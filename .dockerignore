@@ -1,0 +1,13 @@
+**/build/
+**/*_generated_*
+**/node_modules/
+.vscode/
+bin/
+build/
+config/local*
+download/
+out/
+Dockerfile
+latest.build*
+db/
+log/

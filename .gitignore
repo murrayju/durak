@@ -1,0 +1,11 @@
+**/*_generated_*
+**/node_modules/
+.vscode/
+bin/
+build/
+config/local*
+db/
+download/
+out/
+latest.build*
+log/
