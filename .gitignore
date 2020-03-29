@@ -9,3 +9,4 @@ download/
 out/
 latest.build*
 log/
+deploy_rsa
