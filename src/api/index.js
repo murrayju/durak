@@ -70,6 +70,27 @@ export default function(serverContext: ServerContext) {
     return res.json(await game.serialize());
   });
 
+  router.get('/game/:id/events', async (req: ApiRequest, res) => {
+    const game = await Game.find(req.ctx, req.params.id);
+    if (!game) {
+      return res.status(404).send('Not found');
+    }
+    return game.connectSseClient(req, res);
+  });
+
+  router.post('/game/:id/join', async (req: ApiRequest, res) => {
+    const player = {
+      ...req.body,
+      id: req.ctx.clientId,
+    };
+    const game = await Game.find(req.ctx, req.params.id);
+    if (!game) {
+      return res.status(404).send('Not found');
+    }
+    await game.joinPlayer(req.ctx, player);
+    return res.status(204).send();
+  });
+
   // Custom error handler
   router.use(
     (

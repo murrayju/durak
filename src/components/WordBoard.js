@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import type { GameState } from '../api/Game';
+import type { Player, GameState } from '../api/Game';
 import WordTile from './WordTile';
 
 // const BoardWrapper = styled.div`
@@ -40,10 +40,11 @@ const Board = styled.div`
 `;
 
 type Props = {
+  player: Player,
   gameState: GameState,
 };
 
-const WordBoard = ({ gameState }: Props) => {
+const WordBoard = ({ player, gameState }: Props) => {
   if (!gameState) {
     return null;
   }
@@ -52,8 +53,9 @@ const WordBoard = ({ gameState }: Props) => {
     <Board>
       {words?.map((word, i) => (
         <WordTile
+          key={word}
           word={word}
-          type={key?.[i] || 'unknown'}
+          type={player.role === 'spymaster' ? key?.[i] : 'unknown'}
           image={revealTileImages?.[i] || null}
           revealed={revealed?.[i] || false}
         />

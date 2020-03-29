@@ -1415,6 +1415,15 @@ accepts@~1.3.4, accepts@~1.3.7:
     mime-types "~2.1.24"
     negotiator "0.6.2"
 
+access-control@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/access-control/-/access-control-1.0.1.tgz#fc08ceed11cea21576c50edfc3df09b9c240552e"
+  integrity sha512-H5aqjkogmFxfaOrfn/e42vyspHVXuJ8er63KuljJXpOyJ1ZO/U5CrHfO8BLKIy2w7mBM02L5quL0vbfQqrGQbA==
+  dependencies:
+    millisecond "~0.1.2"
+    setheader "~1.0.0"
+    vary "~1.1.0"
+
 acorn-jsx@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.2.0.tgz#4c66069173d6fdd68ed85239fc256226182b2ebe"
@@ -3491,7 +3500,7 @@ dev-ip@^1.0.1:
   resolved "https://registry.yarnpkg.com/dev-ip/-/dev-ip-1.0.1.tgz#a76a3ed1855be7a012bb8ac16cb80f3c00dc28f0"
   integrity sha1-p2o+0YVb56ASu4rBbLgPPADcKPA=
 
-diagnostics@^1.1.1:
+diagnostics@1.x.x, diagnostics@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/diagnostics/-/diagnostics-1.1.1.tgz#cab6ac33df70c9d9a727490ae43ac995a769b22a"
   integrity sha512-8wn1PmdunLJ9Tqbx+Fx/ZEuHfJf4NKSN2ZBj7SJC/OWRWha843+WsTjqMe1B5E3p28jqBlp+mJ2fPVxPyNgYKQ==
@@ -6500,6 +6509,11 @@ miller-rabin@^4.0.0:
     bn.js "^4.0.0"
     brorand "^1.0.1"
 
+millisecond@~0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/millisecond/-/millisecond-0.1.2.tgz#6cc5ad386241cab8e78aff964f87028eec92dac5"
+  integrity sha1-bMWtOGJByrjniv+WT4cCjuyS2sU=
+
 mime-db@1.43.0:
   version "1.43.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.43.0.tgz#0a12e0502650e473d735535050e7c8f4eb4fae58"
@@ -9230,6 +9244,13 @@ set-value@^2.0.0, set-value@^2.0.1:
     is-plain-object "^2.0.3"
     split-string "^3.0.1"
 
+setheader@~1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/setheader/-/setheader-1.0.2.tgz#cde0732155a554f91192ced963f718afcdd92748"
+  integrity sha512-A704nIwzqGed0CnJZIqDE+0udMPS839ocgf1R9OJ8aq8vw4U980HWeNaD9ec8VnmBni9lyGEWDedOWXT/C5kxA==
+  dependencies:
+    diagnostics "1.x.x"
+
 setimmediate@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/setimmediate/-/setimmediate-1.0.5.tgz#290cbb232e306942d7d7ea9b83732ab7856f8285"
@@ -9524,6 +9545,14 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
+
+sse-channel@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/sse-channel/-/sse-channel-3.1.1.tgz#e3c872891fb75f0419e9fe2ad705572c9a93769b"
+  integrity sha512-vgf4QFh60vlAMX0vGJpn6S+7gTO3ckRn7xq4DOgQGcgDs7ULBkaQFQxy4b3vj/umyk0ydhGu7i4A1nHQc5HcYw==
+  dependencies:
+    access-control "1.0.1"
+    lodash "^4.17.10"
 
 sshpk@^1.7.0:
   version "1.16.1"
@@ -10674,7 +10703,7 @@ value-equal@^1.0.1:
   resolved "https://registry.yarnpkg.com/value-equal/-/value-equal-1.0.1.tgz#1e0b794c734c5c0cade179c437d356d931a34d6c"
   integrity sha512-NOJ6JZCAWr0zlxZt+xqCHNTEKOsrks2HQd4MqhP1qy4z1SkbEP467eNx6TgDKXMvUOb+OENfJCZwM+16n7fRfw==
 
-vary@^1, vary@~1.1.2:
+vary@^1, vary@~1.1.0, vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=

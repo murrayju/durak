@@ -2,8 +2,12 @@
 import path from 'path';
 import { v4 as uuid } from 'uuid';
 import fs from 'fs-extra';
+import SseChannel from 'sse-channel';
+import type { $Request, $Response } from 'express';
 
+import logger from '../logger';
 import WordList from './WordList';
+import { whiteBlackFilter } from '../util/array';
 import type { ApiRequestContext } from './index';
 
 const imagesRoot = path.resolve(
@@ -36,10 +40,20 @@ export type GameState = {
   revealed?: boolean[],
 };
 
+type Role = 'spymaster' | 'operative';
+
+export type Player = {
+  id: string,
+  name: string,
+  role: Role,
+  team: Team,
+};
+
 export type GameDbData = {
   id: string,
   wordListId?: string,
   state?: GameState,
+  players?: Player[],
 };
 
 type NewGameOptions = {
@@ -51,9 +65,40 @@ const gamesCache = new Map<string, Game>();
 export default class Game {
   #data: GameDbData;
   #wordList: ?WordList;
+  _sse: SseChannel;
+  _sseClients: Map<string, Set<$Response>>;
+  _sseConnections: WeakMap<$Response, string>;
 
   constructor(data: GameDbData) {
     this.#data = data;
+    this._sseClients = new Map();
+    this._sseConnections = new WeakMap();
+    this._sse = new SseChannel({ jsonEncode: true })
+      .on('connect', (channel, req, res) => {
+        const { clientId } = req.ctx;
+        logger.info(`Client connected to SSE stream.`, { clientId });
+        if (!this._sseClients.has(clientId)) {
+          this._sseClients.set(clientId, new Set());
+        }
+        this._sseClients.get(clientId)?.add(res);
+        this._sseConnections.set(res, clientId);
+      })
+      .on('disconnect', (channel, res) => {
+        const clientId = this._sseConnections.get(res);
+        logger.info(`Client disconnected from SSE stream.`, {
+          clientId,
+        });
+        this._sseConnections.delete(res);
+        if (clientId) {
+          this._sseClients.get(clientId)?.delete(res);
+          if (this._sseClients.get(clientId)?.size === 0) {
+            this._sseClients.delete(clientId);
+          }
+          if (this._sseClients.size === 0) {
+            logger.info('All clients disconnected');
+          }
+        }
+      });
   }
 
   get id() {
@@ -62,6 +107,10 @@ export default class Game {
 
   get wordListId(): string {
     return this.#data.wordListId || 'standard';
+  }
+
+  get players(): Player[] {
+    return this.#data.players || [];
   }
 
   async getWordList(): Promise<WordList> {
@@ -79,8 +128,8 @@ export default class Game {
   }
 
   async serialize(): Promise<GameDbData> {
-    const { id, state, wordListId } = this;
-    return { id, state, wordListId };
+    const { id, state, wordListId, players } = this;
+    return { id, state, wordListId, players };
   }
 
   async newWords(): Promise<string[]> {
@@ -106,6 +155,60 @@ export default class Game {
     this.state.revealed = Array.from({ length: 25 }).map(() => Math.random() > 0.5);
     await this.newWords();
     await this.newKey();
+  }
+
+  async delete() {
+    this.emitToSseClients('connectionClosing');
+    this._sse.close();
+    this._sseClients.clear();
+    this._sseConnections = new WeakMap();
+    gamesCache.delete(this.id);
+  }
+
+  async connectSseClient(req: $Request, res: $Response): Promise<void> {
+    await new Promise((resolve, reject) =>
+      this._sse.addClient(req, res, err => (err ? reject(err) : resolve())),
+    );
+    this._sse.send({ id: uuid(), event: 'connected' }, [res]);
+  }
+
+  emitToSseClients(
+    event: string,
+    data?: ?{ [string]: any } = null,
+    clientWhiteList?: ?(string[]) = null,
+    clientBlackList?: ?(string[]) = null,
+  ): void {
+    const clients =
+      clientWhiteList || clientBlackList
+        ? whiteBlackFilter(
+            [...this._sseClients.keys()],
+            clientWhiteList,
+            clientBlackList,
+          ).flatMap(k => [...(this._sseClients.get(k) || [])])
+        : null;
+    const count = clients ? clients.length : this._sse.getConnectionCount();
+    this._sse.send(
+      {
+        id: data?.id || uuid(),
+        event,
+        data,
+      },
+      // if sending to all clients, use null
+      count === this._sse.getConnectionCount() ? null : clients,
+    );
+    logger.debug(`emitted '${event}' event to ${count} client(s) via SSE`, {
+      event,
+      data,
+    });
+  }
+
+  async save(ctx: ApiRequestContext) {
+    await this.emitToSseClients('stateChanged', await this.serialize());
+  }
+
+  async joinPlayer(ctx: ApiRequestContext, player: Player) {
+    this.#data.players = [...this.players, player];
+    await this.save(ctx);
   }
 
   static async find(ctx: ApiRequestContext, id: string): Promise<?Game> {

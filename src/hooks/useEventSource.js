@@ -16,10 +16,7 @@ const useEventSource = (
   const initFn = useCallback(initializeFn, deps);
 
   useEffect(() => {
-    const user = getUser();
-    const es = new EventSourcePolyfill(`${user.credentials.faUrl}${url}`, {
-      headers: { Authorization: `Bearer ${getUser().token}` },
-    }); // part of the spec
+    const es = new EventSourcePolyfill(url);
 
     es.addEventListener('open', () => {
       setEsConnected(true);
