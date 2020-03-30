@@ -39,6 +39,10 @@ const Board = styled.div`
   }
 `;
 
+const PreloadImages = styled.div`
+  background: ${({ urls }) => urls.map(url => `url('${url}')`).join(', ')};
+`;
+
 type Props = {
   player: Player,
   gameState: GameState,
@@ -63,6 +67,7 @@ const WordBoard = ({ player, gameState, onTileSelected }: Props) => {
           onChoose={() => onTileSelected(i)}
         />
       ))}
+      <PreloadImages urls={revealTileImages} />
     </Board>
   );
 };
