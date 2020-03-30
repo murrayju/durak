@@ -91,12 +91,12 @@ export default function(serverContext: ServerContext) {
     return res.status(204).send();
   });
 
-  router.post('/game/:id/selectTile/:tileId', async (req: ApiRequest, res) => {
+  router.post('/game/:id/selectTile/:tileIndex', async (req: ApiRequest, res) => {
     const game = await Game.find(req.ctx, req.params.id);
     if (!game) {
       return res.status(404).send('Not found');
     }
-    await game.selectTile(req.ctx, req.params.tileId);
+    await game.selectTile(req.ctx, parseInt(req.params.tileIndex, 10));
     return res.status(204).send();
   });
 
