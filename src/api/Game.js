@@ -40,7 +40,7 @@ export type GameState = {
   revealed?: boolean[],
 };
 
-type Role = 'spymaster' | 'operative';
+export type Role = 'spymaster' | 'operative';
 
 export type Player = {
   id: string,
@@ -152,7 +152,7 @@ export default class Game {
 
   async newRound() {
     this.#data.state = {};
-    this.state.revealed = Array.from({ length: 25 }).map(() => Math.random() > 0.5);
+    this.state.revealed = Array.from({ length: 25 }).map(() => false);
     await this.newWords();
     await this.newKey();
   }
@@ -208,6 +208,14 @@ export default class Game {
 
   async joinPlayer(ctx: ApiRequestContext, player: Player) {
     this.#data.players = [...this.players, player];
+    await this.save(ctx);
+  }
+
+  async selectTile(ctx: ApiRequestContext, index: number) {
+    if (!this.state.revealed || index >= this.state.revealed.length) {
+      throw new Error('Invalid tile index');
+    }
+    this.state.revealed[index] = true;
     await this.save(ctx);
   }
 

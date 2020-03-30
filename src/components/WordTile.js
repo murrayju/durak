@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import Icon from './Icon';
 import { bsTheme } from './Layout';
-import type { TileType } from '../api/Game';
+import type { TileType, Role } from '../api/Game';
 
 const portraitColors = {
   red: bsTheme.game.spyRed,
@@ -51,6 +51,7 @@ const Tile = styled.div`
   padding: 10px;
   width: 325px;
   height: calc(325px * 4 / 7);
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'arrow')};
 `;
 
 const InnerTile = styled.div`
@@ -118,18 +119,22 @@ type Props = {
   ...DefaultProps,
   word: string,
   revealed: boolean,
+  role: Role,
+  onChoose: ?Function,
 };
 
-const WordTile = ({ word, type, revealed, image }: Props) => {
+const WordTile = ({ word, type, revealed, image, role, onChoose }: Props) => {
+  const isSpymaster = role === 'spymaster';
+  const shownType = isSpymaster ? type : 'unknown';
   return revealed && image ? (
     <Tile image={image} type={type} revealed />
   ) : (
-    <Tile>
-      <InnerTile type={type}>
+    <Tile onClick={isSpymaster ? null : onChoose}>
+      <InnerTile type={shownType}>
         <Top>
           <Icon css="color: #f7e6d6;" name="circle" />
-          <Person type={type}>
-            <Icon name={portraitIcons[type]} />
+          <Person type={shownType}>
+            <Icon name={portraitIcons[shownType]} />
           </Person>
         </Top>
         <WordBox>

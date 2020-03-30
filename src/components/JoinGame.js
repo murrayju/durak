@@ -22,8 +22,10 @@ const Game = ({ id, clientId }: Props) => {
     team: Math.random() > 0.5 ? 'red' : 'blue',
   });
 
+  const valid = !!playerInfo.name;
+
   const submit = evt => {
-    if (isSubmitting) {
+    if (!valid || isSubmitting) {
       return;
     }
     setSubmitting(true);
@@ -102,7 +104,7 @@ const Game = ({ id, clientId }: Props) => {
       </FormGroup>
       <FormGroup>
         <Col smOffset={3} sm={9}>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={!valid || isSubmitting}>
             Join Game
           </Button>
         </Col>

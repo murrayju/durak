@@ -42,9 +42,10 @@ const Board = styled.div`
 type Props = {
   player: Player,
   gameState: GameState,
+  onTileSelected: (index: number) => void,
 };
 
-const WordBoard = ({ player, gameState }: Props) => {
+const WordBoard = ({ player, gameState, onTileSelected }: Props) => {
   if (!gameState) {
     return null;
   }
@@ -55,9 +56,11 @@ const WordBoard = ({ player, gameState }: Props) => {
         <WordTile
           key={word}
           word={word}
-          type={player.role === 'spymaster' ? key?.[i] : 'unknown'}
+          role={player.role}
+          type={key?.[i] || 'unknown'}
           image={revealTileImages?.[i] || null}
           revealed={revealed?.[i] || false}
+          onChoose={() => onTileSelected(i)}
         />
       ))}
     </Board>

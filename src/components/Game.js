@@ -54,6 +54,12 @@ const Game = ({ id }: Props) => {
     return notFound ? <NotFound /> : <Loading what="game data" />;
   }
 
+  const selectTile = (index: number) => {
+    fetch(`/api/game/${id}/selectTile/${index}`, {
+      method: 'POST',
+    }).then(r => r.json());
+  };
+
   return (
     <>
       {esConnected ? (
@@ -70,7 +76,7 @@ const Game = ({ id }: Props) => {
         <JoinGame id={id} clientId={clientId} />
       ) : (
         <GameBoard>
-          <WordBoard player={player} gameState={game.state} />
+          <WordBoard player={player} gameState={game.state} onTileSelected={selectTile} />
         </GameBoard>
       )}
     </>

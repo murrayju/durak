@@ -91,6 +91,15 @@ export default function(serverContext: ServerContext) {
     return res.status(204).send();
   });
 
+  router.post('/game/:id/selectTile/:tileId', async (req: ApiRequest, res) => {
+    const game = await Game.find(req.ctx, req.params.id);
+    if (!game) {
+      return res.status(404).send('Not found');
+    }
+    await game.selectTile(req.ctx, req.params.tileId);
+    return res.status(204).send();
+  });
+
   // Custom error handler
   router.use(
     (
