@@ -12,12 +12,6 @@ import NotFound from './NotFound';
 import JoinGame from './JoinGame';
 import type { GameDbData } from '../api/Game';
 
-const GameBoard = styled.div`
-  width: 100%;
-  position: relative;
-  max-width: 1750px;
-`;
-
 type Props = {
   id: string,
 };
@@ -75,9 +69,7 @@ const Game = ({ id }: Props) => {
       {!player ? (
         <JoinGame id={id} clientId={clientId} />
       ) : (
-        <GameBoard>
-          <WordBoard player={player} gameState={game.state} onTileSelected={selectTile} />
-        </GameBoard>
+        <WordBoard player={player} gameState={game.state} onTileSelected={selectTile} />
       )}
     </>
   );
