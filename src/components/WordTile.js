@@ -33,8 +33,8 @@ const borderColors = {
 const Tile = styled.div`
   background-color: ${({ theme, revealed, type }) =>
     revealed ? portraitColors[type] : theme.game.cardLight};
-  ${({ image }) =>
-    image
+  ${({ revealed, image }) =>
+    revealed && image
       ? `
     background-image: url('${image}');
     background-repeat: no-repeat;
@@ -51,15 +51,27 @@ const Tile = styled.div`
   padding: 10px;
   width: 325px;
   height: calc(325px * 4 / 7);
+  font-size: 1em;
   @media (max-width: ${({ theme }) => theme.screen.lgMin}),
     (max-height: ${({ theme }) => theme.screen.lgMinHt}) {
+    margin: 4px;
+    padding: 5px;
     width: 220px;
     height: calc(220px * 4 / 7);
+    font-size: 0.9em;
+    ${({ revealed, image }) => (revealed && image ? 'box-shadow: 4px 4px 4px #666;' : '')};
   }
   @media (max-width: ${({ theme }) => theme.screen.mdMin}),
     (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
+    margin: 2px;
+    padding: 3px;
     width: 130px;
     height: calc(130px * 4 / 7);
+    font-size: 0.8em;
+    ${({ revealed, image }) => (revealed && image ? 'box-shadow: 2px 2px 2px #666;' : '')};
+  }
+  @media (max-height: ${({ theme }) => theme.screen.smMinHt}) {
+    height: calc(130px * 3 / 7);
   }
   cursor: ${({ onClick }) => (onClick ? 'pointer' : 'arrow')};
 `;
@@ -68,30 +80,42 @@ const InnerTile = styled.div`
   display: flex;
   flex-flow: column;
   align-items: center;
-  justify-content: center;
+  justify-content: end;
   background-color: ${({ theme }) => theme.game.cardLight};
   border: 4px solid ${({ type }) => borderColors[type]};
   border-radius: 5px;
   height: 100%;
   padding: 5px;
+  @media (max-width: ${({ theme }) => theme.screen.lgMin}),
+    (max-height: ${({ theme }) => theme.screen.lgMinHt}) {
+    padding: 4px;
+    border-width: 3px;
+  }
+  @media (max-width: ${({ theme }) => theme.screen.mdMin}),
+    (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
+    padding: 3px;
+    border-width: 2px;
+  }
+  @media (max-height: ${({ theme }) => theme.screen.smMinHt}) {
+    padding: 2px;
+    border-width: 2px;
+  }
 `;
 
 const Top = styled.div`
   display: flex;
   width: 100%;
-  min-height: 100px;
-  @media (max-width: ${({ theme }) => theme.screen.lgMin}),
-    (max-height: ${({ theme }) => theme.screen.lgMinHt}) {
-    min-height: 40px;
-  }
-  @media (max-width: ${({ theme }) => theme.screen.mdMin}),
-    (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
-    display: none;
-  }
   position: relative;
   flex-flow: column;
   align-items: center;
   flex: 1 1;
+
+  > i {
+    @media (max-width: ${({ theme }) => theme.screen.mdMin}),
+      (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
+      font-size: 0.7em;
+    }
+  }
 `;
 
 const Person = styled.div`
@@ -101,19 +125,39 @@ const Person = styled.div`
   top: 0;
   right: 0;
   bottom: 5px;
+  padding: 5px;
   background-color: ${({ theme }) => theme.game.portraitBackground};
   border: 1px solid ${({ theme }) => theme.game.portraitBorder};
-  padding: 5px;
 
   > i {
     color: ${({ type }) => portraitColors[type]};
-    font-size: 6em;
-    @media (max-width: ${({ theme }) => theme.screen.lgMin}),
-      (max-height: ${({ theme }) => theme.screen.lgMinHt}) {
-      font-size: 2em;
-    }
+    font-size: 6.5em;
     padding: 0;
     margin: 0;
+  }
+  @media (max-width: ${({ theme }) => theme.screen.lgMin}),
+    (max-height: ${({ theme }) => theme.screen.lgMinHt}) {
+    bottom: 4px;
+    > i {
+      font-size: 4.25em;
+    }
+  }
+  @media (max-width: ${({ theme }) => theme.screen.mdMin}),
+    (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
+    bottom: 3px;
+    padding: 4px;
+    > i {
+      font-size: 2.2em;
+      margin-bottom: -2px;
+    }
+  }
+  @media (max-height: ${({ theme }) => theme.screen.smMinHt}) {
+    bottom: 2px;
+    padding: 3px;
+    > i {
+      font-size: 1.5em;
+      margin-bottom: -2px;
+    }
   }
 `;
 
@@ -121,20 +165,23 @@ const WordBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0;
+  flex: 0 0 auto;
   background-color: #dbe0fd;
   border: 2px solid #f3ebe9;
   border-radius: 4px;
   width: 100%;
-  padding: 10px 5px;
+  height: 2.5em;
   @media (max-width: ${({ theme }) => theme.screen.mdMin}),
     (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
-    padding: 3px;
+    height: 2em;
+    border-width: 1px;
+  }
+  @media (max-height: ${({ theme }) => theme.screen.smMinHt}) {
+    height: 1.5em;
   }
 `;
 
 const Word = styled.span`
-  font-size: 16px;
   font-weight: bold;
   margin-bottom: -5px;
 `;

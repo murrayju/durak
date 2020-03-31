@@ -16,7 +16,7 @@ const Board = styled.div`
   }
   @media (max-width: ${({ theme }) => theme.screen.mdMin}),
     (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
-    max-width: 835px;
+    max-width: 800px;
   }
   align-items: center;
   justify-content: center;

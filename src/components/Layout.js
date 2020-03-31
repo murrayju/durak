@@ -48,8 +48,9 @@ export const bsTheme = {
     smMax: '1169.98px',
     mdMin: '1170px',
     mdMax: '1694.98px',
-    mdMinHt: '720px',
     lgMin: '1695px',
+    smMinHt: '420px',
+    mdMinHt: '720px',
     lgMinHt: '1000px',
   },
 };
