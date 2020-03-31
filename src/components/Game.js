@@ -2,6 +2,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useCookies } from 'react-cookie';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import useEventSource from '../hooks/useEventSource';
 import AppContext from '../contexts/AppContext';
@@ -54,18 +55,30 @@ const Game = ({ id }: Props) => {
     }).then(r => r.json());
   };
 
+  const esPopover = (
+    <Popover id="event-stream">
+      Event stream{' '}
+      {esConnected ? 'connected' : <strong className="text-warning">disconnected</strong>}
+    </Popover>
+  );
+
+  const vidPopover = <Popover id="join-video">Join video conference call</Popover>;
+
   return (
     <>
-      {esConnected ? (
-        <div>
-          <Icon name="wifi" color="success" /> event stream connected
-        </div>
-      ) : (
-        <div>
-          <Icon name="user-slash" color="warning" /> event stream{' '}
-          <strong className="text-warning">disconnected</strong>
-        </div>
-      )}
+      <div>
+        <OverlayTrigger overlay={vidPopover} placement="bottom" delayShow={300} delayHide={150}>
+          <a href={`https://meet.jit.si/codenames_${id}`} target="_blank" rel="noopener noreferrer">
+            <Icon name="video" />
+          </a>
+        </OverlayTrigger>{' '}
+        <OverlayTrigger overlay={esPopover} placement="bottom" delayShow={300} delayHide={150}>
+          <Icon
+            name={esConnected ? 'wifi' : 'user-slash'}
+            color={esConnected ? 'success' : 'danger'}
+          />
+        </OverlayTrigger>
+      </div>
       {!player ? (
         <JoinGame id={id} clientId={clientId} />
       ) : (

@@ -12,8 +12,8 @@ import MainContainer from './MainContainer';
 // this should match the values in aura
 export const bsTheme = {
   game: {
-    spyRed: '#e12e37',
-    spyBlue: '#0a7fa5',
+    spyRed: '#ed2024',
+    spyBlue: '#003fff',
     spyBlack: '#32312e',
     portraitUnknown: '#ccbfb6',
     portraitBystander: darken(0.2, '#ccbfb6'),
@@ -45,10 +45,12 @@ export const bsTheme = {
   screen: {
     xsMax: '767.98px',
     smMin: '768px',
-    smMax: '991.98px',
-    mdMin: '992px',
-    mdMax: '1199.98px',
-    lgMin: '1200px',
+    smMax: '1169.98px',
+    mdMin: '1170px',
+    mdMax: '1694.98px',
+    mdMinHt: '720px',
+    lgMin: '1695px',
+    lgMinHt: '1000px',
   },
 };
 

@@ -51,9 +51,15 @@ const Tile = styled.div`
   padding: 10px;
   width: 325px;
   height: calc(325px * 4 / 7);
-  @media (max-width: ${({ theme }) => theme.screen.lgMin}) {
+  @media (max-width: ${({ theme }) => theme.screen.lgMin}),
+    (max-height: ${({ theme }) => theme.screen.lgMinHt}) {
     width: 220px;
     height: calc(220px * 4 / 7);
+  }
+  @media (max-width: ${({ theme }) => theme.screen.mdMin}),
+    (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
+    width: 130px;
+    height: calc(130px * 4 / 7);
   }
   cursor: ${({ onClick }) => (onClick ? 'pointer' : 'arrow')};
 `;
@@ -61,6 +67,8 @@ const Tile = styled.div`
 const InnerTile = styled.div`
   display: flex;
   flex-flow: column;
+  align-items: center;
+  justify-content: center;
   background-color: ${({ theme }) => theme.game.cardLight};
   border: 4px solid ${({ type }) => borderColors[type]};
   border-radius: 5px;
@@ -71,8 +79,13 @@ const InnerTile = styled.div`
 const Top = styled.div`
   display: flex;
   min-height: 100px;
-  @media (max-width: ${({ theme }) => theme.screen.lgMin}) {
+  @media (max-width: ${({ theme }) => theme.screen.lgMin}),
+    (max-height: ${({ theme }) => theme.screen.lgMinHt}) {
     min-height: 40px;
+  }
+  @media (max-width: ${({ theme }) => theme.screen.mdMin}),
+    (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
+    display: none;
   }
   position: relative;
   flex-flow: column;
@@ -94,7 +107,8 @@ const Person = styled.div`
   > i {
     color: ${({ type }) => portraitColors[type]};
     font-size: 6em;
-    @media (max-width: ${({ theme }) => theme.screen.lgMin}) {
+    @media (max-width: ${({ theme }) => theme.screen.lgMin}),
+      (max-height: ${({ theme }) => theme.screen.lgMinHt}) {
       font-size: 2em;
     }
     padding: 0;
@@ -112,6 +126,10 @@ const WordBox = styled.div`
   border-radius: 4px;
   width: 100%;
   padding: 10px 5px;
+  @media (max-width: ${({ theme }) => theme.screen.mdMin}),
+    (max-height: ${({ theme }) => theme.screen.mdMinHt}) {
+    padding: 3px;
+  }
 `;
 
 const Word = styled.span`
