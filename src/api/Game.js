@@ -242,7 +242,7 @@ export default class Game {
     let attempts = 10;
     /* eslint-disable no-await-in-loop */
     while (wl && attempts > 0) {
-      id = wl.getRandomId();
+      id = wl.getRandomId(3);
       if (!(await this.find(ctx, id))) {
         return id;
       }
