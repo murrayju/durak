@@ -78,6 +78,7 @@ const InnerTile = styled.div`
 
 const Top = styled.div`
   display: flex;
+  width: 100%;
   min-height: 100px;
   @media (max-width: ${({ theme }) => theme.screen.lgMin}),
     (max-height: ${({ theme }) => theme.screen.lgMinHt}) {
