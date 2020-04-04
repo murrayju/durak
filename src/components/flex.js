@@ -21,7 +21,21 @@ export const Heading = styled.div`
 `;
 
 export const FlowLeft = styled.div`
-  flex: 1 1 auto;
+  flex: 1 1;
+  @media (max-width: 500px) {
+    h2 {
+      font-size: 20px;
+      margin: 11px 0;
+    }
+  }
+`;
+
+export const FlowCenter = styled.div`
+  flex: 1 1;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   @media (max-width: 500px) {
     h2 {
       font-size: 20px;
@@ -31,7 +45,7 @@ export const FlowLeft = styled.div`
 `;
 
 export const FlowRight = styled.div`
-  flex: 1 1 auto;
+  flex: 1 1;
   display: flex;
   flex-flow: row wrap;
   align-items: center;

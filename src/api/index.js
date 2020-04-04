@@ -17,11 +17,23 @@ export type ApiRequestContext = {
   serverContext: ServerContext,
 };
 
-export type ApiRequest = {
+export type Request = {
   body: any,
   params: { [string]: string },
   query: { [string]: string },
+};
+
+export type ApiRequest = {
+  ...Request,
   ctx: ApiRequestContext,
+};
+
+export type GameApiRequest = {
+  ...Request,
+  ctx: {
+    ...ApiRequestContext,
+    game: Game,
+  },
 };
 
 // Middleware factory
@@ -62,41 +74,64 @@ export default function(serverContext: ServerContext) {
     return res.json(await game.serialize());
   });
 
-  router.get('/game/:id', async (req: ApiRequest, res) => {
+  router.use('/game/:id', async (req: GameApiRequest, res, next) => {
     const game = await Game.find(req.ctx, req.params.id);
     if (!game) {
       return res.status(404).send('Not found');
     }
+    req.ctx.game = game;
+    return next();
+  });
+
+  router.get('/game/:id', async (req: GameApiRequest, res) => {
+    const {
+      ctx: { game },
+    } = req;
     return res.json(await game.serialize());
   });
 
-  router.get('/game/:id/events', async (req: ApiRequest, res) => {
-    const game = await Game.find(req.ctx, req.params.id);
-    if (!game) {
-      return res.status(404).send('Not found');
-    }
+  router.get('/game/:id/events', async (req: GameApiRequest, res) => {
+    const {
+      ctx: { game },
+    } = req;
     return game.connectSseClient(req, res);
   });
 
-  router.post('/game/:id/join', async (req: ApiRequest, res) => {
+  router.post('/game/:id/join', async (req: GameApiRequest, res) => {
+    const {
+      body,
+      ctx: { game, clientId },
+    } = req;
     const player = {
-      ...req.body,
-      id: req.ctx.clientId,
+      ...body,
+      id: clientId,
     };
-    const game = await Game.find(req.ctx, req.params.id);
-    if (!game) {
-      return res.status(404).send('Not found');
-    }
     await game.joinPlayer(req.ctx, player);
     return res.status(204).send();
   });
 
-  router.post('/game/:id/selectTile/:tileIndex', async (req: ApiRequest, res) => {
-    const game = await Game.find(req.ctx, req.params.id);
-    if (!game) {
-      return res.status(404).send('Not found');
-    }
-    await game.selectTile(req.ctx, parseInt(req.params.tileIndex, 10));
+  router.post('/game/:id/selectTile/:tileIndex', async (req: GameApiRequest, res) => {
+    const {
+      ctx: { game },
+      params: { tileIndex },
+    } = req;
+    await game.selectTile(req.ctx, parseInt(tileIndex, 10));
+    return res.status(204).send();
+  });
+
+  router.post('/game/:id/pass', async (req: GameApiRequest, res) => {
+    const {
+      ctx: { game },
+    } = req;
+    await game.pass(req.ctx);
+    return res.status(204).send();
+  });
+
+  router.post('/game/:id/newRound', async (req: GameApiRequest, res) => {
+    const {
+      ctx: { game },
+    } = req;
+    await game.startNewRound(req.ctx);
     return res.status(204).send();
   });
 

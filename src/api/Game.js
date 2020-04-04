@@ -38,6 +38,11 @@ export type GameState = {
   revealTileImages?: ?(string[]),
   words?: string[],
   revealed?: boolean[],
+  totalRed?: number,
+  totalBlue?: number,
+  remainingRed?: number,
+  remainingBlue?: number,
+  gameOver?: boolean,
 };
 
 export type Role = 'spymaster' | 'operative';
@@ -128,6 +133,7 @@ export default class Game {
   }
 
   async serialize(): Promise<GameDbData> {
+    await this.computeDerivedState();
     const { id, state, wordListId, players } = this;
     return { id, state, wordListId, players };
   }
@@ -139,6 +145,8 @@ export default class Game {
 
   async newKey(): Promise<TileType[]> {
     const first = Math.random() > 0.5 ? 'red' : 'blue';
+    this.state.totalRed = first === 'red' ? 9 : 8;
+    this.state.totalBlue = first === 'blue' ? 9 : 8;
     this.state.turn = first;
     const key = [
       ...['red', 'blue'].flatMap(c => Array.from({ length: first === c ? 9 : 8 }).map(() => c)),
@@ -202,8 +210,47 @@ export default class Game {
     });
   }
 
+  async computeDerivedState() {
+    const { remainingRed, remainingBlue, assassinated } =
+      this.state.key?.reduce(
+        (res, type, i) => {
+          if (!this.state.revealed?.[i]) {
+            if (type === 'red') {
+              res.remainingRed += 1;
+            } else if (type === 'blue') {
+              res.remainingBlue += 1;
+            }
+          } else if (type === 'assassin') {
+            res.assassinated = true;
+          }
+          return res;
+        },
+        { remainingRed: 0, remainingBlue: 0, assassinated: false },
+      ) || {};
+    this.state.remainingRed = remainingRed || 0;
+    this.state.remainingBlue = remainingBlue || 0;
+    this.state.gameOver = !remainingBlue || !remainingRed || assassinated;
+    return this.state;
+  }
+
   async save(ctx: ApiRequestContext) {
     await this.emitToSseClients('stateChanged', await this.serialize());
+  }
+
+  async nextTeam() {
+    this.state.turn = this.state.turn === 'red' ? 'blue' : 'red';
+    return this.state.turn;
+  }
+
+  async pass(ctx: ApiRequestContext) {
+    await this.nextTeam();
+    await this.save(ctx);
+    return this.state.turn;
+  }
+
+  async startNewRound(ctx: ApiRequestContext) {
+    await this.newRound();
+    await this.save(ctx);
   }
 
   async joinPlayer(ctx: ApiRequestContext, player: Player) {
@@ -216,6 +263,10 @@ export default class Game {
       throw new Error('Invalid tile index');
     }
     this.state.revealed[index] = true;
+    const tileType = this.state.key?.[index];
+    if (tileType !== this.state.turn) {
+      await this.nextTeam();
+    }
     await this.save(ctx);
   }
 

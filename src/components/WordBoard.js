@@ -27,7 +27,7 @@ const Board = styled.div`
 `;
 
 const PreloadImages = styled.div`
-  background: ${({ urls }) => urls.map(url => `url('${url}')`).join(', ')};
+  background: ${({ urls }) => urls?.map(url => `url('${url}')`).join(', ')};
 `;
 
 type Props = {

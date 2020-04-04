@@ -2,16 +2,43 @@
 import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useCookies } from 'react-cookie';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Badge } from 'react-bootstrap';
 
 import useEventSource from '../hooks/useEventSource';
 import AppContext from '../contexts/AppContext';
 import WordBoard from './WordBoard';
 import Icon from './Icon';
+import IconButton from './IconButton';
 import Loading from './Loading';
 import NotFound from './NotFound';
 import JoinGame from './JoinGame';
+import { Heading, FlowLeft, FlowCenter, FlowRight } from './flex';
 import type { GameDbData } from '../api/Game';
+
+const ColoredBadge = styled(Badge)`
+  background-color: ${({
+    theme: {
+      game: { spyRed, spyBlue, spyBlack },
+    },
+    color,
+  }) => (color === 'red' ? spyRed : color === 'blue' ? spyBlue : spyBlack)};
+  margin: 5px;
+  padding: 10px;
+  font-size: 2em;
+  font-family: monospaced;
+`;
+
+const ColoredHeading = styled.h2`
+  color: ${({
+    theme: {
+      game: { spyRed, spyBlue, spyBlack },
+    },
+    color,
+  }) => (color === 'red' ? spyRed : color === 'blue' ? spyBlue : spyBlack)};
+  font-variant: small-caps;
+  text-transform: capitalize;
+  cursor: ${({ onClick }) => onClick && 'pointer'};
+`;
 
 type Props = {
   id: string,
@@ -45,7 +72,8 @@ const Game = ({ id }: Props) => {
     });
   });
 
-  if (!game?.state) {
+  const gameState = game?.state;
+  if (!gameState) {
     return notFound ? <NotFound /> : <Loading what="game data" />;
   }
 
@@ -55,34 +83,99 @@ const Game = ({ id }: Props) => {
     }).then(r => r.json());
   };
 
-  const esPopover = (
-    <Popover id="event-stream">
-      Event stream{' '}
-      {esConnected ? 'connected' : <strong className="text-warning">disconnected</strong>}
-    </Popover>
-  );
+  const pass = () => {
+    fetch(`/api/game/${id}/pass`, {
+      method: 'POST',
+    }).then(r => r.json());
+  };
 
-  const vidPopover = <Popover id="join-video">Join video conference call</Popover>;
+  const newRound = () => {
+    fetch(`/api/game/${id}/newRound`, {
+      method: 'POST',
+    }).then(r => r.json());
+  };
+
+  const pop = (popId, content) => <Popover id={popId}>{content}</Popover>;
 
   return (
     <>
-      <div>
-        <OverlayTrigger overlay={vidPopover} placement="bottom" delayShow={300} delayHide={150}>
-          <a href={`https://meet.jit.si/codenames_${id}`} target="_blank" rel="noopener noreferrer">
-            <Icon name="video" />
-          </a>
-        </OverlayTrigger>{' '}
-        <OverlayTrigger overlay={esPopover} placement="bottom" delayShow={300} delayHide={150}>
-          <Icon
-            name={esConnected ? 'wifi' : 'user-slash'}
-            color={esConnected ? 'success' : 'danger'}
-          />
-        </OverlayTrigger>
-      </div>
+      <Heading>
+        {player ? (
+          <>
+            <FlowLeft>
+              <OverlayTrigger
+                overlay={pop(
+                  'red-score',
+                  `Red team has ${gameState.remainingRed ||
+                    0} tiles remaining out of ${gameState.totalRed || 0} total`,
+                )}
+                placement="bottom"
+              >
+                <ColoredBadge color="red">{gameState.remainingRed}</ColoredBadge>
+              </OverlayTrigger>
+              <OverlayTrigger
+                overlay={pop(
+                  'blue-score',
+                  `Blue team has ${gameState.remainingBlue ||
+                    0} tiles remaining out of ${gameState.totalBlue || 0} total`,
+                )}
+                placement="bottom"
+              >
+                <ColoredBadge color="blue">{gameState.remainingBlue}</ColoredBadge>
+              </OverlayTrigger>
+              <OverlayTrigger
+                overlay={pop('new-round', 'Shuffle the board and start a new round')}
+                placement="bottom"
+              >
+                <IconButton>
+                  <Icon name="random" onClick={newRound} />
+                </IconButton>
+              </OverlayTrigger>{' '}
+            </FlowLeft>
+            <FlowCenter>
+              {gameState.gameOver ? (
+                <ColoredHeading color="black">Game Over</ColoredHeading>
+              ) : (
+                <ColoredHeading onClick={pass} color={gameState.turn}>
+                  {gameState.turn} team&apos;s turn
+                </ColoredHeading>
+              )}
+            </FlowCenter>
+          </>
+        ) : null}
+        <FlowRight>
+          <OverlayTrigger
+            overlay={pop('join-video', 'Join video conference call using jitsi')}
+            placement="bottom"
+          >
+            <IconButton
+              onClick={() => window.open(`https://meet.jit.si/codenames_${id}`, '_blank')}
+            >
+              <Icon name="video" />
+            </IconButton>
+          </OverlayTrigger>{' '}
+          <OverlayTrigger
+            overlay={pop(
+              'event-stream',
+              <>
+                Event stream{' '}
+                {esConnected ? 'connected' : <strong className="text-warning">disconnected</strong>}
+              </>,
+            )}
+            placement="bottom"
+          >
+            <Icon
+              css=" && { margin-right: 20px; margin-left: 0; }"
+              name={esConnected ? 'wifi' : 'user-slash'}
+              color={esConnected ? 'success' : 'danger'}
+            />
+          </OverlayTrigger>
+        </FlowRight>
+      </Heading>
       {!player ? (
         <JoinGame id={id} clientId={clientId} />
       ) : (
-        <WordBoard player={player} gameState={game.state} onTileSelected={selectTile} />
+        <WordBoard player={player} gameState={gameState} onTileSelected={selectTile} />
       )}
     </>
   );
