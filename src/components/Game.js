@@ -138,6 +138,7 @@ const Game = ({ id }: Props) => {
               ) : (
                 <ColoredHeading onClick={pass} color={gameState.turn}>
                   {gameState.turn} team&apos;s turn
+                  <Icon name="step-forward" css="margin-left: 20px;" />
                 </ColoredHeading>
               )}
             </FlowCenter>
