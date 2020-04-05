@@ -12,6 +12,7 @@ import IconButton from './IconButton';
 import Loading from './Loading';
 import NotFound from './NotFound';
 import JoinGame from './JoinGame';
+import ConfirmModal from './ConfirmModal';
 import { Heading, FlowLeft, FlowCenter, FlowRight } from './flex';
 import type { GameDbData } from '../api/Game';
 
@@ -48,6 +49,7 @@ const Game = ({ id }: Props) => {
   const { fetch } = useContext(AppContext);
   const [game, setGame] = useState<?GameDbData>(null);
   const [notFound, setNotFound] = useState(false);
+  const [newRoundModalShown, setNewRoundModalShown] = useState(false);
   const [cookies] = useCookies();
   const { clientId } = cookies;
   const player = game?.players?.find(p => p.id === clientId) || null;
@@ -134,7 +136,13 @@ const Game = ({ id }: Props) => {
                 overlay={pop('new-round', 'Shuffle the board and start a new round')}
                 placement="bottom"
               >
-                <IconButton onClick={newRound}>
+                <IconButton
+                  onClick={() =>
+                    gameState.gameStarted && !gameState.gameOver
+                      ? setNewRoundModalShown(true)
+                      : newRound()
+                  }
+                >
                   <Icon name="random" />
                 </IconButton>
               </OverlayTrigger>{' '}
@@ -194,6 +202,17 @@ const Game = ({ id }: Props) => {
         <JoinGame id={id} clientId={clientId} />
       ) : (
         <WordBoard player={player} gameState={gameState} onTileSelected={selectTile} />
+      )}
+      {newRoundModalShown && (
+        <ConfirmModal
+          title="Are you sure?"
+          message="The game is still in progress, do you really want to start a new round now?"
+          onCancel={() => setNewRoundModalShown(false)}
+          onConfirm={() => {
+            newRound();
+            setNewRoundModalShown(false);
+          }}
+        />
       )}
     </>
   );

@@ -95,6 +95,7 @@ module.exports = {
     'react/static-property-placement': ['error', 'static public field'],
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-one-expression-per-line': 'off',
+    'react/jsx-curly-newline': 'off',
     'react/destructuring-assignment': ['warn', 'always', { ignoreClassFields: true }],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
