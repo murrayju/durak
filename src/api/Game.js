@@ -249,6 +249,9 @@ export default class Game {
   }
 
   async startNewRound(ctx: ApiRequestContext) {
+    if (this.state.gameOver) {
+      this.#data.players = [];
+    }
     await this.newRound();
     await this.save(ctx);
   }
