@@ -60,6 +60,7 @@ export type GameDbData = {
   wordListId?: string,
   state?: GameState,
   players?: Player[],
+  usedWords?: string[],
 };
 
 type NewGameOptions = {
@@ -119,6 +120,13 @@ export default class Game {
     return this.#data.players || [];
   }
 
+  get usedWords(): WordList {
+    return new WordList({
+      id: `used-${this.id}`,
+      list: this.#data.usedWords || [],
+    });
+  }
+
   async getWordList(): Promise<WordList> {
     if (!this.#wordList) {
       this.#wordList = await WordList.get(this.wordListId);
@@ -140,7 +148,14 @@ export default class Game {
   }
 
   async newWords(): Promise<string[]> {
-    this.state.words = (await this.getWordList()).getRandomList(25);
+    const baseList = await this.getWordList();
+    const unusedList = baseList.without(this.usedWords);
+    if (unusedList.size < 25) {
+      this.#data.usedWords = [];
+      this.state.words = baseList.getRandomList(25);
+    } else {
+      this.state.words = unusedList.getRandomList(25);
+    }
     return this.state.words;
   }
 
@@ -267,6 +282,7 @@ export default class Game {
   async startNewRound(ctx: ApiRequestContext) {
     if (this.state.gameOver) {
       this.#data.players = [];
+      this.#data.usedWords = this.usedWords.joinWith(this.state.words).list;
     }
     await this.newRound();
     await this.save(ctx);

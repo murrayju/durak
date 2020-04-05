@@ -2,12 +2,13 @@
 import config from '@murrayju/config';
 import { v4 as uuid } from 'uuid';
 import camelCase from 'camelcase';
+import { without, union } from 'lodash';
 
 import { entries } from '../util/maps';
 
 type WordListDbData = {
   id: string,
-  name: string,
+  name?: string,
   list: string[],
 };
 
@@ -29,20 +30,20 @@ export default class WordList {
     };
   }
 
-  get id() {
+  get id(): string {
     return this.#data.id;
   }
 
-  get name() {
-    return this.#data.name;
+  get name(): string {
+    return this.#data.name || '';
   }
 
-  get list() {
-    return this.#data.list;
+  get list(): string[] {
+    return this.#data.list || [];
   }
 
-  get size() {
-    return this.list.length;
+  get size(): number {
+    return this.list.length || 0;
   }
 
   getRandomList(count: number = 25) {
@@ -58,6 +59,20 @@ export default class WordList {
 
   getRandomId(wordCount: number = 4): string {
     return camelCase(this.getRandomList(wordCount));
+  }
+
+  joinWith(words?: ?(WordList | string[])): WordList {
+    return new WordList({
+      id: uuid(),
+      list: union(this.list, (words instanceof WordList ? words.list : words) || []),
+    });
+  }
+
+  without(words?: ?(WordList | string[])): WordList {
+    return new WordList({
+      id: uuid(),
+      list: without(this.list, ...((words instanceof WordList ? words.list : words) || [])),
+    });
   }
 
   static async getMap(): Promise<WordListMap> {
