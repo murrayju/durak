@@ -135,6 +135,14 @@ export default function(serverContext: ServerContext) {
     return res.status(204).send();
   });
 
+  router.post('/game/:id/rotateKey', async (req: GameApiRequest, res) => {
+    const {
+      ctx: { game },
+    } = req;
+    await game.rotateKey(req.ctx);
+    return res.status(204).send();
+  });
+
   // Custom error handler
   router.use(
     (

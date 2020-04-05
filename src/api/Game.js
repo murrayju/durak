@@ -42,6 +42,7 @@ export type GameState = {
   totalBlue?: number,
   remainingRed?: number,
   remainingBlue?: number,
+  gameStarted?: boolean,
   gameOver?: boolean,
 };
 
@@ -158,6 +159,21 @@ export default class Game {
     return key;
   }
 
+  async rotateKey(ctx: ApiRequestContext) {
+    if (this.state.gameStarted) {
+      throw new Error('Cannot rotate key after game has started.');
+    }
+    const { key } = this.state;
+    if (!key) {
+      throw new Error('No key exists to rotate');
+    }
+    // 90deg clockwise
+    const newKey = key.map((_, i) => key[(4 - (i % 5)) * 5 + Math.floor(i / 5)]);
+    this.state.key = newKey;
+    await this.save(ctx);
+    return newKey;
+  }
+
   async newRound() {
     this.#data.state = {};
     this.state.revealed = Array.from({ length: 25 }).map(() => false);
@@ -265,6 +281,7 @@ export default class Game {
     if (!this.state.revealed || index >= this.state.revealed.length) {
       throw new Error('Invalid tile index');
     }
+    this.state.gameStarted = true;
     this.state.revealed[index] = true;
     const tileType = this.state.key?.[index];
     if (tileType !== this.state.turn) {

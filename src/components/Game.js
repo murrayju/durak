@@ -51,6 +51,7 @@ const Game = ({ id }: Props) => {
   const [cookies] = useCookies();
   const { clientId } = cookies;
   const player = game?.players?.find(p => p.id === clientId) || null;
+  const isSpyMaster = player?.role === 'spymaster';
 
   useEffect(() => {
     setGame(null);
@@ -95,6 +96,12 @@ const Game = ({ id }: Props) => {
     }).then(r => r.json());
   };
 
+  const rotateKey = () => {
+    fetch(`/api/game/${id}/rotateKey`, {
+      method: 'POST',
+    }).then(r => r.json());
+  };
+
   const pop = (popId, content) => <Popover id={popId}>{content}</Popover>;
 
   return (
@@ -127,10 +134,20 @@ const Game = ({ id }: Props) => {
                 overlay={pop('new-round', 'Shuffle the board and start a new round')}
                 placement="bottom"
               >
-                <IconButton>
-                  <Icon name="random" onClick={newRound} />
+                <IconButton onClick={newRound}>
+                  <Icon name="random" />
                 </IconButton>
               </OverlayTrigger>{' '}
+              {isSpyMaster && (
+                <OverlayTrigger
+                  overlay={pop('rotate-key', 'Rotate the spymaster key 90 degrees.')}
+                  placement="bottom"
+                >
+                  <IconButton onClick={rotateKey} disabled={gameState.gameStarted}>
+                    <Icon name="sync" />
+                  </IconButton>
+                </OverlayTrigger>
+              )}
             </FlowLeft>
             <FlowCenter>
               {gameState.gameOver ? (
