@@ -245,6 +245,7 @@ async function start(
             port: config.get('server.port'),
             middleware: [server],
             open: !process.argv.includes('--silent'),
+            ghostMode: false,
             ...(isDebug ? {} : { notify: false, ui: false }),
           },
           (error, bs) => (error ? reject(error) : resolve(bs)),
