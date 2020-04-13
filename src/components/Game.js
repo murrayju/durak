@@ -6,7 +6,8 @@ import { OverlayTrigger, Popover, Badge } from 'react-bootstrap';
 
 import useEventSource from '../hooks/useEventSource';
 import AppContext from '../contexts/AppContext';
-import WordBoard from './WordBoard';
+import GameBoard from './GameBoard';
+import GameLobby from './GameLobby';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import Loading from './Loading';
@@ -14,7 +15,15 @@ import NotFound from './NotFound';
 import JoinGame from './JoinGame';
 import ConfirmModal from './ConfirmModal';
 import { Heading, FlowLeft, FlowCenter, FlowRight } from './flex';
-import type { GameDbData } from '../api/Game';
+import type { SerializedGame } from '../api/Game';
+import GameState from '../api/GameState';
+
+const Screen = styled.div`
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-flow: column;
+`;
 
 const ColoredBadge = styled(Badge)`
   background-color: ${({
@@ -41,19 +50,23 @@ const ColoredHeading = styled.h2`
   cursor: ${({ onClick }) => onClick && 'pointer'};
 `;
 
+const PreloadImages = styled.div`
+  background: ${({ urls }) => urls?.map(url => `url('${url}')`).join(', ')};
+`;
+
 type Props = {
   id: string,
 };
 
 const Game = ({ id }: Props) => {
   const { fetch } = useContext(AppContext);
-  const [game, setGame] = useState<?GameDbData>(null);
+  const [game, setGame] = useState<?SerializedGame>(null);
   const [notFound, setNotFound] = useState(false);
   const [newRoundModalShown, setNewRoundModalShown] = useState(false);
+  const [deckImgMap, setDeckImgMap] = useState({});
   const [cookies] = useCookies();
   const { clientId } = cookies;
-  const player = game?.players?.find(p => p.id === clientId) || null;
-  const isSpyMaster = player?.role === 'spymaster';
+  const client = game?.clients?.find(p => p.id === clientId) || null;
 
   useEffect(() => {
     setGame(null);
@@ -68,6 +81,17 @@ const Game = ({ id }: Props) => {
       });
   }, [fetch, id]);
 
+  useEffect(() => {
+    fetch(`/api/deck/imgMap`, {
+      method: 'GET',
+    })
+      .then(r => r.json())
+      .then(setDeckImgMap)
+      .catch(err => {
+        console.error('Failed to get deck image map.', err);
+      });
+  }, [fetch]);
+
   const esConnected = useEventSource(`/api/game/${id}/events`, es => {
     es.addEventListener('stateChanged', ({ data: rawData }) => {
       const data = JSON.parse(rawData);
@@ -75,22 +99,10 @@ const Game = ({ id }: Props) => {
     });
   });
 
-  const gameState = game?.state;
-  if (!gameState) {
+  if (!game?.state) {
     return notFound ? <NotFound /> : <Loading what="game data" />;
   }
-
-  const selectTile = (index: number) => {
-    fetch(`/api/game/${id}/selectTile/${index}`, {
-      method: 'POST',
-    }).then(r => r.json());
-  };
-
-  const pass = () => {
-    fetch(`/api/game/${id}/pass`, {
-      method: 'POST',
-    }).then(r => r.json());
-  };
+  const gameState = GameState.deserialize(game?.state);
 
   const newRound = () => {
     fetch(`/api/game/${id}/newRound`, {
@@ -98,40 +110,14 @@ const Game = ({ id }: Props) => {
     }).then(r => r.json());
   };
 
-  const rotateKey = () => {
-    fetch(`/api/game/${id}/rotateKey`, {
-      method: 'POST',
-    }).then(r => r.json());
-  };
-
   const pop = (popId, content) => <Popover id={popId}>{content}</Popover>;
 
   return (
-    <>
+    <Screen>
       <Heading>
-        {player ? (
+        {client ? (
           <>
             <FlowLeft>
-              <OverlayTrigger
-                overlay={pop(
-                  'red-score',
-                  `Red team has ${gameState.remainingRed ||
-                    0} tiles remaining out of ${gameState.totalRed || 0} total`,
-                )}
-                placement="bottom"
-              >
-                <ColoredBadge color="red">{gameState.remainingRed}</ColoredBadge>
-              </OverlayTrigger>
-              <OverlayTrigger
-                overlay={pop(
-                  'blue-score',
-                  `Blue team has ${gameState.remainingBlue ||
-                    0} tiles remaining out of ${gameState.totalBlue || 0} total`,
-                )}
-                placement="bottom"
-              >
-                <ColoredBadge color="blue">{gameState.remainingBlue}</ColoredBadge>
-              </OverlayTrigger>
               <OverlayTrigger
                 overlay={pop('new-round', 'Shuffle the board and start a new round')}
                 placement="bottom"
@@ -146,26 +132,9 @@ const Game = ({ id }: Props) => {
                   <Icon name="random" />
                 </IconButton>
               </OverlayTrigger>{' '}
-              {isSpyMaster && (
-                <OverlayTrigger
-                  overlay={pop('rotate-key', 'Rotate the spymaster key 90 degrees.')}
-                  placement="bottom"
-                >
-                  <IconButton onClick={rotateKey} disabled={gameState.gameStarted}>
-                    <Icon name="sync" />
-                  </IconButton>
-                </OverlayTrigger>
-              )}
             </FlowLeft>
             <FlowCenter>
-              {gameState.gameOver ? (
-                <ColoredHeading color="black">Game Over</ColoredHeading>
-              ) : (
-                <ColoredHeading onClick={pass} color={gameState.turn}>
-                  {gameState.turn} team&apos;s turn
-                  <Icon name="step-forward" css="margin-left: 20px;" />
-                </ColoredHeading>
-              )}
+              {gameState.gameOver ? <ColoredHeading color="black">Game Over</ColoredHeading> : null}
             </FlowCenter>
           </>
         ) : null}
@@ -174,9 +143,7 @@ const Game = ({ id }: Props) => {
             overlay={pop('join-video', 'Join video conference call using jitsi')}
             placement="bottom"
           >
-            <IconButton
-              onClick={() => window.open(`https://meet.jit.si/codenames_${id}`, '_blank')}
-            >
+            <IconButton onClick={() => window.open(`https://meet.jit.si/durak_${id}`, '_blank')}>
               <Icon name="video" />
             </IconButton>
           </OverlayTrigger>{' '}
@@ -198,10 +165,12 @@ const Game = ({ id }: Props) => {
           </OverlayTrigger>
         </FlowRight>
       </Heading>
-      {!player ? (
+      {!client ? (
         <JoinGame id={id} clientId={clientId} />
+      ) : gameState.gameStarted ? (
+        <GameBoard client={client} gameState={gameState} />
       ) : (
-        <WordBoard player={player} gameState={gameState} onTileSelected={selectTile} />
+        <GameLobby id={id} clients={game.clients || []} />
       )}
       {newRoundModalShown && (
         <ConfirmModal
@@ -214,7 +183,8 @@ const Game = ({ id }: Props) => {
           }}
         />
       )}
-    </>
+      <PreloadImages urls={Object.values(deckImgMap)} />
+    </Screen>
   );
 };
 

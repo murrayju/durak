@@ -66,7 +66,7 @@ async function start(
   // Doesn't resolve until kill signal sent
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async outerResolve => {
-    const network = 'codenames-tdd';
+    const network = 'durak-tdd';
 
     let cleaning = null;
     let cfgWatcher = null;

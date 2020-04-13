@@ -1,7 +1,6 @@
 // @flow
-import path from 'path';
+import config from '@murrayju/config';
 import { v4 as uuid } from 'uuid';
-import fs from 'fs-extra';
 import SseChannel from 'sse-channel';
 import type { $Request, $Response } from 'express';
 
@@ -9,75 +8,38 @@ import logger from '../logger';
 import WordList from './WordList';
 import { whiteBlackFilter } from '../util/array';
 import type { ApiRequestContext } from './index';
+import Deck from './Deck';
+import Player from './Player';
+import GameState from './GameState';
+import type { SerializedGameState } from './GameState';
 
-const imagesRoot = path.resolve(
-  __dirname,
-  process.env.NODE_ENV === 'production' ? './' : '../',
-  'public/static/images',
-);
-const imageUrlRoot = '/static/images';
-const listImagesRandomly = async (subDir: string) =>
-  (await fs.readdir(path.resolve(imagesRoot, subDir))).sort(() => Math.random() - 0.5);
-const getImages = async (key: TileType[]) => {
-  const img = {
-    red: await listImagesRandomly('red'),
-    blue: await listImagesRandomly('blue'),
-    assassin: await listImagesRandomly('assassin'),
-    bystander: await listImagesRandomly('bystander'),
-    unknown: [],
-  };
-  return key.map(k => `${imageUrlRoot}/${k}/${img[k].splice(0, 1)[0]}`);
-};
+const fakePlayers = config.get('fakePlayers') || [];
 
-type Team = 'red' | 'blue';
-export type TileType = Team | 'assassin' | 'bystander' | 'unknown';
-
-export type GameState = {
-  turn?: Team,
-  key?: ?(TileType[]),
-  revealTileImages?: ?(string[]),
-  words?: string[],
-  revealed?: boolean[],
-  totalRed?: number,
-  totalBlue?: number,
-  remainingRed?: number,
-  remainingBlue?: number,
-  gameStarted?: boolean,
-  gameOver?: boolean,
-};
-
-export type Role = 'spymaster' | 'operative';
-
-export type Player = {
+export type Client = {
   id: string,
   name: string,
-  role: Role,
-  team: Team,
 };
 
-export type GameDbData = {
+export type SerializedGame = {
   id: string,
-  wordListId?: string,
-  state?: GameState,
-  players?: Player[],
-  usedWords?: string[],
-};
-
-type NewGameOptions = {
-  wordListId?: string,
+  clients?: Client[],
+  state?: SerializedGameState,
 };
 
 const gamesCache = new Map<string, Game>();
 
 export default class Game {
-  #data: GameDbData;
-  #wordList: ?WordList;
+  id: string;
+  clients: Client[];
+  state: GameState;
   _sse: SseChannel;
   _sseClients: Map<string, Set<$Response>>;
   _sseConnections: WeakMap<$Response, string>;
 
-  constructor(data: GameDbData) {
-    this.#data = data;
+  constructor({ id, clients, state }: SerializedGame) {
+    this.id = id;
+    this.clients = clients || [];
+    this.state = state instanceof GameState ? state : GameState.deserialize(state);
     this._sseClients = new Map();
     this._sseConnections = new WeakMap();
     this._sse = new SseChannel({ jsonEncode: true })
@@ -108,92 +70,27 @@ export default class Game {
       });
   }
 
-  get id() {
-    return this.#data.id;
-  }
-
-  get wordListId(): string {
-    return this.#data.wordListId || 'standard';
-  }
-
-  get players(): Player[] {
-    return this.#data.players || [];
-  }
-
-  get usedWords(): WordList {
-    return new WordList({
-      id: `used-${this.id}`,
-      list: this.#data.usedWords || [],
-    });
-  }
-
-  async getWordList(): Promise<WordList> {
-    if (!this.#wordList) {
-      this.#wordList = await WordList.get(this.wordListId);
-    }
-    return this.#wordList;
-  }
-
-  get state(): GameState {
-    if (!this.#data.state) {
-      this.#data.state = {};
-    }
-    return this.#data.state;
-  }
-
-  async serialize(): Promise<GameDbData> {
-    await this.computeDerivedState();
-    const { id, state, wordListId, players } = this;
-    return { id, state, wordListId, players };
-  }
-
-  async newWords(): Promise<string[]> {
-    const baseList = await this.getWordList();
-    const unusedList = baseList.without(this.usedWords);
-    if (unusedList.size < 25) {
-      this.#data.usedWords = [];
-      this.state.words = baseList.getRandomList(25);
-    } else {
-      this.state.words = unusedList.getRandomList(25);
-    }
-    return this.state.words;
-  }
-
-  async newKey(): Promise<TileType[]> {
-    const first = Math.random() > 0.5 ? 'red' : 'blue';
-    this.state.totalRed = first === 'red' ? 9 : 8;
-    this.state.totalBlue = first === 'blue' ? 9 : 8;
-    this.state.turn = first;
-    const key = [
-      ...['red', 'blue'].flatMap(c => Array.from({ length: first === c ? 9 : 8 }).map(() => c)),
-      ...Array.from({ length: 7 }).map(() => 'bystander'),
-      'assassin',
-    ].sort(() => Math.random() - 0.5);
-    this.state.key = key;
-    this.state.revealTileImages = await getImages(key);
-    return key;
-  }
-
-  async rotateKey(ctx: ApiRequestContext) {
-    if (this.state.gameStarted) {
-      throw new Error('Cannot rotate key after game has started.');
-    }
-    const { key } = this.state;
-    if (!key) {
-      throw new Error('No key exists to rotate');
-    }
-    // 90deg clockwise
-    const newKey = key.map((_, i) => key[(4 - (i % 5)) * 5 + Math.floor(i / 5)]);
-    this.state.key = newKey;
-    await this.save(ctx);
-    return newKey;
+  async serialize(forPlayer: string, explicitlyObscured?: boolean): Promise<SerializedGame> {
+    const { id, clients, state } = this;
+    const obscured =
+      explicitlyObscured == null
+        ? !!state.players.find(p => p.id === forPlayer)
+        : explicitlyObscured;
+    return { id, clients, state: state.serialize(forPlayer, obscured) };
   }
 
   async newRound() {
-    this.#data.state = {};
-    this.state.revealed = Array.from({ length: 25 }).map(() => false);
-    await this.newWords();
-    await this.newKey();
+    const deck = Deck.random();
+    const players = [...this.clients, ...fakePlayers]
+      .sort(() => Math.random() - 0.5)
+      .map(
+        c =>
+          new Player({
+            ...c,
+            hand: new Deck(deck.draw(6)),
+          }),
+      );
+    this.state = new GameState({ deck, players });
   }
 
   async delete() {
@@ -241,67 +138,26 @@ export default class Game {
     });
   }
 
-  async computeDerivedState() {
-    const { remainingRed, remainingBlue, assassinated } =
-      this.state.key?.reduce(
-        (res, type, i) => {
-          if (!this.state.revealed?.[i]) {
-            if (type === 'red') {
-              res.remainingRed += 1;
-            } else if (type === 'blue') {
-              res.remainingBlue += 1;
-            }
-          } else if (type === 'assassin') {
-            res.assassinated = true;
-          }
-          return res;
-        },
-        { remainingRed: 0, remainingBlue: 0, assassinated: false },
-      ) || {};
-    this.state.remainingRed = remainingRed || 0;
-    this.state.remainingBlue = remainingBlue || 0;
-    this.state.gameOver = !remainingBlue || !remainingRed || assassinated;
-    return this.state;
+  async emitObscuredStateToEachPlayer() {
+    const clients = [...this._sseClients.keys()];
+    await Promise.all(
+      clients.map(async c => this.emitToSseClients('stateChanged', await this.serialize(c), [c])),
+    );
   }
 
   async save(ctx: ApiRequestContext) {
-    await this.emitToSseClients('stateChanged', await this.serialize());
-  }
-
-  async nextTeam() {
-    this.state.turn = this.state.turn === 'red' ? 'blue' : 'red';
-    return this.state.turn;
-  }
-
-  async pass(ctx: ApiRequestContext) {
-    await this.nextTeam();
-    await this.save(ctx);
-    return this.state.turn;
+    await this.emitObscuredStateToEachPlayer();
   }
 
   async startNewRound(ctx: ApiRequestContext) {
-    if (this.state.gameOver) {
-      this.#data.players = [];
-      this.#data.usedWords = this.usedWords.joinWith(this.state.words).list;
-    }
     await this.newRound();
-    await this.save(ctx);
-  }
-
-  async joinPlayer(ctx: ApiRequestContext, player: Player) {
-    this.#data.players = [...this.players, player];
-    await this.save(ctx);
-  }
-
-  async selectTile(ctx: ApiRequestContext, index: number) {
-    if (!this.state.revealed || index >= this.state.revealed.length) {
-      throw new Error('Invalid tile index');
-    }
     this.state.gameStarted = true;
-    this.state.revealed[index] = true;
-    const tileType = this.state.key?.[index];
-    if (tileType !== this.state.turn) {
-      await this.nextTeam();
+    await this.save(ctx);
+  }
+
+  async joinClient(ctx: ApiRequestContext, player: Client) {
+    if (!this.clients.find(c => c.id === player.id)) {
+      this.clients.push(player);
     }
     await this.save(ctx);
   }
@@ -339,10 +195,9 @@ export default class Game {
     return uuid();
   }
 
-  static async create(ctx: ApiRequestContext, { wordListId }: NewGameOptions = {}) {
+  static async create(ctx: ApiRequestContext) {
     const id = await this.newUniqueId(ctx);
-    const game = new Game({ id, wordListId });
-    await game.newRound();
+    const game = new Game({ id });
     gamesCache.set(id, game);
     return game;
   }

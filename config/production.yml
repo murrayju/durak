@@ -2,5 +2,6 @@
 server:
   port: 80
   testApis: false
+fakePlayers: null
 db:
   url: mongodb://db:27017

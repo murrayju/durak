@@ -8,8 +8,8 @@ import uuid from 'uuid/v4';
 import { version } from '../version._generated_'; // eslint-disable-line import/no-unresolved
 import logger from '../logger';
 import type { ServerContext } from '../server';
-import WordList from './WordList';
 import Game from './Game';
+import Deck from './Deck';
 
 export type ApiRequestContext = {
   correlationId: string,
@@ -65,12 +65,12 @@ export default function(serverContext: ServerContext) {
     res.json(version);
   });
 
-  router.get('/wordList', async (req: ApiRequest, res) => {
-    res.json(await WordList.getAll());
+  router.get('/deck/imgMap', async (req, res) => {
+    res.json(Deck.imageUrlMap);
   });
 
   router.post('/game', async (req: ApiRequest, res) => {
-    const game = await Game.create(req.ctx, req.body);
+    const game = await Game.create(req.ctx);
     return res.json(await game.serialize());
   });
 
@@ -85,9 +85,9 @@ export default function(serverContext: ServerContext) {
 
   router.get('/game/:id', async (req: GameApiRequest, res) => {
     const {
-      ctx: { game },
+      ctx: { game, clientId },
     } = req;
-    return res.json(await game.serialize());
+    return res.json(await game.serialize(clientId));
   });
 
   router.get('/game/:id/events', async (req: GameApiRequest, res) => {
@@ -106,24 +106,7 @@ export default function(serverContext: ServerContext) {
       ...body,
       id: clientId,
     };
-    await game.joinPlayer(req.ctx, player);
-    return res.status(204).send();
-  });
-
-  router.post('/game/:id/selectTile/:tileIndex', async (req: GameApiRequest, res) => {
-    const {
-      ctx: { game },
-      params: { tileIndex },
-    } = req;
-    await game.selectTile(req.ctx, parseInt(tileIndex, 10));
-    return res.status(204).send();
-  });
-
-  router.post('/game/:id/pass', async (req: GameApiRequest, res) => {
-    const {
-      ctx: { game },
-    } = req;
-    await game.pass(req.ctx);
+    await game.joinClient(req.ctx, player);
     return res.status(204).send();
   });
 
@@ -132,14 +115,6 @@ export default function(serverContext: ServerContext) {
       ctx: { game },
     } = req;
     await game.startNewRound(req.ctx);
-    return res.status(204).send();
-  });
-
-  router.post('/game/:id/rotateKey', async (req: GameApiRequest, res) => {
-    const {
-      ctx: { game },
-    } = req;
-    await game.rotateKey(req.ctx);
     return res.status(204).send();
   });
 

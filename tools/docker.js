@@ -167,7 +167,7 @@ export async function dockerTeardown() {
 }
 
 export async function runDbContainer(
-  network: ?string = 'codenames',
+  network: ?string = 'durak',
   persist: ?string = './db/data',
   port: ?number = 27018,
   alias: ?string = 'db',
@@ -181,7 +181,7 @@ export async function runDbContainer(
     runArgs: [
       ...(persist ? ['-v', `${path.resolve(persist)}:/data/db:rw`] : []),
       ...(p ? ['-p', `${p}:${dockerPort}`] : []),
-      ...(alias ? ['--name', `codenames-tdd-${alias}`] : []),
+      ...(alias ? ['--name', `durak-tdd-${alias}`] : []),
       ...(Array.isArray(environment)
         ? environment.reduce((args, env) => [...args, '-e', env], [])
         : entries(environment || {}).reduce((args, [k, v]) => [...args, '-e', `${k}=${v}`], [])),

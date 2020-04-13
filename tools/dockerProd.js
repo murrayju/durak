@@ -26,7 +26,7 @@ export default async function dockerProd(
     await run(docker);
   }
 
-  const network = 'codenames-production';
+  const network = 'durak-production';
   let db = null;
   let dbHost = null;
   let dbPort = null;

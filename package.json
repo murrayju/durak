@@ -1,7 +1,7 @@
 {
-  "name": "codenames",
+  "name": "durak",
   "version": "1.0.0",
-  "description": "a game with words and spies",
+  "description": "a card game",
   "main": "index.js",
   "buildStrap": {
     "repoType": "git",
@@ -13,7 +13,7 @@
       "registry": "https://registry.yarnpkg.com/"
     },
     "docker": {
-      "repository": "murrayju/codenames",
+      "repository": "murrayju/durak",
       "registry": "docker.pkg.github.com"
     }
   },
@@ -23,14 +23,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/murrayju/codenames.git"
+    "url": "git+https://github.com/murrayju/durak.git"
   },
   "author": "murrayju",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/murrayju/codenames/issues"
+    "url": "https://github.com/murrayju/durak/issues"
   },
-  "homepage": "https://github.com/murrayju/codenames",
+  "homepage": "https://github.com/murrayju/durak",
   "engines": {
     "node": ">=12.16.1",
     "npm": ">=6.13.4"

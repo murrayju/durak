@@ -58,7 +58,6 @@ export const bsTheme = {
 const PageRoot = styled.div`
   ${position('fixed', 0, 0, 0, 0)};
   width: 100%;
-  overflow: auto;
   background-color: ${({ theme }) => theme.brand.gray5};
 `;
 
@@ -68,7 +67,6 @@ const ContentRoot = styled.div`
   flex: 1 1;
   flex-flow: column;
   align-items: center;
-  overflow: auto;
 `;
 
 type Props = {
@@ -81,10 +79,10 @@ type Props = {
 const Layout = ({ container, children, ...props }: Props) => (
   <ThemeProvider theme={bsTheme}>
     <PageRoot>
+      <Footer />
       <ContentRoot>
         {container ? <MainContainer {...props}>{children}</MainContainer> : children}
       </ContentRoot>
-      <Footer />
     </PageRoot>
   </ThemeProvider>
 );

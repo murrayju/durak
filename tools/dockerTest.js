@@ -12,7 +12,7 @@ export default async function dockerTest(
 ) {
   const tag = await ensureBuilder(build);
 
-  const network = `codenames-test-integration-${tag}`;
+  const network = `durak-test-integration-${tag}`;
   try {
     // Run the tests in the builder container
     await dockerRun(
