@@ -90,7 +90,8 @@ export default class Game {
             hand: new Deck(deck.draw(6)),
           }),
       );
-    this.state = new GameState({ deck, players });
+    const [trumpCard] = deck.draw(1);
+    this.state = new GameState({ deck, players, trumpCard });
   }
 
   async delete() {

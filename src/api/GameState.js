@@ -1,4 +1,6 @@
 // @flow
+import Card from './Card';
+import type { SerializedCard } from './Card';
 import Deck from './Deck';
 import type { SerializedDeck } from './Deck';
 import Player from './Player';
@@ -10,6 +12,7 @@ export type SerializedGameState = {
   gameOver: boolean,
   players: SerializedPlayer[],
   deck: SerializedDeck,
+  trumpCard: ?SerializedCard,
   discard: SerializedDeck,
   durak: ?string,
 };
@@ -20,6 +23,7 @@ export type GameStateCtorData = {
   gameOver?: boolean,
   players?: Array<SerializedPlayer | Player>,
   deck?: SerializedDeck | Deck,
+  trumpCard?: ?(SerializedCard | Card),
   discard?: SerializedDeck | Deck,
   durak?: ?string,
 };
@@ -30,6 +34,7 @@ export default class GameState {
   gameOver: boolean;
   players: Player[];
   deck: Deck;
+  trumpCard: ?Card;
   discard: Deck;
   durak: ?string;
 
@@ -39,6 +44,7 @@ export default class GameState {
     gameOver,
     players,
     deck,
+    trumpCard,
     discard,
     durak,
   }: GameStateCtorData = {}) {
@@ -47,6 +53,8 @@ export default class GameState {
     this.gameOver = gameOver || false;
     this.players = players?.map(p => (p instanceof Player ? p : Player.deserialize(p))) || [];
     this.deck = deck instanceof Deck ? deck : deck ? Deck.deserialize(deck) : new Deck();
+    this.trumpCard =
+      trumpCard instanceof Card ? trumpCard : trumpCard ? Card.deserialize(trumpCard) : null;
     this.discard =
       discard instanceof Deck ? discard : discard ? Deck.deserialize(discard) : new Deck([]);
     this.durak = durak || null;
@@ -61,13 +69,14 @@ export default class GameState {
 
   serialize(forPlayer: string, obscured?: boolean = false): SerializedGameState {
     this.computeDerivedState();
-    const { turn, gameStarted, gameOver, players, deck, discard, durak } = this;
+    const { turn, gameStarted, gameOver, players, deck, trumpCard, discard, durak } = this;
     return {
       turn,
       gameStarted,
       gameOver,
       players: players.map(p => p.serialize(obscured && p.id !== forPlayer)),
       deck: deck.serialize(obscured),
+      trumpCard: trumpCard?.serialize() || null,
       discard: discard.serialize(obscured),
       durak,
     };
