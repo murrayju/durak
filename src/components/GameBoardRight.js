@@ -29,6 +29,12 @@ const RightHand = styled.div`
     }}) {
     padding: 80px 0px;
   }
+
+  @media (min-width: ${({ theme }) => {
+      return theme.screen.lgMin;
+    }}) {
+    padding: 150px 0px;
+  }
 `;
 
 type Props = {
