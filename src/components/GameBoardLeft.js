@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import type Player from '../api/Player';
+import PlayerName from './PlayerName';
 import Hand from './Hand';
 
 const LeftSide = styled.div`
@@ -27,25 +28,6 @@ const LeftHand = styled.div`
       return theme.screen.smMin;
     }}) {
     padding: 80px 0px;
-  }
-`;
-
-const PlayerName = styled.div`
-  font-size: 1em;
-  margin-top: -10px;
-
-  @media (min-width: ${({ theme }) => {
-      return theme.screen.smMin;
-    }}) {
-    margin-top: 10px;
-    font-size: 1.2em;
-  }
-
-  @media (min-width: ${({ theme }) => {
-      return theme.screen.lgMin;
-    }}) {
-    margin-top: 25px;
-    font-size: 1.5em;
   }
 `;
 
