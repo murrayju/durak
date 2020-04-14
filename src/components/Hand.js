@@ -27,7 +27,7 @@ const CardImg = styled.img`
   margin-top: ${({ selected }) => (selected ? '-350px' : '-250px')};
   cursor: ${({ onClick }) => (onClick ? 'pointer' : null)};
   width: 100px;
-  top: 60px;
+  top: 50px;
   ${({ primary }) => {
     return primary ? 'transform: scale(1.5);' : '';
   }};
@@ -41,8 +41,8 @@ const CardImg = styled.img`
   @media (min-width: ${({ theme }) => {
       return theme.screen.smMin;
     }}) {
-    top: 80px;
-    width: 145px;
+    width: 146px;
+    top: 78px;
     &:not(:first-child) {
       ${({ primary }) => {
         return primary ? 'margin-left: -100px;' : 'margin-left: -135px;';
@@ -51,10 +51,10 @@ const CardImg = styled.img`
   }
 
   @media (min-width: ${({ theme }) => {
-      return theme.screen.lgMin;
+      return theme.screen.mdMin;
     }}) {
-    top: 60px;
     width: 220px;
+    top: 110px;
     &:not(:first-child) {
       ${({ primary }) => {
         return primary ? 'margin-left: -150px;' : 'margin-left: -200px;';

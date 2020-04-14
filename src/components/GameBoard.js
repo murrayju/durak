@@ -8,6 +8,8 @@ import type GameState from '../api/GameState';
 import Hand from './Hand';
 import Icon from './Icon';
 
+import useScreenSize from '../hooks/useScreenSize';
+
 const Board = styled.div`
   flex: 1 1;
   display: flex;
@@ -85,12 +87,13 @@ const TopHand = styled.div`
 
 const PlayerName = styled.div`
   margin-top: 10px;
-  font-size: 1.5em;
+  font-size: 1em;
 
   @media (min-width: ${({ theme }) => {
       return theme.screen.smMin;
     }}) {
     margin-top: 70px;
+    font-size: 1.5em;
   }
 `;
 
@@ -101,10 +104,13 @@ type Props = {
 
 const GameBoard = ({ client, gameState }: Props) => {
   const [selectedCards, setSelectedCards] = useState([]);
+  const { width, height } = useScreenSize();
 
   if (!gameState) {
     return null;
   }
+
+  const screenRatio = width / height;
 
   const { players, turn } = gameState;
   const numPlayers = players.length;
@@ -117,8 +123,8 @@ const GameBoard = ({ client, gameState }: Props) => {
   const attacker = relPlayer(0, turn);
   const defender = relPlayer(1, turn);
 
-  const leftPlayer = numPlayers > 1 ? relPlayer(1) : null;
-  const rightPlayer = numPlayers > 2 ? relPlayer(-1) : null;
+  const leftPlayers = numPlayers > 1 ? [relPlayer(1)] : null;
+  const rightPlayers = numPlayers > 2 ? [relPlayer(-1)] : null;
   const midPlayers =
     numPlayers > 3 ? Array.from({ length: numPlayers - 3 }).map((_, i) => relPlayer(2 + i)) : null;
 
@@ -144,22 +150,26 @@ const GameBoard = ({ client, gameState }: Props) => {
           ))}
         </TopSide>
       )}
-      {leftPlayer && (
+      {leftPlayers && (
         <LeftSide>
-          <LeftHand>
-            <Hand hand={leftPlayer.hand} />
-            <PlayerName>{leftPlayer.name}</PlayerName>
-            {playerIndicator(leftPlayer)}
-          </LeftHand>
+          {leftPlayers.map(p => (
+            <LeftHand>
+              <Hand hand={p.hand} />
+              <PlayerName>{p.name}</PlayerName>
+              {playerIndicator(p)}
+            </LeftHand>
+          ))}
         </LeftSide>
       )}
-      {rightPlayer && (
+      {rightPlayers && (
         <RightSide>
-          <RightHand>
-            <Hand hand={rightPlayer.hand} />
-            <PlayerName>{rightPlayer.name}</PlayerName>
-            {playerIndicator(rightPlayer)}
-          </RightHand>
+          {rightPlayers.map(p => (
+            <RightHand>
+              <Hand hand={p.hand} />
+              <PlayerName>{p.name}</PlayerName>
+              {playerIndicator(p)}
+            </RightHand>
+          ))}
         </RightSide>
       )}
       {player && (
