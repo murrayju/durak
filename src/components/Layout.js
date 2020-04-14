@@ -79,10 +79,10 @@ type Props = {
 const Layout = ({ container, children, ...props }: Props) => (
   <ThemeProvider theme={bsTheme}>
     <PageRoot>
+      <Footer />
       <ContentRoot>
         {container ? <MainContainer {...props}>{children}</MainContainer> : children}
       </ContentRoot>
-      <Footer />
     </PageRoot>
   </ThemeProvider>
 );

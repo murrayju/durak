@@ -30,10 +30,9 @@ const LeftSide = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column-reverse;
   position: absolute;
-  left: calc(-50vh + 90px);
-  top: 0;
-  bottom: 0;
+  left: 20px;
 `;
 
 const LeftHand = styled.div`
@@ -42,7 +41,7 @@ const LeftHand = styled.div`
   flex-flow: column;
   align-items: center;
   justify-content: center;
-  width: 100vh;
+  padding: 50px 0px;
   transform: rotate(-90deg);
 `;
 
@@ -50,10 +49,9 @@ const RightSide = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   position: absolute;
-  right: calc(-50vh + 90px);
-  top: 0;
-  bottom: 0;
+  right: 20px;
 `;
 
 const RightHand = styled.div`
@@ -62,7 +60,7 @@ const RightHand = styled.div`
   flex-flow: column;
   align-items: center;
   justify-content: center;
-  width: 100vh;
+  padding: 50px 0px;
   transform: rotate(90deg);
 `;
 
@@ -86,13 +84,20 @@ const TopHand = styled.div`
 `;
 
 const PlayerName = styled.div`
-  margin-top: 10px;
   font-size: 1em;
+  margin-top: -10px;
 
   @media (min-width: ${({ theme }) => {
       return theme.screen.smMin;
     }}) {
-    margin-top: 70px;
+    margin-top: 10px;
+    font-size: 1.2em;
+  }
+
+  @media (min-width: ${({ theme }) => {
+      return theme.screen.lgMin;
+    }}) {
+    margin-top: 25px;
     font-size: 1.5em;
   }
 `;
@@ -123,10 +128,75 @@ const GameBoard = ({ client, gameState }: Props) => {
   const attacker = relPlayer(0, turn);
   const defender = relPlayer(1, turn);
 
-  const leftPlayers = numPlayers > 1 ? [relPlayer(1)] : null;
-  const rightPlayers = numPlayers > 2 ? [relPlayer(-1)] : null;
-  const midPlayers =
-    numPlayers > 3 ? Array.from({ length: numPlayers - 3 }).map((_, i) => relPlayer(2 + i)) : null;
+  let midPlayers = [];
+  let leftPlayers = [];
+  let rightPlayers = [];
+
+  // I'm sure you can do this fancier.. feel free but in case it needs to change I didnt want to spend time on a crazy algorithm
+  if (numPlayers === 2) {
+    midPlayers = [relPlayer(1)];
+  } else if (numPlayers === 3) {
+    midPlayers = [relPlayer(1)];
+    rightPlayers = [relPlayer(2)];
+  } else if (numPlayers === 4) {
+    leftPlayers = [relPlayer(1)];
+    midPlayers = [relPlayer(2)];
+    rightPlayers = [relPlayer(3)];
+  } else if (numPlayers === 5) {
+    if (screenRatio > 1) {
+      // spread over mid
+      leftPlayers = [relPlayer(1)];
+      midPlayers = [relPlayer(2), relPlayer(3)];
+      rightPlayers = [relPlayer(4)];
+    } else {
+      // spread over left/right
+      leftPlayers = [relPlayer(1), relPlayer(2)];
+      midPlayers = [relPlayer(3)];
+      rightPlayers = [relPlayer(4)];
+    }
+  } else if (numPlayers === 6) {
+    if (screenRatio > 1) {
+      // spread over mid
+      leftPlayers = [relPlayer(1)];
+      midPlayers = [relPlayer(2), relPlayer(3), relPlayer(4)];
+      rightPlayers = [relPlayer(5)];
+    } else {
+      // spread over left/right
+      leftPlayers = [relPlayer(1), relPlayer(2)];
+      midPlayers = [relPlayer(3)];
+      rightPlayers = [relPlayer(4), relPlayer(5)];
+    }
+  } else if (numPlayers === 7) {
+    if (screenRatio > 1) {
+      // spread over mid
+      leftPlayers = [relPlayer(1), relPlayer(2)];
+      midPlayers = [relPlayer(3), relPlayer(4), relPlayer(5)];
+      rightPlayers = [relPlayer(6)];
+    } else {
+      // spread over left/right
+      leftPlayers = [relPlayer(1), relPlayer(2), relPlayer(3)];
+      midPlayers = [relPlayer(4)];
+      rightPlayers = [relPlayer(5), relPlayer(6)];
+    }
+  } else if (numPlayers === 8) {
+    if (screenRatio > 1) {
+      // spread over mid
+      leftPlayers = [relPlayer(1), relPlayer(2)];
+      midPlayers = [relPlayer(3), relPlayer(4), relPlayer(5)];
+      rightPlayers = [relPlayer(6), relPlayer(7)];
+    } else {
+      // spread over left/right
+      leftPlayers = [relPlayer(1), relPlayer(2), relPlayer(3)];
+      midPlayers = [relPlayer(4)];
+      rightPlayers = [relPlayer(5), relPlayer(6), relPlayer(7)];
+    }
+  }
+
+  // old one:
+  // const leftPlayers = numPlayers > 1 ? [relPlayer(1)] : null;
+  // const rightPlayers = numPlayers > 2 ? [relPlayer(-1)] : null;
+  // const midPlayers =
+  //   numPlayers > 3 ? Array.from({ length: numPlayers - 3 }).map((_, i) => relPlayer(2 + i)) : null;
 
   const playerIndicator = p =>
     p === attacker ? (

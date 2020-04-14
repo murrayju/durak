@@ -26,38 +26,38 @@ const CardImg = styled.img`
   position: relative;
   margin-top: ${({ selected }) => (selected ? '-350px' : '-250px')};
   cursor: ${({ onClick }) => (onClick ? 'pointer' : null)};
-  width: 100px;
-  top: 50px;
+  width: 70px;
+  top: 60px;
   ${({ primary }) => {
     return primary ? 'transform: scale(1.5);' : '';
   }};
 
   &:not(:first-child) {
     ${({ primary }) => {
-      return primary ? 'margin-left: -75px;' : 'margin-left: -92px;';
+      return primary ? 'margin-left: -50px;' : 'margin-left: -65px;';
     }};
   }
 
   @media (min-width: ${({ theme }) => {
       return theme.screen.smMin;
     }}) {
-    width: 146px;
-    top: 78px;
+    width: 100px;
+    top: 50px;
     &:not(:first-child) {
       ${({ primary }) => {
-        return primary ? 'margin-left: -100px;' : 'margin-left: -135px;';
+        return primary ? 'margin-left: -75px;' : 'margin-left: -92px;';
       }};
     }
   }
 
   @media (min-width: ${({ theme }) => {
-      return theme.screen.mdMin;
+      return theme.screen.lgMin;
     }}) {
-    width: 220px;
-    top: 110px;
+    width: 146px;
+    top: 40px;
     &:not(:first-child) {
       ${({ primary }) => {
-        return primary ? 'margin-left: -150px;' : 'margin-left: -200px;';
+        return primary ? 'margin-left: -100px;' : 'margin-left: -135px;';
       }};
     }
   }

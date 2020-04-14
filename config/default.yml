@@ -20,6 +20,10 @@ fakePlayers:
     name: Michael
   - id: asd-5
     name: Brandon
+  - id: asd-6
+    name: Cheech
+  - id: asd-7
+    name: Chong
 db:
   url: mongodb://localhost:27018
   name: durak
