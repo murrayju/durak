@@ -2,3 +2,6 @@ flow-typed/
 node_modules/
 download/
 build/
+db/
+log/
+out/
