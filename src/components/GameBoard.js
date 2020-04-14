@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import type Player from '../api/Player';
@@ -103,6 +103,7 @@ type Props = {
 };
 
 const GameBoard = ({ client, gameState }: Props) => {
+  const [selectedCards, setSelectedCards] = useState([]);
   if (!gameState) {
     return null;
   }
@@ -164,7 +165,15 @@ const GameBoard = ({ client, gameState }: Props) => {
       {player && (
         <MainHand>
           {playerIndicator(player)}
-          <Hand hand={player.hand} />
+          <Hand
+            hand={player.hand}
+            selected={selectedCards}
+            onCardClick={c =>
+              setSelectedCards(sel =>
+                sel.find(s => s.id === c.id) ? sel.filter(s => s.id !== c.id) : [...sel, c],
+              )
+            }
+          />
         </MainHand>
       )}
     </Board>

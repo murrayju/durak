@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import type Deck from '../api/Deck';
+import type Card from '../api/Card';
 
 const cardRatio = 240 / 336;
 
@@ -25,7 +26,8 @@ const Box = styled.div`
 
 const CardImg = styled.img`
   position: relative;
-  margin-top: -250px;
+  margin-top: ${({ selected }) => (selected ? '-350px' : '-250px')};
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : null)};
   top: 125px;
   &:not(:first-child) {
     margin-left: -195px;
@@ -34,18 +36,29 @@ const CardImg = styled.img`
 
 type Props = {
   hand: Deck,
+  selected?: ?(Card[]),
+  onCardClick?: ?(Card) => void,
 };
 
-const Hand = ({ hand }: Props) => {
+const Hand = ({ hand, selected, onCardClick }: Props) => {
   const { cards } = hand.sort();
-  const count = cards.length;
   return (
     <Box>
       {cards.map(c => (
-        <CardImg key={c.id} src={c.imageUrl} alt={c.name} />
+        <CardImg
+          key={c.id}
+          alt={c.name}
+          src={c.imageUrl}
+          onClick={onCardClick ? () => onCardClick(c) : null}
+          selected={!!selected?.find(s => s.id === c.id)}
+        />
       ))}
     </Box>
   );
+};
+Hand.defaultProps = {
+  selected: null,
+  onCardClick: null,
 };
 
 export default Hand;
