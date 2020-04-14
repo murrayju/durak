@@ -10,13 +10,11 @@ const cardRatio = 240 / 336;
 const Box = styled.div`
   flex: 1 1;
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: nowrap;
   width: 100%;
   align-items: center;
   justify-content: center;
   position: relative;
-  /* margin-left: 200px;
-  left: -100px; */
   overflow: visible;
 
   > * {
@@ -28,9 +26,40 @@ const CardImg = styled.img`
   position: relative;
   margin-top: ${({ selected }) => (selected ? '-350px' : '-250px')};
   cursor: ${({ onClick }) => (onClick ? 'pointer' : null)};
-  top: 125px;
+  width: 100px;
+  top: 60px;
+  ${({ primary }) => {
+    return primary ? 'transform: scale(1.5);' : '';
+  }};
+
   &:not(:first-child) {
-    margin-left: -195px;
+    ${({ primary }) => {
+      return primary ? 'margin-left: -75px;' : 'margin-left: -92px;';
+    }};
+  }
+
+  @media (min-width: ${({ theme }) => {
+      return theme.screen.smMin;
+    }}) {
+    top: 80px;
+    width: 145px;
+    &:not(:first-child) {
+      ${({ primary }) => {
+        return primary ? 'margin-left: -100px;' : 'margin-left: -135px;';
+      }};
+    }
+  }
+
+  @media (min-width: ${({ theme }) => {
+      return theme.screen.lgMin;
+    }}) {
+    top: 60px;
+    width: 220px;
+    &:not(:first-child) {
+      ${({ primary }) => {
+        return primary ? 'margin-left: -150px;' : 'margin-left: -200px;';
+      }};
+    }
   }
 `;
 
@@ -38,15 +67,17 @@ type Props = {
   hand: Deck,
   selected?: ?(Card[]),
   onCardClick?: ?(Card) => void,
+  primary?: ?boolean,
 };
 
-const Hand = ({ hand, selected, onCardClick }: Props) => {
+const Hand = ({ hand, selected, onCardClick, primary }: Props) => {
   const { cards } = hand.sort();
   return (
     <Box>
       {cards.map(c => (
         <CardImg
           key={c.id}
+          primary={primary}
           alt={c.name}
           src={c.imageUrl}
           onClick={onCardClick ? () => onCardClick(c) : null}
@@ -59,6 +90,7 @@ const Hand = ({ hand, selected, onCardClick }: Props) => {
 Hand.defaultProps = {
   selected: null,
   onCardClick: null,
+  primary: false,
 };
 
 export default Hand;

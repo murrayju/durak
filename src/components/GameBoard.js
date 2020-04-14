@@ -42,9 +42,6 @@ const LeftHand = styled.div`
   justify-content: center;
   width: 100vh;
   transform: rotate(-90deg);
-  img {
-    top: 0;
-  }
 `;
 
 const RightSide = styled.div`
@@ -65,9 +62,6 @@ const RightHand = styled.div`
   justify-content: center;
   width: 100vh;
   transform: rotate(90deg);
-  img {
-    top: 0;
-  }
 `;
 
 const TopSide = styled.div`
@@ -75,7 +69,8 @@ const TopSide = styled.div`
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: -50px;
+  padding: 0 80px;
+  top: 0;
   left: 0;
   right: 0;
 `;
@@ -86,15 +81,17 @@ const TopHand = styled.div`
   flex-flow: column;
   align-items: center;
   justify-content: center;
-  transform: scale(0.5);
-  img {
-    top: 0;
-  }
 `;
 
 const PlayerName = styled.div`
   margin-top: 10px;
   font-size: 1.5em;
+
+  @media (min-width: ${({ theme }) => {
+      return theme.screen.smMin;
+    }}) {
+    margin-top: 70px;
+  }
 `;
 
 type Props = {
@@ -104,9 +101,11 @@ type Props = {
 
 const GameBoard = ({ client, gameState }: Props) => {
   const [selectedCards, setSelectedCards] = useState([]);
+
   if (!gameState) {
     return null;
   }
+
   const { players, turn } = gameState;
   const numPlayers = players.length;
   const playerIndex = players.findIndex(p => p.id === client.id);
@@ -117,6 +116,7 @@ const GameBoard = ({ client, gameState }: Props) => {
 
   const attacker = relPlayer(0, turn);
   const defender = relPlayer(1, turn);
+
   const leftPlayer = numPlayers > 1 ? relPlayer(1) : null;
   const rightPlayer = numPlayers > 2 ? relPlayer(-1) : null;
   const midPlayers =
@@ -166,6 +166,7 @@ const GameBoard = ({ client, gameState }: Props) => {
         <MainHand>
           {playerIndicator(player)}
           <Hand
+            primary
             hand={player.hand}
             selected={selectedCards}
             onCardClick={c =>
