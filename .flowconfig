@@ -5,6 +5,9 @@
 .*/broken.json
 <PROJECT_ROOT>/download/.*
 <PROJECT_ROOT>/build/.*
+<PROJECT_ROOT>/db/.*
+<PROJECT_ROOT>/log/.*
+<PROJECT_ROOT>/out/.*
 <PROJECT_ROOT>/\.git/.*
 
 [include]

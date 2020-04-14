@@ -140,6 +140,7 @@
     "eslint-plugin-react-hooks": "^2.3.0",
     "flow-bin": "^0.114.0",
     "get-port": "^5.1.0",
+    "husky": "^4.2.5",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "lodash": "^4.17.15",
@@ -179,5 +180,10 @@
     "webpack-dev-middleware": "^3.7.2",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-node-externals": "^1.7.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "./bs lint"
+    }
   }
 }
