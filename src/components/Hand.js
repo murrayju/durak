@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import type Deck from '../api/Deck';
 import type Card from '../api/Card';
 
-const cardRatio = 240 / 336;
+// const cardRatio = 240 / 336;
 
 const Box = styled.div`
   flex: 1 1;
