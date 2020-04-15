@@ -2,7 +2,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useCookies } from 'react-cookie';
-import { OverlayTrigger, Popover, Badge } from 'react-bootstrap';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import useEventSource from '../hooks/useEventSource';
 import AppContext from '../contexts/AppContext';
@@ -23,19 +23,6 @@ const Screen = styled.div`
   height: 100vh;
   display: flex;
   flex-flow: column;
-`;
-
-const ColoredBadge = styled(Badge)`
-  background-color: ${({
-    theme: {
-      game: { spyRed, spyBlue, spyBlack },
-    },
-    color,
-  }) => (color === 'red' ? spyRed : color === 'blue' ? spyBlue : spyBlack)};
-  margin: 5px;
-  padding: 10px;
-  font-size: 2em;
-  font-family: monospaced;
 `;
 
 const ColoredHeading = styled.h2`

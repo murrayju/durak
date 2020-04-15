@@ -22,6 +22,7 @@ const Board = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
+  z-index: 100;
 `;
 
 const MainHand = styled.div`
