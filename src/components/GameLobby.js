@@ -1,7 +1,7 @@
 // @flow
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import { Form, FormGroup, Col, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
 import AppContext from '../contexts/AppContext';
 import type { Client } from '../api/Game';
@@ -15,10 +15,7 @@ const Box = styled.div`
 `;
 
 const PlayersBox = styled.div`
-  flex: 1 1;
-  display: flex;
-  align-items: start;
-  flex-flow: column;
+  margin-top: 10px;
 `;
 
 type Props = {
