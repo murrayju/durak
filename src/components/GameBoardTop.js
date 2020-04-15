@@ -37,8 +37,7 @@ const GameBoardTop = ({ players, playerIndicator }: Props) => {
         <TopHand key={p.id}>
           <Hand hand={p.hand} />
           <PlayerName>
-            {p.name}
-            {playerIndicator(p)}
+            {p.name} {playerIndicator(p)}
           </PlayerName>
         </TopHand>
       ))}
