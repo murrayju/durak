@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import type Player from '../api/Player';
 import type { Client } from '../api/Game';
 import type GameState from '../api/GameState';
 import Hand from './Hand';
@@ -59,9 +60,9 @@ const GameBoard = ({ client, gameState }: Props) => {
   const attacker = relPlayer(0, turn);
   const defender = relPlayer(1, turn);
 
-  let midPlayers = [];
-  let leftPlayers = [];
-  let rightPlayers = [];
+  let midPlayers: Player[] = [];
+  let leftPlayers: Player[] = [];
+  let rightPlayers: Player[] = [];
 
   // I'm sure you can do this fancier.. feel free but in case it needs to change I didnt want to spend time on a crazy algorithm
   if (numPlayers === 2) {

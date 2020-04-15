@@ -14,7 +14,9 @@ const useScreenSize = () => {
   const [screenSize, setScreenSize] = useState(getScreenSize);
 
   useEffect(() => {
-    if (!hasScreen) return false;
+    if (!hasScreen) {
+      return () => {};
+    }
     const resize = () => {
       setScreenSize(getScreenSize());
     };

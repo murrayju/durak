@@ -26,8 +26,8 @@ const TopHand = styled.div`
 `;
 
 type Props = {
-  players: [Player],
-  playerIndicator: func,
+  players: Player[],
+  playerIndicator: Player => any,
 };
 
 const GameBoardTop = ({ players, playerIndicator }: Props) => {

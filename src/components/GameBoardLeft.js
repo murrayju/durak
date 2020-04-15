@@ -38,8 +38,8 @@ const LeftHand = styled.div`
 `;
 
 type Props = {
-  players: [Player],
-  playerIndicator: func,
+  players: Player[],
+  playerIndicator: Player => any,
 };
 
 const GameBoardLeft = ({ players, playerIndicator }: Props) => {
