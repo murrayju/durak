@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import type Player from '../api/Player';
 import type { Client } from '../api/Game';
 import type GameState from '../api/GameState';
 import Hand from './Hand';

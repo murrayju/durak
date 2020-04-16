@@ -74,9 +74,9 @@ const Hand = ({ hand, selected, onCardClick, primary }: Props) => {
   const { cards } = hand.sort();
   return (
     <Box>
-      {cards.map(c => (
+      {cards.map((c, i) => (
         <CardImg
-          key={c.id}
+          key={c.id === 'X:X' ? `X:X:${i}` : c.id}
           primary={primary}
           alt={c.name}
           src={c.imageUrl}
