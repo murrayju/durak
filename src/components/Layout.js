@@ -12,15 +12,8 @@ import MainContainer from './MainContainer';
 // this should match the values in aura
 export const bsTheme = {
   game: {
-    spyRed: '#ed2024',
-    spyBlue: '#003fff',
-    spyBlack: '#32312e',
-    portraitUnknown: '#ccbfb6',
-    portraitBystander: darken(0.2, '#ccbfb6'),
-    portraitBackground: '#ddd1c1',
-    portraitBorder: '#e9d9c9',
-    cardLight: '#e7cfb5',
-    cardDark: '#b3a18b',
+    pokerGreen: '#477148',
+    darkGreen: darken(0.5, '#477148'),
   },
   brand: {
     primary: '#337ab7', // DMA Light blue

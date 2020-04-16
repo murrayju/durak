@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import styled from 'styled-components';
+import { useDrag } from 'react-dnd';
 
 import type Card from '../api/Card';
 
@@ -8,67 +9,97 @@ import type Card from '../api/Card';
 
 const CardImg = styled.img`
   position: relative;
-  margin-top: ${({ selected }) => (selected ? '-350px' : '-250px')};
+  margin-top: ${({ inDeck, selected, dragging }) =>
+    inDeck ? 0 : selected || dragging ? '-350px' : '-250px'};
   cursor: ${({ onClick }) => (onClick ? 'pointer' : null)};
   width: 70px;
-  top: 60px;
-  ${({ primary }) => {
-    return primary ? 'transform: scale(1.5);' : '';
-  }};
+  top: ${({ inDeck }) => (inDeck ? null : '60px')};
+  transform: ${({ primary }) => (primary ? 'scale(1.5);' : null)};
+  ${({ dragging }) =>
+    dragging
+      ? {
+          border: '2px solid red',
+          'border-radius': '9px',
+        }
+      : null};
 
   &:not(:first-child) {
-    ${({ primary }) => {
-      return primary ? 'margin-left: -50px;' : 'margin-left: -65px;';
-    }};
+    margin-left: ${({ inDeck, primary }) => (inDeck ? '-69px' : primary ? '-50px;' : '-65px;')};
+    margin-top: ${({ inDeck, index }) => (inDeck ? `${index}px` : null)};
   }
 
-  @media (min-width: ${({ theme }) => {
-      return theme.screen.smMin;
-    }}) {
+  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
     width: 100px;
-    top: 50px;
+    top: ${({ inDeck }) => (inDeck ? null : '50px')};
     &:not(:first-child) {
-      ${({ primary }) => {
-        return primary ? 'margin-left: -75px;' : 'margin-left: -92px;';
-      }};
+      margin-left: ${({ inDeck, primary }) => (inDeck ? '-99px' : primary ? '-75px;' : '-92px;')};
+      margin-top: ${({ inDeck, index }) => (inDeck ? `${index}px` : null)};
     }
   }
 
-  @media (min-width: ${({ theme }) => {
-      return theme.screen.lgMin;
-    }}) {
+  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
     width: 146px;
-    top: 40px;
+    top: ${({ inDeck }) => (inDeck ? null : '40px')};
     &:not(:first-child) {
-      ${({ primary }) => {
-        return primary ? 'margin-left: -100px;' : 'margin-left: -135px;';
-      }};
+      margin-left: ${({ inDeck, primary }) =>
+        inDeck ? '-145px' : primary ? '-100px;' : '-135px;'};
+      margin-top: ${({ inDeck, index }) => (inDeck ? `${index}px` : null)};
     }
   }
 `;
 
 type Props = {
   card: Card,
+  index?: number,
   selected?: boolean,
   onCardClick?: ?(Card) => void,
   primary?: ?boolean,
+  inDeck?: ?boolean,
+  canDrag?: ?boolean,
+  className?: string,
 };
 
-const CardComponent = ({ card, selected, onCardClick, primary }: Props) => {
+const CardComponent = ({
+  card,
+  index,
+  selected,
+  onCardClick,
+  primary,
+  inDeck,
+  canDrag,
+  className,
+}: Props) => {
+  const [{ isDragging }, drag] = useDrag({
+    item: { type: 'card', id: card.id },
+    canDrag: () => canDrag,
+    collect: mon => ({
+      isDragging: !!mon.isDragging(),
+    }),
+  });
+
   return (
     <CardImg
+      ref={drag}
+      index={index}
       primary={primary}
+      inDeck={inDeck}
       alt={card.name}
       src={card.imageUrl}
       onClick={onCardClick ? () => onCardClick(card) : null}
       selected={selected}
+      dragging={isDragging}
+      className={className}
     />
   );
 };
 CardComponent.defaultProps = {
+  index: 0,
   selected: false,
   onCardClick: null,
   primary: false,
+  inDeck: false,
+  canDrag: false,
+  className: '',
 };
 
 export default CardComponent;

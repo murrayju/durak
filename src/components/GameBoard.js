@@ -8,6 +8,7 @@ import type Player from '../api/Player';
 import Hand from './Hand';
 import Icon from './Icon';
 
+import PlayArea from './PlayArea';
 import BoardTop from './GameBoardTop';
 import BoardLeft from './GameBoardLeft';
 import BoardRight from './GameBoardRight';
@@ -146,6 +147,7 @@ const GameBoard = ({ client, gameState }: Props) => {
         <MainHand>
           <Hand
             primary
+            canDrag
             hand={player.hand}
             selected={selectedCards}
             onCardClick={c =>
@@ -157,6 +159,7 @@ const GameBoard = ({ client, gameState }: Props) => {
           <MainHandIndicators>{playerIndicator(player)}</MainHandIndicators>
         </MainHand>
       )}
+      <PlayArea gameState={gameState} />
     </Board>
   );
 };

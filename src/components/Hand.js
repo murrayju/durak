@@ -9,10 +9,8 @@ import type Card from '../api/Card';
 // const cardRatio = 240 / 336;
 
 const Box = styled.div`
-  flex: 1 1;
   display: flex;
-  flex-flow: nowrap;
-  width: 100%;
+  flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
   position: relative;
@@ -28,19 +26,23 @@ type Props = {
   selected?: ?(Card[]),
   onCardClick?: ?(Card) => void,
   primary?: ?boolean,
+  deck?: ?boolean,
+  className?: string,
 };
 
-const Hand = ({ hand, selected, onCardClick, primary }: Props) => {
+const Hand = ({ hand, selected, onCardClick, primary, deck, className }: Props) => {
   const { cards } = hand.sort();
   return (
-    <Box>
+    <Box className={className}>
       {cards.map((c, i) => (
         <CardComponent
           key={c.id === 'X:X' ? `X:X:${i}` : c.id}
           card={c}
+          index={i}
           primary={primary}
           onCardClick={onCardClick}
           selected={!!selected?.find(s => s.id === c.id)}
+          inDeck={deck}
         />
       ))}
     </Box>
@@ -50,6 +52,8 @@ Hand.defaultProps = {
   selected: null,
   onCardClick: null,
   primary: false,
+  deck: false,
+  className: '',
 };
 
 export default Hand;
