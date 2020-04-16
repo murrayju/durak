@@ -32,6 +32,9 @@ const MainHand = styled.div`
 `;
 
 const MainHandIndicators = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 10px;
   font-size: 3em;
 `;
 
@@ -141,7 +144,6 @@ const GameBoard = ({ client, gameState }: Props) => {
       {rightPlayers && <BoardRight players={rightPlayers} playerIndicator={playerIndicator} />}
       {player && (
         <MainHand>
-          <MainHandIndicators>{playerIndicator(player)}</MainHandIndicators>
           <Hand
             primary
             hand={player.hand}
@@ -152,6 +154,7 @@ const GameBoard = ({ client, gameState }: Props) => {
               )
             }
           />
+          <MainHandIndicators>{playerIndicator(player)}</MainHandIndicators>
         </MainHand>
       )}
     </Board>
