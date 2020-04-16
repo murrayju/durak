@@ -6,6 +6,7 @@ import { Modal, Button } from 'react-bootstrap';
 
 const Overlay = styled.div`
   ${position('fixed', 0, 0, 0, 0)};
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;

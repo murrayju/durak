@@ -16,8 +16,10 @@ export const Container = styled.div`
 
 export const Heading = styled.div`
   display: flex;
+  position: absolute;
   flex-flow: row wrap;
   width: 100%;
+  z-index: 1000;
 `;
 
 export const FlowLeft = styled.div`
