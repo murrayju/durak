@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import type Deck from '../api/Deck';
 import type Card from '../api/Card';
 
-const cardRatio = 240 / 336;
+// const cardRatio = 240 / 336;
 
 const Box = styled.div`
   flex: 1 1;
@@ -44,9 +44,9 @@ const Hand = ({ hand, selected, onCardClick }: Props) => {
   const { cards } = hand.sort();
   return (
     <Box>
-      {cards.map(c => (
+      {cards.map((c, i) => (
         <CardImg
-          key={c.id}
+          key={c.id === 'X:X' ? `X:X:${i}` : c.id}
           alt={c.name}
           src={c.imageUrl}
           onClick={onCardClick ? () => onCardClick(c) : null}
