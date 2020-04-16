@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import type { Client } from '../api/Game';
 import type GameState from '../api/GameState';
+import type Player from '../api/Player';
 import Hand from './Hand';
 import Icon from './Icon';
 
