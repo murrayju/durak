@@ -14,6 +14,9 @@ import webpackConfig from './webpack.config';
 import run from './run';
 import clean from './clean';
 import lint from './lint';
+import yarn from './yarn';
+import copy from './copy';
+import generateSrc from './generateSrc';
 import { runDbContainer, dockerTeardown } from './docker';
 
 const isDebug = !process.argv.includes('--release');
@@ -60,8 +63,11 @@ async function start(
   persistDbData = !process.argv.includes('--tdd-no-db-persist'),
   noDocker = process.argv.includes('--tdd-no-docker'),
 ) {
-  // initial lint
+  // initial build
+  await run(yarn);
   await run(lint);
+  await run(copy);
+  await run(generateSrc);
 
   // Doesn't resolve until kill signal sent
   // eslint-disable-next-line no-async-promise-executor
