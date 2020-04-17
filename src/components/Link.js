@@ -10,7 +10,7 @@ function isModifiedEvent(event) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
 }
 
-export const withLink = (defaultPrefix = '', defaultTo = '/') => WrappedComponent =>
+export const withLink = (defaultPrefix = '', defaultTo = '/') => (WrappedComponent) =>
   class extends React.PureComponent {
     static propTypes = {
       prefix: PropTypes.string,
@@ -24,7 +24,7 @@ export const withLink = (defaultPrefix = '', defaultTo = '/') => WrappedComponen
       onClick: null,
     };
 
-    handleClick = event => {
+    handleClick = (event) => {
       const { onClick, to, prefix } = this.props;
 
       if (onClick) {

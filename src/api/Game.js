@@ -74,7 +74,7 @@ export default class Game {
     const { id, clients, state } = this;
     const obscured =
       explicitlyObscured == null
-        ? !!state.players.find(p => p.id === forPlayer)
+        ? !!state.players.find((p) => p.id === forPlayer)
         : explicitlyObscured;
     return { id, clients, state: state.serialize(forPlayer, obscured) };
   }
@@ -84,7 +84,7 @@ export default class Game {
     const players = [...this.clients, ...fakePlayers]
       .sort(() => Math.random() - 0.5)
       .map(
-        c =>
+        (c) =>
           new Player({
             ...c,
             hand: new Deck(deck.draw(6)),
@@ -104,7 +104,7 @@ export default class Game {
 
   async connectSseClient(req: $Request, res: $Response): Promise<void> {
     await new Promise((resolve, reject) =>
-      this._sse.addClient(req, res, err => (err ? reject(err) : resolve())),
+      this._sse.addClient(req, res, (err) => (err ? reject(err) : resolve())),
     );
     this._sse.send({ id: uuid(), event: 'connected' }, [res]);
   }
@@ -121,7 +121,7 @@ export default class Game {
             [...this._sseClients.keys()],
             clientWhiteList,
             clientBlackList,
-          ).flatMap(k => [...(this._sseClients.get(k) || [])])
+          ).flatMap((k) => [...(this._sseClients.get(k) || [])])
         : null;
     const count = clients ? clients.length : this._sse.getConnectionCount();
     this._sse.send(
@@ -142,7 +142,7 @@ export default class Game {
   async emitObscuredStateToEachPlayer() {
     const clients = [...this._sseClients.keys()];
     await Promise.all(
-      clients.map(async c => this.emitToSseClients('stateChanged', await this.serialize(c), [c])),
+      clients.map(async (c) => this.emitToSseClients('stateChanged', await this.serialize(c), [c])),
     );
   }
 
@@ -157,7 +157,7 @@ export default class Game {
   }
 
   async joinClient(ctx: ApiRequestContext, player: Client) {
-    if (!this.clients.find(c => c.id === player.id)) {
+    if (!this.clients.find((c) => c.id === player.id)) {
       this.clients.push(player);
     }
     await this.save(ctx);

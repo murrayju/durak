@@ -51,7 +51,7 @@ const GameBoard = () => {
 
   const { players, turn } = gameState;
   const numPlayers = players.length;
-  const playerIndex = players.findIndex(p => p.id === client.id);
+  const playerIndex = players.findIndex((p) => p.id === client.id);
   const player = players[playerIndex] || null;
 
   const relPlayer = (offset, source = playerIndex) =>
@@ -124,7 +124,7 @@ const GameBoard = () => {
     }
   }
 
-  const playerIndicator = p =>
+  const playerIndicator = (p) =>
     p === attacker ? (
       <Icon name="dragon" />
     ) : p === defender ? (
@@ -145,9 +145,9 @@ const GameBoard = () => {
             canDrag
             hand={player.hand}
             selected={selectedCards}
-            onCardClick={c =>
-              setSelectedCards(sel =>
-                sel.find(s => s.id === c.id) ? sel.filter(s => s.id !== c.id) : [...sel, c],
+            onCardClick={(c) =>
+              setSelectedCards((sel) =>
+                sel.find((s) => s.id === c.id) ? sel.filter((s) => s.id !== c.id) : [...sel, c],
               )
             }
           />

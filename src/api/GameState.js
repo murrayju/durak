@@ -51,7 +51,7 @@ export default class GameState {
     this.turn = turn || 0;
     this.gameStarted = gameStarted || false;
     this.gameOver = gameOver || false;
-    this.players = players?.map(p => (p instanceof Player ? p : Player.deserialize(p))) || [];
+    this.players = players?.map((p) => (p instanceof Player ? p : Player.deserialize(p))) || [];
     this.deck = deck instanceof Deck ? deck : deck ? Deck.deserialize(deck) : new Deck();
     this.trumpCard =
       trumpCard instanceof Card ? trumpCard : trumpCard ? Card.deserialize(trumpCard) : null;
@@ -61,7 +61,7 @@ export default class GameState {
   }
 
   computeDerivedState() {
-    const remainingPlayers = this.players.filter(p => p.hand.size > 0);
+    const remainingPlayers = this.players.filter((p) => p.hand.size > 0);
     this.gameOver = this.deck.size === 0 && remainingPlayers.length === 1;
     this.durak = this.gameOver ? remainingPlayers[0].id : null;
     return this;
@@ -74,7 +74,7 @@ export default class GameState {
       turn,
       gameStarted,
       gameOver,
-      players: players.map(p => p.serialize(obscured && p.id !== forPlayer)),
+      players: players.map((p) => p.serialize(obscured && p.id !== forPlayer)),
       deck: deck.serialize(obscured),
       trumpCard: trumpCard?.serialize() || null,
       discard: discard.serialize(obscured),

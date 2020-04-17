@@ -115,9 +115,9 @@ const createApp = async () => {
       data.styleTags = sheet.getStyleElement();
 
       const scripts = new Set();
-      const addChunk = chunk => {
+      const addChunk = (chunk) => {
         if (chunks[chunk]) {
-          chunks[chunk].forEach(asset => scripts.add(asset));
+          chunks[chunk].forEach((asset) => scripts.add(asset));
           // $FlowFixMe
         } else if (__DEV__) {
           throw new Error(`Chunk with name '${chunk}' cannot be found`);
@@ -176,7 +176,7 @@ const createApp = async () => {
     });
 
     // Handle kill signal (something isn't playing nicely)
-    ['SIGINT', 'SIGTERM'].forEach(sig => process.on(sig, () => process.exit(0)));
+    ['SIGINT', 'SIGTERM'].forEach((sig) => process.on(sig, () => process.exit(0)));
   }
 
   //
@@ -205,7 +205,7 @@ const createApp = async () => {
 // $FlowFixMe
 if (!module.hot) {
   // entry point
-  createApp().catch(err => console.error('Failed to create app', err));
+  createApp().catch((err) => console.error('Failed to create app', err));
 }
 
 export default createApp;

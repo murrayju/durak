@@ -27,13 +27,13 @@ const TopHand = styled.div`
 
 type Props = {
   players: Player[],
-  playerIndicator: Player => any,
+  playerIndicator: (Player) => any,
 };
 
 const GameBoardTop = ({ players, playerIndicator }: Props) => {
   return (
     <TopSide>
-      {players.map(p => (
+      {players.map((p) => (
         <TopHand key={p.id}>
           <Hand hand={p.hand} />
           <PlayerName>

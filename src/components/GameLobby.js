@@ -21,7 +21,7 @@ const GameLobby = () => {
   const { newRound, clients } = useGameContext();
   const [isSubmitting, setSubmitting] = useState(false);
 
-  const submit = evt => {
+  const submit = (evt) => {
     if (isSubmitting) {
       return;
     }
@@ -38,7 +38,7 @@ const GameLobby = () => {
       <PlayersBox>
         <h3>Connected Players</h3>
         <ul>
-          {clients.map(c => (
+          {clients.map((c) => (
             <li key={c.id}>{c.name}</li>
           ))}
         </ul>

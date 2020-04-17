@@ -2,7 +2,9 @@
 import Card from './Card';
 import type { SerializedCard } from './Card';
 
-const fullDeck: Card[] = Card.suits.flatMap(suit => Card.ranks.map(rank => new Card(rank, suit)));
+const fullDeck: Card[] = Card.suits.flatMap((suit) =>
+  Card.ranks.map((rank) => new Card(rank, suit)),
+);
 const imageUrlMap = {
   ...fullDeck.reduce((obj, c) => Object.assign(obj, { [c.id]: c.imageUrl }), {}),
   back: Card.backImageUrl,
@@ -57,11 +59,11 @@ export default class Deck {
   }
 
   serialize(obscured?: boolean = false): SerializedDeck {
-    return this.cards.map(c => c.serialize(obscured));
+    return this.cards.map((c) => c.serialize(obscured));
   }
 
   static deserialize(deck: SerializedDeck): Deck {
-    return new Deck(deck?.map(c => Card.deserialize(c)) || []);
+    return new Deck(deck?.map((c) => Card.deserialize(c)) || []);
   }
 
   static random(): Deck {

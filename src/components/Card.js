@@ -72,7 +72,7 @@ const CardComponent = ({
   const [{ isDragging }, drag] = useDrag({
     item: { type: 'card', id: card.id },
     canDrag: () => canDrag,
-    collect: mon => ({
+    collect: (mon) => ({
       isDragging: !!mon.isDragging(),
     }),
   });

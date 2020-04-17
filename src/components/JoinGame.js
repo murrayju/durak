@@ -20,7 +20,7 @@ const JoinGame = () => {
   const [playerName, setPlayerName] = useState(cookies.durak_name || '');
   const valid = !!playerName;
 
-  const submit = evt => {
+  const submit = (evt) => {
     if (!valid || isSubmitting) {
       return;
     }

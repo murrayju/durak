@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import useDeckImages from '../hooks/useDeckImages';
 
 export const PreloadImages = styled.div`
-  background: ${({ urls }) => urls?.map(url => `url('${url}')`).join(', ')};
+  background: ${({ urls }) => urls?.map((url) => `url('${url}')`).join(', ')};
 `;
 
 const PreloadDeckImages = () => {

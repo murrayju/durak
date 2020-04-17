@@ -14,7 +14,7 @@ export default async function dockerCleanup(
     './latest.build.tag',
     './latest.build.id',
   ];
-  await Promise.all(files.map(async f => fs.ensureFile(f)));
+  await Promise.all(files.map(async (f) => fs.ensureFile(f)));
   const builderTag = (await fs.readFile('./latest.builder.tag')).toString();
   const builderId = (await fs.readFile('./latest.builder.id')).toString();
   const buildTag = (await fs.readFile('./latest.build.tag')).toString();
@@ -41,8 +41,11 @@ export default async function dockerCleanup(
 
     // images with no repo and no tag
     ...(
-      await dockerImages(null, m => m.repository === '<none>' && m.tag === '<none>' && filterOld(m))
-    ).map(m => m.id),
+      await dockerImages(
+        null,
+        (m) => m.repository === '<none>' && m.tag === '<none>' && filterOld(m),
+      )
+    ).map((m) => m.id),
 
     // any leftover tags from prior builds (only if purgeAll or purgeOld)
     ...(purgeAll || purgeOld
@@ -52,5 +55,5 @@ export default async function dockerCleanup(
         ]
       : []),
   ]);
-  await Promise.all(files.map(async f => fs.remove(f)));
+  await Promise.all(files.map(async (f) => fs.remove(f)));
 }

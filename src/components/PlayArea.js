@@ -37,10 +37,10 @@ const PlayArea = () => {
   const { gameState } = useGameContext();
   const [{ isOver }, drop] = useDrop({
     accept: 'card',
-    drop: dropped => console.log('dropped', dropped),
-    hover: item => console.log('hovering', item),
+    drop: (dropped) => console.log('dropped', dropped),
+    hover: (item) => console.log('hovering', item),
     canDrop: () => true,
-    collect: mon => ({
+    collect: (mon) => ({
       isOver: !!mon.isOver(),
       canDrop: !!mon.canDrop(),
     }),

@@ -16,7 +16,7 @@ const useGameApi = (id: string) => {
   const [notFound, setNotFound] = useState(false);
   const [cookies] = useCookies();
   const { clientId } = cookies;
-  const client = game?.clients?.find(p => p.id === clientId) || null;
+  const client = game?.clients?.find((p) => p.id === clientId) || null;
 
   // get the initial state
   useEffect(() => {
@@ -24,7 +24,7 @@ const useGameApi = (id: string) => {
     fetch(`/api/game/${id}`, {
       method: 'GET',
     })
-      .then(r => r.json())
+      .then((r) => r.json())
       .then(setGame)
       .catch(() => {
         setGame(null);
@@ -33,7 +33,7 @@ const useGameApi = (id: string) => {
   }, [fetch, id]);
 
   // subscribe to change events
-  const connected = useEventSource(`/api/game/${id}/events`, es => {
+  const connected = useEventSource(`/api/game/${id}/events`, (es) => {
     es.addEventListener('stateChanged', ({ data: rawData }) => {
       const data = JSON.parse(rawData);
       setGame(data);

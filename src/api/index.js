@@ -2,7 +2,7 @@
 import Router from 'express-promise-router';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 
 // $FlowFixMe - generated file
 import { version } from '../version._generated_'; // eslint-disable-line import/no-unresolved
@@ -37,7 +37,7 @@ export type GameApiRequest = {
 };
 
 // Middleware factory
-export default function(serverContext: ServerContext) {
+export default function (serverContext: ServerContext) {
   const router = Router();
 
   router.use(cors());

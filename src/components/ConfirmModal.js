@@ -25,7 +25,7 @@ type Props = {
 const ConfirmModal = ({ title, message, onConfirm, onCancel }: Props) => (
   <Overlay onClick={onCancel}>
     {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
-    <ModalContent onClick={evt => evt.stopPropagation()}>
+    <ModalContent onClick={(evt) => evt.stopPropagation()}>
       <Modal.Header>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

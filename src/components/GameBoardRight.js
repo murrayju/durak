@@ -39,13 +39,13 @@ const RightHand = styled.div`
 
 type Props = {
   players: Player[],
-  playerIndicator: Player => any,
+  playerIndicator: (Player) => any,
 };
 
 const GameBoardRight = ({ players, playerIndicator }: Props) => {
   return (
     <RightSide>
-      {players.map(p => (
+      {players.map((p) => (
         <RightHand>
           <Hand hand={p.hand} />
           <PlayerName>

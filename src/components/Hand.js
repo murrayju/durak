@@ -41,7 +41,7 @@ const Hand = ({ hand, selected, onCardClick, primary, deck, className }: Props) 
           index={i}
           primary={primary}
           onCardClick={onCardClick}
-          selected={!!selected?.find(s => s.id === c.id)}
+          selected={!!selected?.find((s) => s.id === c.id)}
           inDeck={deck}
         />
       ))}

@@ -14,8 +14,8 @@ const NewGame = () => {
     fetch(`/api/game`, {
       method: 'POST',
     })
-      .then(r => r.json())
-      .then(game => history.push(`/game/${game.id}`))
+      .then((r) => r.json())
+      .then((game) => history.push(`/game/${game.id}`))
       .catch(() => setNotFound(true));
   }, [fetch]);
   return notFound ? <NotFound /> : <Loading what="new game" />;

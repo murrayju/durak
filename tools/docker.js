@@ -54,7 +54,7 @@ export default async function docker(
       './latest.builder.id',
       './latest.build.tag',
       './latest.build.id',
-    ].map(async f => fs.ensureFile(f)),
+    ].map(async (f) => fs.ensureFile(f)),
   );
 
   const v = await getVersion();
@@ -108,7 +108,7 @@ export async function ensureBuilder(
 ): Promise<string> {
   await fs.ensureFile('./latest.builder.tag');
   const tag = await getBuilderTag();
-  if (build || !(await dockerImages(getBuilderRepo())).find(m => m.tag === tag)) {
+  if (build || !(await dockerImages(getBuilderRepo())).find((m) => m.tag === tag)) {
     buildLog('Image does not exist, running docker build...');
     await docker(true);
   }
@@ -128,7 +128,7 @@ export async function dockerTeardown() {
     cleaning = (async () => {
       buildLog('Stopping docker containers...');
       const killContainers = Promise.all(
-        containers.map(async c => {
+        containers.map(async (c) => {
           try {
             buildLog(`Stopping container: <${c.alias || c.id}>...`);
             await spawn('docker', ['stop', c.id]);
@@ -150,7 +150,7 @@ export async function dockerTeardown() {
 
       buildLog('Deleting docker networks...');
       const killNetworks = Promise.all(
-        Array.from(networks).map(async n => {
+        Array.from(networks).map(async (n) => {
           try {
             await dockerNetworkDelete(n);
           } catch (err) {

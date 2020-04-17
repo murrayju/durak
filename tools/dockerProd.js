@@ -21,7 +21,7 @@ export default async function dockerProd(
 ) {
   await fs.ensureFile('./latest.build.tag');
   const tag = await getBuildTag();
-  if (build || !(await dockerImages(getDockerRepo())).find(m => m.tag === tag)) {
+  if (build || !(await dockerImages(getDockerRepo())).find((m) => m.tag === tag)) {
     buildLog('Image does not exist, running docker build...');
     await run(docker);
   }

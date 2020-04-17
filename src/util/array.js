@@ -32,7 +32,7 @@ export function whiteBlackFilter<T, L>(
   black?: ?(L[]),
   lookup?: (item: T) => L,
 ): T[] {
-  return list.filter(item => {
+  return list.filter((item) => {
     const l = lookup ? lookup(item) : item;
     return (!white || white.includes(l)) && (!black || !black.includes(l));
   });

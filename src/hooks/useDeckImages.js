@@ -11,9 +11,9 @@ const useDeckImages = () => {
     fetch(`/api/deck/imgMap`, {
       method: 'GET',
     })
-      .then(r => r.json())
+      .then((r) => r.json())
       .then(setDeckImgMap)
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to get deck image map.', err);
       });
   }, [fetch]);

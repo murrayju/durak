@@ -26,7 +26,7 @@ const useEventSource = (
       setConnected(false);
     });
 
-    es.addEventListener('error', err => {
+    es.addEventListener('error', (err) => {
       console.error('EventListener error', err);
       setConnected(false);
     });

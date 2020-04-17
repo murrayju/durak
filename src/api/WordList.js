@@ -54,7 +54,7 @@ export default class WordList {
       .map((v, i) => i)
       .sort(() => Math.random() - 0.5)
       .slice(0, count)
-      .map(i => this.list[i]);
+      .map((i) => this.list[i]);
   }
 
   getRandomId(wordCount: number = 4): string {
