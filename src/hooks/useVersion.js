@@ -1,9 +1,10 @@
 // @flow
-import { useContext, useState, useEffect } from 'react';
-import AppContext from '../contexts/AppContext';
+import { useState, useEffect } from 'react';
+
+import useFetch from './useFetch';
 
 const useVersion = () => {
-  const { fetch } = useContext(AppContext);
+  const { fetch } = useFetch();
   const [version, setVersion] = useState('');
 
   useEffect(() => {

@@ -1,10 +1,9 @@
 // @flow
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Button } from 'react-bootstrap';
 
-import AppContext from '../contexts/AppContext';
-import type { Client } from '../api/Game';
+import useGameContext from '../hooks/useGameContext';
 
 const Box = styled.div`
   flex: 1 1;
@@ -18,13 +17,8 @@ const PlayersBox = styled.div`
   margin-top: 10px;
 `;
 
-type Props = {
-  id: string,
-  clients: Client[],
-};
-
-const GameLobby = ({ id, clients }: Props) => {
-  const { fetch } = useContext(AppContext);
+const GameLobby = () => {
+  const { newRound, clients } = useGameContext();
   const [isSubmitting, setSubmitting] = useState(false);
 
   const submit = evt => {
@@ -33,9 +27,7 @@ const GameLobby = ({ id, clients }: Props) => {
     }
     setSubmitting(true);
     evt.preventDefault();
-    fetch(`/api/game/${id}/newRound`, {
-      method: 'POST',
-    }).finally(() => setSubmitting(false));
+    newRound().finally(() => setSubmitting(false));
   };
 
   return (

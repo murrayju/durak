@@ -1,13 +1,13 @@
 // @flow
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import history from '../history';
-import AppContext from '../contexts/AppContext';
+import useFetch from '../hooks/useFetch';
 import Loading from './Loading';
 import NotFound from './NotFound';
 
 const NewGame = () => {
-  const { fetch } = useContext(AppContext);
+  const { fetch } = useFetch();
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
 
-import type GameState from '../api/GameState';
+import useGameContext from '../hooks/useGameContext';
 import Hand from './Hand';
 import CardComponent from './Card';
 
@@ -33,11 +33,8 @@ const DrawPile = styled(Hand)`
   right: 10px;
 `;
 
-type Props = {
-  gameState: GameState,
-};
-
-const PlayArea = ({ gameState }: Props) => {
+const PlayArea = () => {
+  const { gameState } = useGameContext();
   const [{ isOver }, drop] = useDrop({
     accept: 'card',
     drop: dropped => console.log('dropped', dropped),

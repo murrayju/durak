@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import type { Client } from '../api/Game';
-import type GameState from '../api/GameState';
+import useGameContext from '../hooks/useGameContext';
 import type Player from '../api/Player';
 import Hand from './Hand';
 import Icon from './Icon';
@@ -39,12 +38,8 @@ const MainHandIndicators = styled.div`
   font-size: 3em;
 `;
 
-type Props = {
-  client: Client,
-  gameState: GameState,
-};
-
-const GameBoard = ({ client, gameState }: Props) => {
+const GameBoard = () => {
+  const { client, gameState } = useGameContext();
   const [selectedCards, setSelectedCards] = useState([]);
   const { width, height } = useScreenSize();
 
@@ -159,7 +154,7 @@ const GameBoard = ({ client, gameState }: Props) => {
           <MainHandIndicators>{playerIndicator(player)}</MainHandIndicators>
         </MainHand>
       )}
-      <PlayArea gameState={gameState} />
+      <PlayArea />
     </Board>
   );
 };

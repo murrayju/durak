@@ -1,17 +1,13 @@
 // @flow
-import { useContext, useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
-
-import AppContext from '../contexts/AppContext';
 
 const useEventSource = (
   url: string,
   initializeFn: (es: EventSourcePolyfill) => void,
   deps?: any[] = [],
 ) => {
-  const context = useContext(AppContext);
-  const { getUser } = context;
-  const [esConnected, setEsConnected] = useState(false);
+  const [connected, setConnected] = useState(false);
 
   const initFn = useCallback(initializeFn, deps);
 
@@ -19,20 +15,20 @@ const useEventSource = (
     const es = new EventSourcePolyfill(url);
 
     es.addEventListener('open', () => {
-      setEsConnected(true);
+      setConnected(true);
     }); // fired by server when registration completed
 
     es.addEventListener('connected', () => {
-      setEsConnected(true);
+      setConnected(true);
     }); // fired by server just before closing
 
     es.addEventListener('connectionClosing', () => {
-      setEsConnected(false);
+      setConnected(false);
     });
 
     es.addEventListener('error', err => {
       console.error('EventListener error', err);
-      setEsConnected(false);
+      setConnected(false);
     });
 
     initFn(es);
@@ -45,9 +41,9 @@ const useEventSource = (
         console.error(`Failed to close EventSource ${url}`, err);
       }
     };
-  }, [initFn, getUser, url]);
+  }, [initFn, url]);
 
-  return esConnected;
+  return connected;
 };
 
 export default useEventSource;

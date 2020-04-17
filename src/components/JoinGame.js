@@ -1,11 +1,10 @@
 // @flow
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { Form, FormGroup, Col, FormControl, ControlLabel, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 
-import AppContext from '../contexts/AppContext';
-import type { Client } from '../api/Game';
+import useGameContext from '../hooks/useGameContext';
 
 const Box = styled.div`
   flex: 1 1;
@@ -14,21 +13,12 @@ const Box = styled.div`
   justify-content: center;
 `;
 
-type Props = {
-  id: string,
-  clientId: string,
-};
-
-const JoinGame = ({ id, clientId }: Props) => {
-  const { fetch } = useContext(AppContext);
+const JoinGame = () => {
+  const { id, join, clientId } = useGameContext();
   const [isSubmitting, setSubmitting] = useState(false);
   const [cookies, setCookie] = useCookies();
-  const [playerInfo, setPlayerInfo] = useState<Client>({
-    id: clientId,
-    name: cookies.durak_name || '',
-  });
-
-  const valid = !!playerInfo.name;
+  const [playerName, setPlayerName] = useState(cookies.durak_name || '');
+  const valid = !!playerName;
 
   const submit = evt => {
     if (!valid || isSubmitting) {
@@ -36,9 +26,9 @@ const JoinGame = ({ id, clientId }: Props) => {
     }
     setSubmitting(true);
     evt.preventDefault();
-    fetch(`/api/game/${id}/join`, {
-      method: 'POST',
-      body: JSON.stringify(playerInfo),
+    join({
+      id: clientId,
+      name: playerName,
     }).finally(() => setSubmitting(false));
   };
 
@@ -56,10 +46,10 @@ const JoinGame = ({ id, clientId }: Props) => {
             <FormControl
               type="text"
               placeholder="Name"
-              value={playerInfo.name}
+              value={playerName}
               onChange={({ currentTarget: { value: name } }) => {
                 setCookie('durak_name', name, { path: '/' });
-                setPlayerInfo(p => ({ ...p, name }));
+                setPlayerName(name);
               }}
               disabled={isSubmitting}
             />
