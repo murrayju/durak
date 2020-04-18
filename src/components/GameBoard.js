@@ -106,8 +106,8 @@ const GameBoard = () => {
       {midPlayers && <BoardTop players={midPlayers} />}
       {leftPlayers && <BoardLeft players={leftPlayers} />}
       {rightPlayers && <BoardRight players={rightPlayers} />}
-      {player && <MainHand />}
       <PlayArea />
+      {player && <MainHand />}
     </Board>
   );
 };
