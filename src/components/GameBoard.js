@@ -1,11 +1,10 @@
 // @flow
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import useGameContext from '../hooks/useGameContext';
 import type Player from '../api/Player';
-import Hand from './Hand';
-import Icon from './Icon';
+import MainHand from './MainHand';
 
 import PlayArea from './PlayArea';
 import BoardTop from './GameBoardTop';
@@ -25,46 +24,24 @@ const Board = styled.div`
   z-index: 100;
 `;
 
-const MainHand = styled.div`
-  position: absolute;
-  bottom: -50px;
-  width: 100%;
-`;
-
-const MainHandIndicators = styled.div`
-  position: fixed;
-  bottom: 0;
-  left: 10px;
-  font-size: 3em;
-`;
-
 const GameBoard = () => {
-  const { client, gameState } = useGameContext();
-  const [selectedCards, setSelectedCards] = useState([]);
+  const { clientId, gameState } = useGameContext();
   const { width, height } = useScreenSize();
-
-  if (!gameState) {
-    return null;
-  }
 
   const screenRatio = width / height;
 
-  const { players, turn } = gameState;
+  const { players } = gameState;
   const numPlayers = players.length;
-  const playerIndex = players.findIndex((p) => p.id === client.id);
+  const playerIndex = players.findIndex((p) => p.id === clientId);
   const player = players[playerIndex] || null;
 
-  const relPlayer = (offset, source = playerIndex) =>
-    players[(source + numPlayers + offset) % numPlayers];
-
-  const attacker = relPlayer(0, turn);
-  const defender = relPlayer(1, turn);
+  const relPlayer = (offset, source = playerIndex) => gameState.relativePlayer(offset, source);
 
   let midPlayers: Player[] = [];
   let leftPlayers: Player[] = [];
   let rightPlayers: Player[] = [];
 
-  // I'm sure you can do this fancier.. feel free but in case it needs to change I didnt want to spend time on a crazy algorithm
+  // I'm sure you can do this fancier.. feel free but in case it needs to change I didn't want to spend time on a crazy algorithm
   if (numPlayers === 2) {
     midPlayers = [relPlayer(1)];
   } else if (numPlayers === 3) {
@@ -124,36 +101,12 @@ const GameBoard = () => {
     }
   }
 
-  const playerIndicator = (p) =>
-    p === attacker ? (
-      <Icon name="dragon" />
-    ) : p === defender ? (
-      <Icon name="chess-rook" />
-    ) : (
-      <Icon name="burn" css="visibility: hidden;" />
-    );
-
   return (
     <Board>
-      {midPlayers && <BoardTop players={midPlayers} playerIndicator={playerIndicator} />}
-      {leftPlayers && <BoardLeft players={leftPlayers} playerIndicator={playerIndicator} />}
-      {rightPlayers && <BoardRight players={rightPlayers} playerIndicator={playerIndicator} />}
-      {player && (
-        <MainHand>
-          <Hand
-            primary
-            canDrag
-            hand={player.hand}
-            selected={selectedCards}
-            onCardClick={(c) =>
-              setSelectedCards((sel) =>
-                sel.find((s) => s.id === c.id) ? sel.filter((s) => s.id !== c.id) : [...sel, c],
-              )
-            }
-          />
-          <MainHandIndicators>{playerIndicator(player)}</MainHandIndicators>
-        </MainHand>
-      )}
+      {midPlayers && <BoardTop players={midPlayers} />}
+      {leftPlayers && <BoardLeft players={leftPlayers} />}
+      {rightPlayers && <BoardRight players={rightPlayers} />}
+      {player && <MainHand />}
       <PlayArea />
     </Board>
   );

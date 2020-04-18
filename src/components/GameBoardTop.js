@@ -3,8 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import type Player from '../api/Player';
-import PlayerName from './PlayerName';
-import Hand from './Hand';
+import PlayerHand from './PlayerHand';
 
 const TopSide = styled.div`
   display: flex;
@@ -17,29 +16,17 @@ const TopSide = styled.div`
   right: 0;
 `;
 
-const TopHand = styled.div`
-  flex: 1 1;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  justify-content: center;
-`;
+const TopHand = styled(PlayerHand)``;
 
 type Props = {
   players: Player[],
-  playerIndicator: (Player) => any,
 };
 
-const GameBoardTop = ({ players, playerIndicator }: Props) => {
+const GameBoardTop = ({ players }: Props) => {
   return (
     <TopSide>
       {players.map((p) => (
-        <TopHand key={p.id}>
-          <Hand hand={p.hand} />
-          <PlayerName>
-            {p.name} {playerIndicator(p)}
-          </PlayerName>
-        </TopHand>
+        <TopHand key={p.id} player={p} />
       ))}
     </TopSide>
   );

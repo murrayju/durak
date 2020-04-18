@@ -4,13 +4,14 @@ import { useCookies } from 'react-cookie';
 
 import useEventSource from './useEventSource';
 import useFetch from './useFetch';
-import type { Client, SerializedGame } from '../api/Game';
+import type { Client, SerializedGame, PlayAction } from '../api/Game';
 import GameState from '../api/GameState';
+import type { GameContextType } from '../contexts/GameContext';
 
 // It really would be overkill to use this in more than one place
 // Just register the events once, and share with children via context
 // See useGameContext
-const useGameApi = (id: string) => {
+const useGameApi = (id: string): GameContextType => {
   const { fetch } = useFetch();
   const [game, setGame] = useState<?SerializedGame>(null);
   const [notFound, setNotFound] = useState(false);
@@ -55,7 +56,25 @@ const useGameApi = (id: string) => {
       method: 'POST',
     });
 
-  return { game, id, notFound, connected, clients, client, clientId, gameState, join, newRound };
+  const playCards = async (action: PlayAction) =>
+    fetch(`/api/game/${id}/playCards`, {
+      method: 'POST',
+      body: JSON.stringify(action),
+    });
+
+  return {
+    game,
+    id,
+    notFound,
+    connected,
+    clients,
+    client,
+    clientId,
+    gameState,
+    join,
+    newRound,
+    playCards,
+  };
 };
 
 export default useGameApi;

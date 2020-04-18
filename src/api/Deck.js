@@ -1,6 +1,6 @@
 // @flow
 import Card from './Card';
-import type { SerializedCard } from './Card';
+import type { SerializedCard, SomeCards } from './Card';
 
 const fullDeck: Card[] = Card.suits.flatMap((suit) =>
   Card.ranks.map((rank) => new Card(rank, suit)),
@@ -36,26 +36,36 @@ export default class Deck {
     return this;
   }
 
+  // Take card(s) from the top of the deck
   draw(count?: number = 1): Card[] {
     return this.cards.splice(-count, count).reverse();
   }
 
-  topDeck(cards: Card | Card[]) {
-    if (Array.isArray(cards)) {
-      this.cards.push(...cards);
-    } else {
-      this.cards.push(cards);
-    }
+  // Ignores cards not in deck
+  // returns cards actually removed
+  remove(cards: SomeCards): Card[] {
+    return Card.wrapMultiple(cards).reduce((removed, card) => {
+      const i = this.cards.findIndex((c) => c.equals(card));
+      if (i >= 0) {
+        const [removedCard] = this.cards.splice(i, 1);
+        removed.push(removedCard);
+      }
+      return removed;
+    }, []);
+  }
+
+  topDeck(cards: SomeCards) {
+    this.cards.push(...Card.wrapMultiple(cards));
     return this;
   }
 
-  bottomDeck(cards: Card | Card[]) {
-    if (Array.isArray(cards)) {
-      this.cards.unshift(...cards);
-    } else {
-      this.cards.unshift(cards);
-    }
+  bottomDeck(cards: SomeCards) {
+    this.cards.unshift(...Card.wrapMultiple(cards));
     return this;
+  }
+
+  contains(cards: SomeCards): boolean {
+    return Card.wrapMultiple(cards).every((card) => this.cards.find((c) => c.equals(card)));
   }
 
   serialize(obscured?: boolean = false): SerializedDeck {

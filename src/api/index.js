@@ -118,6 +118,15 @@ export default function (serverContext: ServerContext) {
     return res.status(204).send();
   });
 
+  router.post('/game/:id/playCards', async (req: GameApiRequest, res) => {
+    const {
+      ctx: { game },
+      body,
+    } = req;
+    await game.playCards(req.ctx, body);
+    return res.status(204).send();
+  });
+
   // Custom error handler
   router.use(
     (

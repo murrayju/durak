@@ -9,6 +9,8 @@ import WordList from './WordList';
 import { whiteBlackFilter } from '../util/array';
 import type { ApiRequestContext } from './index';
 import Deck from './Deck';
+import Card from './Card';
+import type { SerializedCard } from './Card';
 import Player from './Player';
 import GameState from './GameState';
 import type { SerializedGameState } from './GameState';
@@ -24,6 +26,16 @@ export type SerializedGame = {
   id: string,
   clients?: Client[],
   state?: SerializedGameState,
+};
+
+export type CardPlay = {
+  id: string,
+  target?: string,
+};
+
+export type PlayAction = {
+  type: 'attack' | 'defense',
+  cards: CardPlay[],
 };
 
 const gamesCache = new Map<string, Game>();
@@ -161,6 +173,76 @@ export default class Game {
       this.clients.push(player);
     }
     await this.save(ctx);
+  }
+
+  isValidAttack(attackCard: Card | SerializedCard): boolean {
+    const card = Card.wrap(attackCard);
+    return (
+      this.state.attacks.length === 0 ||
+      (this.state.attacks.length < 6 &&
+        !!this.state.attacks.find(
+          ({ attack, defense }) => attack.equalsRankOf(card) || defense?.equalsRankOf(card),
+        ))
+    );
+  }
+
+  async playCards(ctx: ApiRequestContext, play: PlayAction) {
+    const player = this.state.players.find((p) => p.id === ctx.clientId);
+    if (!player) {
+      throw new Error(`You are not a player in the game, you can't play cards.`);
+    }
+    if (!play?.cards?.length) {
+      // No-op
+      return;
+    }
+    if (!this.state.gameStarted) {
+      throw new Error(`The game hasn't started yet.`);
+    }
+    if (this.state.gameOver) {
+      throw new Error(`The game is over.`);
+    }
+
+    const cards = play.cards.map((c) => Card.deserialize(c.id));
+    if (!player.hand.contains(cards)) {
+      throw new Error(`You can't play a card that's not in your hand.`);
+    }
+    try {
+      if (play.type === 'attack') {
+        cards.forEach((c) => {
+          if (!this.isValidAttack(c)) {
+            throw new Error(`Invalid attack`);
+          }
+          const [attack] = player.hand.remove(c);
+          this.state.attacks.push({
+            attack,
+          });
+        });
+      } else if (play.type === 'defense') {
+        cards.forEach((card, i) => {
+          const { target } = play.cards[i];
+          if (!target) {
+            throw new Error(`Defensive play must have a target card.`);
+          }
+          const targetCard = Card.deserialize(target);
+          const targetAttack = this.state.attacks.find(
+            ({ attack, defense }) => attack.equals(targetCard) && !defense,
+          );
+          if (!targetAttack) {
+            throw new Error(`No matching target card.`);
+          }
+          if (!card.beats(targetAttack.attack, this.state.trumpCard?.suit)) {
+            throw new Error(`Invalid target for defense.`);
+          }
+          const [defense] = player.hand.remove(card);
+          targetAttack.defense = defense;
+        });
+      } else {
+        throw new Error(`Invalid play type.`);
+      }
+    } finally {
+      // Even if we threw above, may have modified some game state first
+      await this.save(ctx);
+    }
   }
 
   static async find(ctx: ApiRequestContext, id: string): Promise<?Game> {

@@ -20,6 +20,20 @@ const Box = styled.div`
   position: relative;
 `;
 
+const AttackArea = styled.div`
+  flex: 1 1;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+`;
+
+const AttackGroup = styled.div``;
+
+const AttackCard = styled(CardComponent)``;
+const DefenseCard = styled(CardComponent)``;
+
 const TrumpCard = styled(CardComponent)`
   transform: rotate(90deg);
   position: absolute;
@@ -47,10 +61,18 @@ const PlayArea = () => {
   });
 
   return (
-    <Box ref={drop}>
+    <Box>
       <TrumpCard card={gameState.trumpCard} inDeck />
       <DrawPile hand={gameState.deck} deck />
-      {isOver && 'hovering'}
+      <AttackArea ref={drop}>
+        {gameState.attacks.map(({ attack, defense }) => (
+          <AttackGroup>
+            <AttackCard card={attack} />
+            {defense && <DefenseCard card={defense} />}
+          </AttackGroup>
+        ))}
+        {isOver && 'hovering'}
+      </AttackArea>
     </Box>
   );
 };
