@@ -5,6 +5,7 @@ import Deck from './Deck';
 import type { SerializedDeck } from './Deck';
 import Player from './Player';
 import type { SerializedPlayer } from './Player';
+import type { Client } from './Game';
 
 type Attack = {
   attack: Card,
@@ -107,6 +108,26 @@ export default class GameState {
   relativePlayer(offset: number, source?: number = this.turn) {
     const num = this.players.length;
     return this.players[(source + num + offset) % num];
+  }
+
+  get defender(): Player {
+    return this.relativePlayer(1);
+  }
+
+  get attacker(): Player {
+    return this.players[this.turn];
+  }
+
+  getPlayerById(clientId: string): ?Player {
+    return this.players.find((p) => p.id === clientId) || null;
+  }
+
+  isDefender(player: Player | Client | string): boolean {
+    return this.defender.equals(player);
+  }
+
+  isAttacker(player: Player | Client | string): boolean {
+    return this.attacker.equals(player);
   }
 
   static deserialize(data?: SerializedGameState) {

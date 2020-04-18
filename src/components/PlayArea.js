@@ -7,6 +7,7 @@ import { useDrop } from 'react-dnd';
 import useGameContext from '../hooks/useGameContext';
 import Hand from './Hand';
 import CardComponent from './Card';
+import Card from '../api/Card';
 
 const Box = styled.div`
   display: flex;
@@ -41,7 +42,10 @@ const AttackCard = styled(CardComponent)`
   position: static;
   margin: 0;
 `;
-const DefenseCard = styled(CardComponent)``;
+const DefenseCard = styled(CardComponent)`
+  position: static;
+  margin-top: 65px;
+`;
 
 const TrumpCard = styled(CardComponent)`
   transform: rotate(90deg);
@@ -57,7 +61,14 @@ const DrawPile = styled(Hand)`
 `;
 
 const PlayArea = () => {
-  const { gameState } = useGameContext();
+  const {
+    clientId,
+    gameState,
+    playCards,
+    selectedCards,
+    setSelectedCards,
+    setErrorMsg,
+  } = useGameContext();
   const [{ isOver }, drop] = useDrop({
     accept: 'card',
     drop: (dropped) => console.log('dropped', dropped),
@@ -69,6 +80,25 @@ const PlayArea = () => {
     }),
   });
 
+  const isDefender = gameState.isDefender(clientId);
+
+  const defend = (targetCard: Card) => {
+    setErrorMsg(null);
+    playCards({
+      type: 'defend',
+      cards: selectedCards.map(({ id }) => ({
+        id,
+        target: targetCard.id,
+      })),
+    }).then(
+      () => setSelectedCards([]),
+      (err) => {
+        setErrorMsg(err.message.replace('Fetch failed: ', ''));
+        setSelectedCards([]);
+      },
+    );
+  };
+
   return (
     <Box>
       <TrumpCard card={gameState.trumpCard} inDeck />
@@ -76,7 +106,7 @@ const PlayArea = () => {
       <AttackArea ref={drop}>
         {gameState.attacks.map(({ attack, defense }) => (
           <AttackGroup>
-            <AttackCard card={attack} />
+            <AttackCard card={attack} onCardClick={isDefender ? defend : null} />
             {defense && <DefenseCard card={defense} />}
           </AttackGroup>
         ))}

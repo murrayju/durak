@@ -34,7 +34,7 @@ export type CardPlay = {
 };
 
 export type PlayAction = {
-  type: 'attack' | 'defense',
+  type: 'attack' | 'defend',
   cards: CardPlay[],
 };
 
@@ -217,7 +217,7 @@ export default class Game {
             attack,
           });
         });
-      } else if (play.type === 'defense') {
+      } else if (play.type === 'defend') {
         cards.forEach((card, i) => {
           const { target } = play.cards[i];
           if (!target) {

@@ -1,5 +1,5 @@
 // @flow
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import useGameContext from '../hooks/useGameContext';
@@ -41,14 +41,18 @@ const ErrorMessage = styled.span`
 `;
 
 const MainHand = () => {
-  const { clientId, gameState, playCards } = useGameContext();
-  const [selectedCards, setSelectedCards] = useState([]);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const {
+    clientId,
+    gameState,
+    playCards,
+    selectedCards,
+    setSelectedCards,
+    errorMsg,
+    setErrorMsg,
+  } = useGameContext();
 
-  const { players, turn } = gameState;
-  const player = players.find((p) => p.id === clientId) || players[turn];
-  const defender = gameState.relativePlayer(1, turn);
-  const isDefender = player === defender;
+  const player = gameState.getPlayerById(clientId) || gameState.attacker;
+  const isDefender = gameState.isDefender(clientId);
 
   const attack = () => {
     setErrorMsg(null);
@@ -73,7 +77,9 @@ const MainHand = () => {
         selected={selectedCards}
         onCardClick={(c) =>
           setSelectedCards((sel) =>
-            sel.find((s) => s.id === c.id) ? sel.filter((s) => s.id !== c.id) : [...sel, c],
+            sel.find((s) => s.id === c.id)
+              ? sel.filter((s) => s.id !== c.id)
+              : [...(isDefender ? [] : sel), c],
           )
         }
       />
@@ -83,7 +89,7 @@ const MainHand = () => {
       </MainHandIndicators>
       {!isDefender && selectedCards.length > 0 ? (
         <Actions>
-          <IconButton text onClick={attack}>
+          <IconButton primary text onClick={attack}>
             <Icon name="dragon" />
             Attack
           </IconButton>

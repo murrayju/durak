@@ -6,6 +6,7 @@ import useEventSource from './useEventSource';
 import useFetch from './useFetch';
 import type { Client, SerializedGame, PlayAction } from '../api/Game';
 import GameState from '../api/GameState';
+import type Card from '../api/Card';
 import type { GameContextType } from '../contexts/GameContext';
 
 // It really would be overkill to use this in more than one place
@@ -15,6 +16,8 @@ const useGameApi = (id: string): GameContextType => {
   const { fetch } = useFetch();
   const [game, setGame] = useState<?SerializedGame>(null);
   const [notFound, setNotFound] = useState(false);
+  const [selectedCards, setSelectedCards] = useState<Card[]>([]);
+  const [errorMsg, setErrorMsg] = useState<?string>(null);
   const [cookies] = useCookies();
   const { clientId } = cookies;
   const client = game?.clients?.find((p) => p.id === clientId) || null;
@@ -74,6 +77,12 @@ const useGameApi = (id: string): GameContextType => {
     join,
     newRound,
     playCards,
+
+    // client-side
+    selectedCards,
+    setSelectedCards,
+    errorMsg,
+    setErrorMsg,
   };
 };
 

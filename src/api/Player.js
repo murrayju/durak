@@ -1,6 +1,7 @@
 // @flow
 import Deck from './Deck';
 import type { SerializedDeck } from './Deck';
+import type { Client } from './Game';
 
 export type SerializedPlayer = {
   id: string,
@@ -32,6 +33,10 @@ export default class Player {
       name,
       hand: hand.serialize(obscured),
     };
+  }
+
+  equals(other: Player | Client | string) {
+    return this.id === (other.id || other);
   }
 
   static deserialize(data: SerializedPlayer) {

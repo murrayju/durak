@@ -24,16 +24,17 @@ const CardImg = styled.img`
       : null};
 
   &:not(:first-child) {
-    margin-left: ${({ inDeck, primary }) => (inDeck ? '-69px' : primary ? '-50px;' : '-65px;')};
-    margin-top: ${({ inDeck, index }) => (inDeck ? `${index}px` : null)};
+    margin-left: ${({ inDeck, primary }) => (inDeck ? '-69.5px' : primary ? '-50px;' : '-65px;')};
+    margin-top: ${({ inDeck, index }) => (inDeck ? `${index * 0.5}px` : null)};
   }
 
   @media (min-width: ${({ theme }) => theme.screen.smMin}) {
     width: 100px;
     top: ${({ inDeck }) => (inDeck ? null : '50px')};
     &:not(:first-child) {
-      margin-left: ${({ inDeck, primary }) => (inDeck ? '-99px' : primary ? '-75px;' : '-92px;')};
-      margin-top: ${({ inDeck, index }) => (inDeck ? `${index}px` : null)};
+      margin-left: ${({ inDeck, primary }) =>
+        inDeck ? '-99.25px' : primary ? '-75px;' : '-92px;'};
+      margin-top: ${({ inDeck, index }) => (inDeck ? `${index * 0.75}px` : null)};
     }
   }
 
