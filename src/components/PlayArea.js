@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import styled from 'styled-components';
+import { position } from 'polished';
 import { useDrop } from 'react-dnd';
 
 import useGameContext from '../hooks/useGameContext';
@@ -15,9 +16,14 @@ const Box = styled.div`
   border: 1px solid ${({ theme }) => theme.game.darkGreen};
   border-radius: 20px;
   background-color: ${({ theme }) => theme.game.pokerGreen};
-  width: 1000px;
-  height: 800px;
-  position: relative;
+
+  ${position('absolute', 65, 60, 100, 60)}
+  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
+    ${position('absolute', 95, 100, 150, 100)}
+  }
+  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
+    ${position('absolute', 120, 140, 210, 140)}
+  }
 `;
 
 const AttackArea = styled.div`
@@ -31,7 +37,10 @@ const AttackArea = styled.div`
 
 const AttackGroup = styled.div``;
 
-const AttackCard = styled(CardComponent)``;
+const AttackCard = styled(CardComponent)`
+  position: static;
+  margin: 0;
+`;
 const DefenseCard = styled(CardComponent)``;
 
 const TrumpCard = styled(CardComponent)`
