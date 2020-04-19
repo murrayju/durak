@@ -1,6 +1,6 @@
 // @flow
 import Card from './Card';
-import type { SerializedCard } from './Card';
+import type { SerializedCard, Suit } from './Card';
 import Deck from './Deck';
 import type { SerializedDeck } from './Deck';
 import Player from './Player';
@@ -24,9 +24,11 @@ export type SerializedGameState = {
   players: SerializedPlayer[],
   deck: SerializedDeck,
   trumpCard: ?SerializedCard,
+  trumpSuit: ?Suit,
   attacks: SerializedAttack[],
   discard: SerializedDeck,
   durak: ?string,
+  beatVotes: string[],
 };
 
 export type GameStateCtorData = {
@@ -36,9 +38,11 @@ export type GameStateCtorData = {
   players?: Array<SerializedPlayer | Player>,
   deck?: SerializedDeck | Deck,
   trumpCard?: ?(SerializedCard | Card),
+  trumpSuit?: ?Suit,
   attacks?: Array<SerializedAttack | Attack>,
   discard?: SerializedDeck | Deck,
   durak?: ?string,
+  beatVotes?: ?(string[]),
 };
 
 export default class GameState {
@@ -48,9 +52,11 @@ export default class GameState {
   players: Player[];
   deck: Deck;
   trumpCard: ?Card;
+  trumpSuit: ?Suit;
   attacks: Attack[];
   discard: Deck;
   durak: ?string;
+  beatVotes: string[];
 
   constructor({
     turn,
@@ -59,9 +65,11 @@ export default class GameState {
     players,
     deck,
     trumpCard,
+    trumpSuit,
     attacks,
     discard,
     durak,
+    beatVotes,
   }: GameStateCtorData = {}) {
     this.turn = turn || 0;
     this.gameStarted = gameStarted || false;
@@ -70,6 +78,7 @@ export default class GameState {
     this.deck = deck instanceof Deck ? deck : deck ? Deck.deserialize(deck) : new Deck();
     this.trumpCard =
       trumpCard instanceof Card ? trumpCard : trumpCard ? Card.deserialize(trumpCard) : null;
+    this.trumpSuit = trumpSuit || this.trumpCard?.suit || null;
     this.attacks = (attacks || []).map(({ attack, defense } = {}) => ({
       attack: attack instanceof Card ? attack : Card.deserialize(attack),
       defense: defense instanceof Card ? defense : defense ? Card.deserialize(defense) : null,
@@ -77,6 +86,7 @@ export default class GameState {
     this.discard =
       discard instanceof Deck ? discard : discard ? Deck.deserialize(discard) : new Deck([]);
     this.durak = durak || null;
+    this.beatVotes = beatVotes || [];
   }
 
   computeDerivedState() {
@@ -88,7 +98,19 @@ export default class GameState {
 
   serialize(forPlayer: string, obscured?: boolean = false): SerializedGameState {
     this.computeDerivedState();
-    const { turn, gameStarted, gameOver, players, deck, trumpCard, attacks, discard, durak } = this;
+    const {
+      turn,
+      gameStarted,
+      gameOver,
+      players,
+      deck,
+      trumpCard,
+      trumpSuit,
+      attacks,
+      discard,
+      durak,
+      beatVotes,
+    } = this;
     return {
       turn,
       gameStarted,
@@ -96,17 +118,23 @@ export default class GameState {
       players: players.map((p) => p.serialize(obscured && p.id !== forPlayer)),
       deck: deck.serialize(obscured),
       trumpCard: trumpCard?.serialize() || null,
+      trumpSuit,
       attacks: attacks.map(({ attack, defense }) => ({
         attack: attack.serialize(),
         defense: defense?.serialize() || null,
       })),
       discard: discard.serialize(obscured),
       durak,
+      beatVotes,
     };
   }
 
+  get numPlayers(): number {
+    return this.players.length;
+  }
+
   relativePlayer(offset: number, source?: number = this.turn) {
-    const num = this.players.length;
+    const num = this.numPlayers;
     return this.players[(source + num + offset) % num];
   }
 
@@ -118,8 +146,16 @@ export default class GameState {
     return this.players[this.turn];
   }
 
-  getPlayerById(clientId: string): ?Player {
-    return this.players.find((p) => p.id === clientId) || null;
+  get unbeatenAttacks(): Attack[] {
+    return this.attacks.filter(({ defense }) => !defense);
+  }
+
+  get looksBeat(): boolean {
+    return this.attacks.length > 0 && this.unbeatenAttacks.length === 0;
+  }
+
+  getPlayer(player: Player | Client | string): ?Player {
+    return this.players.find((p) => p.id === (player?.id || player)) || null;
   }
 
   isDefender(player: Player | Client | string): boolean {
@@ -128,6 +164,27 @@ export default class GameState {
 
   isAttacker(player: Player | Client | string): boolean {
     return this.attacker.equals(player);
+  }
+
+  canAttack(player: Player | Client | string): boolean {
+    return !this.isDefender(player) && !!this.getPlayer(player);
+  }
+
+  incrementTurn(skipOne: boolean = false): number {
+    this.attacks = [];
+    this.beatVotes = [];
+    // draw cards starting with primary attacker, in reverse order
+    Array.from({ length: this.numPlayers }).forEach((_, i) => {
+      const player = this.relativePlayer(-i);
+      // Try the deck first
+      player.hand.bottomDeck(this.deck.draw(6 - player.hand.size));
+      if (player.hand.size < 6 && this.trumpCard) {
+        player.hand.bottomDeck(this.trumpCard);
+        this.trumpCard = null;
+      }
+    });
+    this.turn = (this.turn + (skipOne ? 2 : 1)) % this.numPlayers;
+    return this.turn;
   }
 
   static deserialize(data?: SerializedGameState) {

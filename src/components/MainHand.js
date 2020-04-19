@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import styled from 'styled-components';
+import { position } from 'polished';
 
 import useGameContext from '../hooks/useGameContext';
 import Hand from './Hand';
@@ -9,13 +10,25 @@ import IconButton from './IconButton';
 import PlayerIndicator from './PlayerIndicator';
 
 const Box = styled.div`
+  ${position('absolute', null, 0, 0, 0)}
+  height: 95px;
+  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
+    height: 140px;
+  }
+  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
+    height: 200px;
+  }
+  display: flex;
+  justify-content: center;
+`;
+
+const TheHand = styled(Hand)`
   position: absolute;
   bottom: -50px;
-  width: 100%;
 `;
 
 const MainHandIndicators = styled.div`
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 10px;
   font-size: 3em;
@@ -27,11 +40,16 @@ const MainHandIndicators = styled.div`
 
 const Actions = styled.div`
   position: absolute;
-  bottom: 100px;
+  bottom: 10px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  > {
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
 `;
 
 const ErrorMessage = styled.span`
@@ -45,13 +63,15 @@ const MainHand = () => {
     clientId,
     gameState,
     playCards,
+    pickUpAttacks,
+    declareAsBeat,
     selectedCards,
     setSelectedCards,
     errorMsg,
     setErrorMsg,
   } = useGameContext();
 
-  const player = gameState.getPlayerById(clientId) || gameState.attacker;
+  const player = gameState.getPlayer(clientId) || gameState.attacker;
   const isDefender = gameState.isDefender(clientId);
 
   const attack = () => {
@@ -68,9 +88,27 @@ const MainHand = () => {
     );
   };
 
+  const pickUp = () => {
+    setErrorMsg(null);
+    pickUpAttacks().then(
+      () => setSelectedCards([]),
+      (err) => {
+        setErrorMsg(err.message.replace('Fetch failed: ', ''));
+        setSelectedCards([]);
+      },
+    );
+  };
+
+  const itsBeat = () => {
+    setErrorMsg(null);
+    declareAsBeat().then(null, (err) => {
+      setErrorMsg(err.message.replace('Fetch failed: ', ''));
+    });
+  };
+
   return (
     <Box>
-      <Hand
+      <TheHand
         primary
         canDrag
         hand={player.hand}
@@ -87,14 +125,31 @@ const MainHand = () => {
         <PlayerIndicator player={player} />
         {errorMsg && <ErrorMessage>{errorMsg}</ErrorMessage>}
       </MainHandIndicators>
-      {!isDefender && selectedCards.length > 0 ? (
-        <Actions>
+      <Actions>
+        {!isDefender && selectedCards.length > 0 ? (
           <IconButton primary text onClick={attack}>
             <Icon name="dragon" />
             Attack
           </IconButton>
-        </Actions>
-      ) : null}
+        ) : null}
+        {isDefender && gameState.unbeatenAttacks.length > 0 ? (
+          <IconButton primary text onClick={pickUp}>
+            <Icon name="skull-crossbones" />
+            Pick Up
+          </IconButton>
+        ) : null}
+        {gameState.attacks.length > 0 && gameState.unbeatenAttacks.length === 0 ? (
+          <IconButton
+            primary
+            text
+            onClick={itsBeat}
+            disabled={gameState.beatVotes.includes(player.id)}
+          >
+            <Icon name="trophy" />
+            It&apos;s beat
+          </IconButton>
+        ) : null}
+      </Actions>
     </Box>
   );
 };

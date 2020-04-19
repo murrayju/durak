@@ -127,6 +127,22 @@ export default function (serverContext: ServerContext) {
     return res.status(204).send();
   });
 
+  router.post('/game/:id/pickUpAttacks', async (req: GameApiRequest, res) => {
+    const {
+      ctx: { game },
+    } = req;
+    await game.pickUpAttacks(req.ctx);
+    return res.status(204).send();
+  });
+
+  router.post('/game/:id/declareAsBeat', async (req: GameApiRequest, res) => {
+    const {
+      ctx: { game },
+    } = req;
+    await game.declareAsBeat(req.ctx);
+    return res.status(204).send();
+  });
+
   // Custom error handler
   router.use(
     (

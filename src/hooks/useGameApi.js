@@ -65,6 +65,16 @@ const useGameApi = (id: string): GameContextType => {
       body: JSON.stringify(action),
     });
 
+  const pickUpAttacks = async () =>
+    fetch(`/api/game/${id}/pickUpAttacks`, {
+      method: 'POST',
+    });
+
+  const declareAsBeat = async () =>
+    fetch(`/api/game/${id}/declareAsBeat`, {
+      method: 'POST',
+    });
+
   return {
     game,
     id,
@@ -77,6 +87,8 @@ const useGameApi = (id: string): GameContextType => {
     join,
     newRound,
     playCards,
+    pickUpAttacks,
+    declareAsBeat,
 
     // client-side
     selectedCards,

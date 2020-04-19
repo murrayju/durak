@@ -6,6 +6,7 @@ import { useDrop } from 'react-dnd';
 
 import useGameContext from '../hooks/useGameContext';
 import Hand from './Hand';
+import Icon from './Icon';
 import CardComponent from './Card';
 import Card from '../api/Card';
 
@@ -60,6 +61,17 @@ const DrawPile = styled(Hand)`
   right: 10px;
 `;
 
+const DiscardPile = styled(Hand)`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+`;
+
+const GameOver = styled.h1`
+  font-variant: small-caps;
+  text-transform: capitalize;
+`;
+
 const PlayArea = () => {
   const {
     clientId,
@@ -101,8 +113,19 @@ const PlayArea = () => {
 
   return (
     <Box>
-      <TrumpCard card={gameState.trumpCard} inDeck />
+      {gameState.trumpCard && <TrumpCard card={gameState.trumpCard} inDeck />}
       <DrawPile hand={gameState.deck} deck />
+      <DiscardPile hand={gameState.discard} deck />
+      {gameState.gameOver ? (
+        <>
+          <GameOver>Game Over</GameOver>
+          {gameState.durak && (
+            <h3>
+              <Icon name="beer" /> {gameState.getPlayer(gameState.durak)?.name} is the durak!
+            </h3>
+          )}
+        </>
+      ) : null}
       <AttackArea ref={drop}>
         {gameState.attacks.map(({ attack, defense }) => (
           <AttackGroup>

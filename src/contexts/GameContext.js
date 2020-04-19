@@ -19,6 +19,8 @@ export type GameContextType = {
   join: (Client) => Promise<void>,
   newRound: () => Promise<void>,
   playCards: (PlayAction) => Promise<void>,
+  pickUpAttacks: () => Promise<void>,
+  declareAsBeat: () => Promise<void>,
 
   // Client-only state
   selectedCards: Card[],

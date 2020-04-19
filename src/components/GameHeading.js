@@ -1,25 +1,12 @@
 // @flow
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import useGameContext from '../hooks/useGameContext';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import ConfirmModal from './ConfirmModal';
-import { Heading, FlowLeft, FlowCenter, FlowRight } from './flex';
-
-const ColoredHeading = styled.h2`
-  color: ${({
-    theme: {
-      game: { spyRed, spyBlue, spyBlack },
-    },
-    color,
-  }) => (color === 'red' ? spyRed : color === 'blue' ? spyBlue : spyBlack)};
-  font-variant: small-caps;
-  text-transform: capitalize;
-  cursor: ${({ onClick }) => onClick && 'pointer'};
-`;
+import { Heading, FlowLeft, FlowRight } from './flex';
 
 const GameHeading = () => {
   const { client, connected, id, newRound, gameState } = useGameContext();
@@ -47,9 +34,6 @@ const GameHeading = () => {
               </IconButton>
             </OverlayTrigger>{' '}
           </FlowLeft>
-          <FlowCenter>
-            {gameState.gameOver ? <ColoredHeading color="black">Game Over</ColoredHeading> : null}
-          </FlowCenter>
         </>
       ) : null}
       <FlowRight>

@@ -186,20 +186,25 @@ export default class Game {
     );
   }
 
-  async playCards(ctx: ApiRequestContext, play: PlayAction) {
-    const player = this.state.players.find((p) => p.id === ctx.clientId);
+  ensurePlayerCanPlay(ctx: ApiRequestContext): Player {
+    const player = this.state.getPlayer(ctx.clientId);
     if (!player) {
       throw new Error(`You are not a player in the game, you can't play cards.`);
-    }
-    if (!play?.cards?.length) {
-      // No-op
-      return;
     }
     if (!this.state.gameStarted) {
       throw new Error(`The game hasn't started yet.`);
     }
     if (this.state.gameOver) {
       throw new Error(`The game is over.`);
+    }
+    return player;
+  }
+
+  async playCards(ctx: ApiRequestContext, play: PlayAction) {
+    const player = this.ensurePlayerCanPlay(ctx);
+    if (!play?.cards?.length) {
+      // No-op
+      return;
     }
 
     const cards = play.cards.map((c) => Card.deserialize(c.id));
@@ -208,6 +213,9 @@ export default class Game {
     }
     try {
       if (play.type === 'attack') {
+        if (!this.state.canAttack(player)) {
+          throw new Error(`You are not an attacker.`);
+        }
         cards.forEach((c) => {
           if (!this.isValidAttack(c)) {
             throw new Error(`Invalid attack`);
@@ -218,6 +226,9 @@ export default class Game {
           });
         });
       } else if (play.type === 'defend') {
+        if (!this.state.isDefender(player)) {
+          throw new Error(`You are not the defender.`);
+        }
         cards.forEach((card, i) => {
           const { target } = play.cards[i];
           if (!target) {
@@ -230,7 +241,7 @@ export default class Game {
           if (!targetAttack) {
             throw new Error(`No matching target card.`);
           }
-          if (!card.beats(targetAttack.attack, this.state.trumpCard?.suit)) {
+          if (!card.beats(targetAttack.attack, this.state.trumpSuit)) {
             throw new Error(`Invalid target for defense.`);
           }
           const [defense] = player.hand.remove(card);
@@ -241,8 +252,45 @@ export default class Game {
       }
     } finally {
       // Even if we threw above, may have modified some game state first
+      this.state.beatVotes = [];
       await this.save(ctx);
     }
+  }
+
+  async pickUpAttacks(ctx: ApiRequestContext) {
+    const player = this.ensurePlayerCanPlay(ctx);
+    if (!this.state.isDefender(player)) {
+      throw new Error(`You are not the defender.`);
+    }
+
+    player.hand.bottomDeck(
+      this.state.attacks.flatMap(({ attack, defense }) => [attack, ...(defense ? [defense] : [])]),
+    );
+    this.state.incrementTurn(true);
+    await this.save(ctx);
+  }
+
+  async declareAsBeat(ctx: ApiRequestContext) {
+    const player = this.ensurePlayerCanPlay(ctx);
+    if (!this.state.looksBeat) {
+      throw new Error(`Doesn't look beat.`);
+    }
+
+    if (!this.state.beatVotes.includes(player.id)) {
+      this.state.beatVotes.push(player.id);
+    }
+
+    if (this.state.beatVotes.length === this.state.numPlayers) {
+      this.state.discard.topDeck(
+        this.state.attacks.flatMap(({ attack, defense }) => [
+          attack,
+          ...(defense ? [defense] : []),
+        ]),
+      );
+      this.state.incrementTurn();
+    }
+
+    await this.save(ctx);
   }
 
   static async find(ctx: ApiRequestContext, id: string): Promise<?Game> {
