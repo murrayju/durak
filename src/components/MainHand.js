@@ -38,6 +38,11 @@ const MainHandIndicators = styled.div`
   padding: 10px;
 `;
 
+const PlayerName = styled.h2`
+  position: absolute;
+  top: -50px;
+`;
+
 const Actions = styled.div`
   position: absolute;
   bottom: 10px;
@@ -72,6 +77,7 @@ const MainHand = () => {
   } = useGameContext();
 
   const player = gameState.getPlayer(clientId) || gameState.attacker;
+  const isPlaying = player.id === clientId;
   const isDefender = gameState.isDefender(clientId);
 
   const attack = () => {
@@ -122,34 +128,37 @@ const MainHand = () => {
         }
       />
       <MainHandIndicators>
+        <PlayerName>{player.name}</PlayerName>
         <PlayerIndicator player={player} />
         {errorMsg && <ErrorMessage>{errorMsg}</ErrorMessage>}
       </MainHandIndicators>
-      <Actions>
-        {!isDefender && selectedCards.length > 0 ? (
-          <IconButton primary text onClick={attack}>
-            <Icon name="dragon" />
-            Attack
-          </IconButton>
-        ) : null}
-        {isDefender && gameState.unbeatenAttacks.length > 0 ? (
-          <IconButton primary text onClick={pickUp}>
-            <Icon name="skull-crossbones" />
-            Pick Up
-          </IconButton>
-        ) : null}
-        {gameState.attacks.length > 0 && gameState.unbeatenAttacks.length === 0 ? (
-          <IconButton
-            primary
-            text
-            onClick={itsBeat}
-            disabled={gameState.beatVotes.includes(player.id)}
-          >
-            <Icon name="trophy" />
-            It&apos;s beat
-          </IconButton>
-        ) : null}
-      </Actions>
+      {isPlaying && (
+        <Actions>
+          {!isDefender && selectedCards.length > 0 ? (
+            <IconButton primary text onClick={attack}>
+              <Icon name="dragon" />
+              Attack
+            </IconButton>
+          ) : null}
+          {isDefender && gameState.unbeatenAttacks.length > 0 ? (
+            <IconButton primary text onClick={pickUp}>
+              <Icon name="skull-crossbones" />
+              Pick Up
+            </IconButton>
+          ) : null}
+          {gameState.attacks.length > 0 && gameState.unbeatenAttacks.length === 0 ? (
+            <IconButton
+              primary
+              text
+              onClick={itsBeat}
+              disabled={gameState.beatVotes.includes(player.id)}
+            >
+              <Icon name="trophy" />
+              It&apos;s beat
+            </IconButton>
+          ) : null}
+        </Actions>
+      )}
     </Box>
   );
 };
