@@ -93,6 +93,11 @@ export default class Game {
 
   async newRound() {
     const deck = Deck.random();
+    const deckSize = config.get('deckSize');
+    if (deckSize < deck.size) {
+      // really just for debugging right now, removes some random cards
+      deck.draw(deck.size - deckSize);
+    }
     const players = [...this.clients, ...fakePlayers]
       .sort(() => Math.random() - 0.5)
       .map(
