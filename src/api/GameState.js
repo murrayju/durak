@@ -22,6 +22,7 @@ export type SerializedGameState = {
   gameStarted: boolean,
   gameOver: boolean,
   players: SerializedPlayer[],
+  winners: SerializedPlayer[],
   deck: SerializedDeck,
   trumpCard: ?SerializedCard,
   trumpSuit: ?Suit,
@@ -36,6 +37,7 @@ export type GameStateCtorData = {
   gameStarted?: boolean,
   gameOver?: boolean,
   players?: Array<SerializedPlayer | Player>,
+  winners?: Array<SerializedPlayer | Player>,
   deck?: SerializedDeck | Deck,
   trumpCard?: ?(SerializedCard | Card),
   trumpSuit?: ?Suit,
@@ -50,6 +52,7 @@ export default class GameState {
   gameStarted: boolean;
   gameOver: boolean;
   players: Player[];
+  winners: Player[];
   deck: Deck;
   trumpCard: ?Card;
   trumpSuit: ?Suit;
@@ -63,6 +66,7 @@ export default class GameState {
     gameStarted,
     gameOver,
     players,
+    winners,
     deck,
     trumpCard,
     trumpSuit,
@@ -75,6 +79,7 @@ export default class GameState {
     this.gameStarted = gameStarted || false;
     this.gameOver = gameOver || false;
     this.players = players?.map((p) => (p instanceof Player ? p : Player.deserialize(p))) || [];
+    this.winners = winners?.map((p) => (p instanceof Player ? p : Player.deserialize(p))) || [];
     this.deck = deck instanceof Deck ? deck : deck ? Deck.deserialize(deck) : new Deck();
     this.trumpCard =
       trumpCard instanceof Card ? trumpCard : trumpCard ? Card.deserialize(trumpCard) : null;
@@ -103,6 +108,7 @@ export default class GameState {
       gameStarted,
       gameOver,
       players,
+      winners,
       deck,
       trumpCard,
       trumpSuit,
@@ -116,6 +122,7 @@ export default class GameState {
       gameStarted,
       gameOver,
       players: players.map((p) => p.serialize(obscured && p.id !== forPlayer)),
+      winners: winners.map((p) => p.serialize(obscured && p.id !== forPlayer)),
       deck: deck.serialize(obscured),
       trumpCard: trumpCard?.serialize() || null,
       trumpSuit,
@@ -183,6 +190,11 @@ export default class GameState {
         this.trumpCard = null;
       }
     });
+    if (!this.deck.size && !this.trumpCard) {
+      // any players without cards now are out
+      this.winners = [...this.winners, ...this.players.filter((p) => !p.hand.size)];
+      this.players = this.players.filter((p) => !!p.hand.size);
+    }
     this.turn = (this.turn + (skipOne ? 2 : 1)) % this.numPlayers;
     return this.turn;
   }

@@ -72,6 +72,18 @@ const GameOver = styled.h1`
   text-transform: capitalize;
 `;
 
+const Winners = styled.div`
+  ${position('absolute', null, 0, 0, 0)};
+  display: flex;
+  flex-flow: row wrap;
+  padding: 10px;
+  justify-content: center;
+`;
+
+const Winner = styled.div`
+  margin: 0 10px;
+`;
+
 const PlayArea = () => {
   const {
     clientId,
@@ -135,6 +147,13 @@ const PlayArea = () => {
         ))}
         {isOver && 'hovering'}
       </AttackArea>
+      <Winners>
+        {gameState.winners.map((p) => (
+          <Winner>
+            <Icon name="crown" /> {p.name}
+          </Winner>
+        ))}
+      </Winners>
     </Box>
   );
 };
