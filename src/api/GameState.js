@@ -161,6 +161,10 @@ export default class GameState {
     return this.attacks.length > 0 && this.unbeatenAttacks.length === 0;
   }
 
+  get remainingAttackSlots(): number {
+    return Math.min(6 - this.attacks.length, this.defender.hand.size - this.unbeatenAttacks.length);
+  }
+
   getPlayer(player: Player | Client | string): ?Player {
     return this.players.find((p) => p.id === (player?.id || player)) || null;
   }

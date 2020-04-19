@@ -41,6 +41,7 @@ const MainHandIndicators = styled.div`
 const PlayerName = styled.h2`
   position: absolute;
   top: -50px;
+  white-space: nowrap;
 `;
 
 const Actions = styled.div`

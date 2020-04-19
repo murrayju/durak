@@ -179,7 +179,7 @@ export default class Game {
     const card = Card.wrap(attackCard);
     return (
       this.state.attacks.length === 0 ||
-      (this.state.attacks.length < 6 &&
+      (this.state.remainingAttackSlots > 0 &&
         !!this.state.attacks.find(
           ({ attack, defense }) => attack.equalsRankOf(card) || defense?.equalsRankOf(card),
         ))
