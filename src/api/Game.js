@@ -94,10 +94,8 @@ export default class Game {
   async newRound() {
     const deck = Deck.random();
     const deckSize = config.get('deckSize');
-    if (deckSize < deck.size) {
-      // really just for debugging right now, removes some random cards
-      deck.draw(deck.size - deckSize);
-    }
+    // really just for debugging right now, removes some random cards
+    const discard = new Deck(deckSize < deck.size ? deck.draw(deck.size - deckSize) : []);
     const players = [...this.clients, ...fakePlayers]
       .sort(() => Math.random() - 0.5)
       .map(
@@ -108,7 +106,7 @@ export default class Game {
           }),
       );
     const [trumpCard] = deck.draw(1);
-    this.state = new GameState({ deck, players, trumpCard });
+    this.state = new GameState({ deck, discard, players, trumpCard });
   }
 
   async delete() {
