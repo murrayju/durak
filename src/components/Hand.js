@@ -27,10 +27,11 @@ type Props = {
   onCardClick?: ?(Card) => void,
   primary?: ?boolean,
   deck?: ?boolean,
+  disheveled?: ?boolean,
   className?: string,
 };
 
-const Hand = ({ hand, selected, onCardClick, primary, deck, className }: Props) => {
+const Hand = ({ hand, selected, onCardClick, primary, deck, disheveled, className }: Props) => {
   const { cards } = hand.sort();
   return (
     <Box className={className}>
@@ -43,6 +44,7 @@ const Hand = ({ hand, selected, onCardClick, primary, deck, className }: Props) 
           onCardClick={onCardClick}
           selected={!!selected?.find((s) => s.id === c.id)}
           inDeck={deck}
+          disheveled={disheveled}
         />
       ))}
     </Box>
@@ -53,6 +55,7 @@ Hand.defaultProps = {
   onCardClick: null,
   primary: false,
   deck: false,
+  disheveled: false,
   className: '',
 };
 

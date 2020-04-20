@@ -36,6 +36,7 @@ const AttackArea = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+  z-index: 1;
 `;
 
 const AttackGroup = styled.div``;
@@ -89,8 +90,8 @@ const DrawPile = styled(Hand)`
 
 const DiscardPile = styled(Hand)`
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 50px;
+  left: 100px;
 `;
 
 const GameOver = styled.h1`
@@ -179,7 +180,7 @@ const PlayArea = () => {
       {trumpSuit && <TrumpIndicator>{trumpSymbol}</TrumpIndicator>}
       {gameState.trumpCard && <TrumpCard card={gameState.trumpCard} inDeck />}
       <DrawPile hand={gameState.deck} deck />
-      <DiscardPile hand={gameState.discard} deck />
+      <DiscardPile hand={gameState.discard} deck disheveled />
       {gameState.gameOver ? (
         <>
           <GameOver>Game Over</GameOver>

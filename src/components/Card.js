@@ -14,7 +14,14 @@ const CardImg = styled.img`
   cursor: ${({ onClick }) => (onClick ? 'pointer' : null)};
   width: 70px;
   top: ${({ inDeck }) => (inDeck ? null : '60px')};
-  transform: ${({ primary }) => (primary ? 'scale(1.5);' : null)};
+  transform: ${({ primary, disheveled, idNum }) =>
+    `${primary ? 'scale(1.5)' : ''} ${
+      disheveled
+        ? `rotate(${13 * idNum}deg) translate(${((idNum - 26) * 77) % 50}px, ${
+            ((idNum - 26) * 17) % 50
+          }px)`
+        : ''
+    }`};
   ${({ dragging }) =>
     dragging
       ? {
@@ -56,6 +63,7 @@ type Props = {
   onCardClick?: ?(Card) => void,
   primary?: ?boolean,
   inDeck?: ?boolean,
+  disheveled?: ?boolean,
   canDrag?: ?boolean,
   className?: string,
 };
@@ -67,6 +75,7 @@ const CardComponent = ({
   onCardClick,
   primary,
   inDeck,
+  disheveled,
   canDrag,
   className,
 }: Props) => {
@@ -82,6 +91,8 @@ const CardComponent = ({
     <CardImg
       ref={drag}
       index={index}
+      idNum={parseInt(card.idNum, 10)}
+      disheveled={disheveled}
       primary={primary}
       inDeck={inDeck}
       alt={card.name}
@@ -99,6 +110,7 @@ CardComponent.defaultProps = {
   onCardClick: null,
   primary: false,
   inDeck: false,
+  disheveled: false,
   canDrag: false,
   className: '',
 };
