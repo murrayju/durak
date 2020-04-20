@@ -52,8 +52,33 @@ const DefenseCard = styled(CardComponent)`
 const TrumpCard = styled(CardComponent)`
   transform: rotate(90deg);
   position: absolute;
-  top: 30px;
-  right: 80px;
+  top: 13px;
+  right: 40px;
+  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
+    top: 17px;
+    right: 60px;
+  }
+  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
+    top: 20px;
+    right: 80px;
+  }
+`;
+
+const TrumpIndicator = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 55px;
+  font-size: 5em;
+  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
+    top: 15px;
+    right: 85px;
+    font-size: 7em;
+  }
+  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
+    top: 70px;
+    right: 125px;
+    font-size: 7em;
+  }
 `;
 
 const DrawPile = styled(Hand)`
@@ -118,6 +143,9 @@ const PlayArea = () => {
   const isPlaying = player.id === clientId;
   const isDefender = gameState.isDefender(clientId);
 
+  const { trumpSuit } = gameState;
+  const { symbol: trumpSymbol } = new Card('2', trumpSuit || 'X', 'X');
+
   const defend = (targetCard: Card) => {
     setErrorMsg(null);
     playCards({
@@ -148,6 +176,7 @@ const PlayArea = () => {
 
   return (
     <Box>
+      {trumpSuit && <TrumpIndicator>{trumpSymbol}</TrumpIndicator>}
       {gameState.trumpCard && <TrumpCard card={gameState.trumpCard} inDeck />}
       <DrawPile hand={gameState.deck} deck />
       <DiscardPile hand={gameState.discard} deck />

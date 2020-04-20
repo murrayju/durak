@@ -19,6 +19,8 @@ export type Suit = 'X' | 'C' | 'D' | 'H' | 'S';
 
 const ranks: Rank[] = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 const suits: Suit[] = ['D', 'C', 'H', 'S'];
+const suitChars = ['♦', '♣', '♥', '♠'];
+const suitNames = ['Diamonds', 'Clubs', 'Hearts', 'Spades'];
 
 export type SerializedCard = string;
 
@@ -53,6 +55,14 @@ export default class Card {
 
   get imageUrl() {
     return this.isObscured ? Card.backImageUrl : `/static/images/playingCards/${this.name}.svg`;
+  }
+
+  get symbol(): string {
+    return suitChars[suits.indexOf(this.suit)] || '';
+  }
+
+  get suitName(): string {
+    return suitNames[suits.indexOf(this.suit)] || '';
   }
 
   compareRank(other: Card) {
