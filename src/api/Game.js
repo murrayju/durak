@@ -165,6 +165,13 @@ export default class Game {
 
   async save(ctx: ApiRequestContext) {
     await this.emitObscuredStateToEachPlayer();
+    try {
+      await ctx.serverContext.db
+        .collection('games')
+        .replaceOne({ id: this.id }, await this.serialize('server', false), { upsert: true });
+    } catch (err) {
+      logger.error('Failed to save to db', { err });
+    }
   }
 
   async startNewRound(ctx: ApiRequestContext) {
@@ -301,13 +308,20 @@ export default class Game {
     await this.save(ctx);
   }
 
+  static async findInDb(ctx: ApiRequestContext, id: string): Promise<?Game> {
+    const serializedGame: ?SerializedGame = await ctx.serverContext.db
+      .collection('games')
+      .findOne({ id });
+    if (!serializedGame) {
+      return null;
+    }
+    const game = new Game(serializedGame);
+    gamesCache.set(game.id, game);
+    return game;
+  }
+
   static async find(ctx: ApiRequestContext, id: string): Promise<?Game> {
-    // const game: ?GameDbData = await ctx.serverContext.db.collection('games').findOne({ id });
-    // if (!game) {
-    //   return null;
-    // }
-    // return new Game(game);
-    return gamesCache.get(id) || null;
+    return gamesCache.get(id) || (await this.findInDb(ctx, id)) || null;
   }
 
   static async get(ctx: ApiRequestContext, id: string): Promise<?Game> {
