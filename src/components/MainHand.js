@@ -121,9 +121,9 @@ const MainHand = () => {
         <PlayerIndicator player={player} />
         {errorMsg && <ErrorMessage>{errorMsg}</ErrorMessage>}
       </MainHandIndicators>
-      {isPlaying && (
+      {isPlaying && !isDefender && (
         <Actions>
-          {!isDefender && selectedCards.length > 0 ? (
+          {selectedCards.length > 0 ? (
             <IconButton primary text onClick={attack}>
               <Icon name="dragon" />
               Attack

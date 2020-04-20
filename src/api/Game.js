@@ -280,12 +280,15 @@ export default class Game {
     if (!this.state.looksBeat) {
       throw new Error(`Doesn't look beat.`);
     }
+    if (this.state.isDefender(player)) {
+      throw new Error(`Defender doesn't get a beat vote.`);
+    }
 
     if (!this.state.beatVotes.includes(player.id)) {
       this.state.beatVotes.push(player.id);
     }
 
-    if (this.state.beatVotes.length === this.state.numPlayers) {
+    if (this.state.beatVotes.length === this.state.numPlayers - 1) {
       this.state.discard.topDeck(
         this.state.attacks.flatMap(({ attack, defense }) => [
           attack,
