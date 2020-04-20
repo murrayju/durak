@@ -69,7 +69,6 @@ const MainHand = () => {
     clientId,
     gameState,
     playCards,
-    pickUpAttacks,
     declareAsBeat,
     selectedCards,
     setSelectedCards,
@@ -87,17 +86,6 @@ const MainHand = () => {
       type: 'attack',
       cards: selectedCards.map(({ id }) => ({ id })),
     }).then(
-      () => setSelectedCards([]),
-      (err) => {
-        setErrorMsg(err.message.replace('Fetch failed: ', ''));
-        setSelectedCards([]);
-      },
-    );
-  };
-
-  const pickUp = () => {
-    setErrorMsg(null);
-    pickUpAttacks().then(
       () => setSelectedCards([]),
       (err) => {
         setErrorMsg(err.message.replace('Fetch failed: ', ''));
@@ -139,12 +127,6 @@ const MainHand = () => {
             <IconButton primary text onClick={attack}>
               <Icon name="dragon" />
               Attack
-            </IconButton>
-          ) : null}
-          {isDefender && gameState.unbeatenAttacks.length > 0 ? (
-            <IconButton primary text onClick={pickUp}>
-              <Icon name="skull-crossbones" />
-              Pick Up
             </IconButton>
           ) : null}
           {gameState.attacks.length > 0 && gameState.unbeatenAttacks.length === 0 ? (

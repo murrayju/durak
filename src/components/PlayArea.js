@@ -7,6 +7,7 @@ import { useDrop } from 'react-dnd';
 import useGameContext from '../hooks/useGameContext';
 import Hand from './Hand';
 import Icon from './Icon';
+import IconButton from './IconButton';
 import CardComponent from './Card';
 import Card from '../api/Card';
 
@@ -29,7 +30,7 @@ const Box = styled.div`
 `;
 
 const AttackArea = styled.div`
-  flex: 1 1;
+  flex: 0 0;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -72,6 +73,14 @@ const GameOver = styled.h1`
   text-transform: capitalize;
 `;
 
+const Actions = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+`;
+
 const Winners = styled.div`
   ${position('absolute', null, 0, 0, 0)};
   display: flex;
@@ -89,6 +98,7 @@ const PlayArea = () => {
     clientId,
     gameState,
     playCards,
+    pickUpAttacks,
     selectedCards,
     setSelectedCards,
     setErrorMsg,
@@ -104,6 +114,8 @@ const PlayArea = () => {
     }),
   });
 
+  const player = gameState.getPlayer(clientId) || gameState.attacker;
+  const isPlaying = player.id === clientId;
   const isDefender = gameState.isDefender(clientId);
 
   const defend = (targetCard: Card) => {
@@ -115,6 +127,17 @@ const PlayArea = () => {
         target: targetCard.id,
       })),
     }).then(
+      () => setSelectedCards([]),
+      (err) => {
+        setErrorMsg(err.message.replace('Fetch failed: ', ''));
+        setSelectedCards([]);
+      },
+    );
+  };
+
+  const pickUp = () => {
+    setErrorMsg(null);
+    pickUpAttacks().then(
       () => setSelectedCards([]),
       (err) => {
         setErrorMsg(err.message.replace('Fetch failed: ', ''));
@@ -147,6 +170,16 @@ const PlayArea = () => {
         ))}
         {isOver && 'hovering'}
       </AttackArea>
+      {isPlaying && (
+        <Actions>
+          {isDefender && gameState.unbeatenAttacks.length > 0 ? (
+            <IconButton primary text onClick={pickUp}>
+              <Icon name="skull-crossbones" />
+              Pick Up
+            </IconButton>
+          ) : null}
+        </Actions>
+      )}
       <Winners>
         {gameState.winners.map((p) => (
           <Winner>
