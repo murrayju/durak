@@ -163,7 +163,7 @@ const PlayArea = () => {
       ) : null}
       <AttackArea ref={drop}>
         {gameState.attacks.map(({ attack, defense }) => (
-          <AttackGroup>
+          <AttackGroup key={attack.id}>
             <AttackCard card={attack} onCardClick={isDefender ? defend : null} />
             {defense && <DefenseCard card={defense} />}
           </AttackGroup>
@@ -182,7 +182,7 @@ const PlayArea = () => {
       )}
       <Winners>
         {gameState.winners.map((p) => (
-          <Winner>
+          <Winner key={p.id}>
             <Icon name="crown" /> {p.name}
           </Winner>
         ))}

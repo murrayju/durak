@@ -27,10 +27,12 @@ export type SomeCards = Card | SerializedCard | Card[] | SerializedCard[];
 export default class Card {
   rank: Rank;
   suit: Suit;
+  idNum: string;
 
-  constructor(rank: Rank, suit: Suit) {
+  constructor(rank: Rank, suit: Suit, idNum: string) {
     this.rank = rank;
     this.suit = suit;
+    this.idNum = idNum;
   }
 
   get name(): string {
@@ -38,13 +40,19 @@ export default class Card {
   }
 
   get id(): string {
-    return `${this.rank}:${this.suit}`;
+    return `${this.rank}:${this.suit}:${this.idNum}`;
+  }
+
+  get obscuredId(): string {
+    return `X:X:${this.idNum}`;
+  }
+
+  get isObscured() {
+    return this.rank === 'X' || this.suit === 'X';
   }
 
   get imageUrl() {
-    return this.id === unknownCard.id
-      ? Card.backImageUrl
-      : `/static/images/playingCards/${this.name}.svg`;
+    return this.isObscured ? Card.backImageUrl : `/static/images/playingCards/${this.name}.svg`;
   }
 
   compareRank(other: Card) {
@@ -56,7 +64,7 @@ export default class Card {
   }
 
   equals(other: Card) {
-    return other && this.id === other.id;
+    return this.equalsRankOf(other) && this.equalsSuitOf(other);
   }
 
   equalsRankOf(other: Card) {
@@ -75,18 +83,15 @@ export default class Card {
   }
 
   serialize(obscured?: boolean = false): SerializedCard {
-    return obscured ? unknownCard.id : this.id;
+    return obscured ? this.obscuredId : this.id;
   }
 
   static deserialize(card: SerializedCard): Card {
-    if (card === this.obscured.id) {
-      return this.obscured;
-    }
-    const [rank, suit] = card?.split(':') || [];
-    if (!(ranks.includes(rank) && suits.includes(suit))) {
+    const [rank, suit, idNum] = card?.split(':') || [];
+    if (!(ranks.includes(rank) && suits.includes(suit)) && !(rank === 'X' && suit === 'X')) {
       throw new Error(`Invalid card: ${card}`);
     }
-    return new Card(((rank: any): Rank), ((suit: any): Suit));
+    return new Card(((rank: any): Rank), ((suit: any): Suit), idNum);
   }
 
   static wrap(card: SerializedCard | Card): Card {
@@ -106,12 +111,10 @@ export default class Card {
   }
 
   static get obscured(): Card {
-    return unknownCard;
+    return new Card('X', 'X', 'X');
   }
 
   static get backImageUrl() {
     return `/static/images/playingCards/back_red.svg`;
   }
 }
-
-const unknownCard = new Card('X', 'X');

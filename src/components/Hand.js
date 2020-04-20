@@ -36,7 +36,7 @@ const Hand = ({ hand, selected, onCardClick, primary, deck, className }: Props) 
     <Box className={className}>
       {cards.map((c, i) => (
         <CardComponent
-          key={c.id === 'X:X' ? `X:X:${i}` : c.id}
+          key={c.id}
           card={c}
           index={i}
           primary={primary}
