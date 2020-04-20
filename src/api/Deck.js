@@ -1,6 +1,6 @@
 // @flow
 import Card from './Card';
-import type { SerializedCard, SomeCards } from './Card';
+import type { SerializedCard, SomeCards, Suit } from './Card';
 
 const standardCards = (): Card[] => {
   const { suits, ranks } = Card;
@@ -77,6 +77,13 @@ export default class Deck {
 
   serialize(obscured?: boolean = false): SerializedDeck {
     return this.cards.map((c) => c.serialize(obscured));
+  }
+
+  lowest(suit?: ?Suit): ?Card {
+    return (
+      [...this.cards].filter((c) => !suit || c.suit === suit).sort((a, b) => a.compareRank(b))[0] ||
+      null
+    );
   }
 
   static deserialize(deck: SerializedDeck): Deck {

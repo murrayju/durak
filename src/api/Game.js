@@ -93,20 +93,37 @@ export default class Game {
 
   async newRound() {
     const deck = Deck.random();
-    const deckSize = config.get('deckSize');
-    // really just for debugging right now, removes some random cards
-    const discard = new Deck(deckSize < deck.size ? deck.draw(deck.size - deckSize) : []);
+
+    // randomly seat the players, and deal initial hands to players
     const players = [...this.clients, ...fakePlayers]
       .sort(() => Math.random() - 0.5)
       .map(
         (c) =>
           new Player({
             ...c,
-            hand: new Deck(deck.draw(6)),
+            hand: new Deck(deck.draw(6)).sort(),
           }),
       );
+
+    // pick a trump
     const [trumpCard] = deck.draw(1);
-    this.state = new GameState({ deck, discard, players, trumpCard });
+
+    // lowest trump goes first
+    const turn =
+      players
+        .map((p, i) => ({ lowestTrump: p.hand.lowest(trumpCard?.suit), i }))
+        .filter((f) => !!f.lowestTrump)
+        .sort((a, b) => a.lowestTrump.compareRank(b.lowestTrump))
+        .map(({ i }) => i)[0] || 0;
+
+    // really just for debugging right now, removes some random cards
+    const deckSize = config.get('deckSize');
+    const discard = new Deck(
+      deckSize != null && deckSize < deck.size ? deck.draw(deck.size - deckSize) : [],
+    );
+
+    // set the initial game state
+    this.state = new GameState({ deck, discard, players, turn, trumpCard });
   }
 
   async delete() {
