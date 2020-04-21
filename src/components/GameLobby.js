@@ -32,7 +32,7 @@ const GameLobby = () => {
 
   return (
     <Box>
-      <Button onClick={submit} disabled={isSubmitting}>
+      <Button onClick={submit} disabled={clients.length < 2 || isSubmitting}>
         Start Game
       </Button>
       <PlayersBox>

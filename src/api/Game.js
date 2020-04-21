@@ -105,6 +105,10 @@ export default class Game {
           }),
       );
 
+    if (players.length < 2) {
+      throw new Error(`You need at least 2 players to play a game!`);
+    }
+
     // pick a trump
     const [trumpCard] = deck.draw(1);
 
