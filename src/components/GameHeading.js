@@ -1,28 +1,23 @@
 // @flow
 import React, { useState } from 'react';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import useGameContext from '../hooks/useGameContext';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import ConfirmModal from './ConfirmModal';
+import Tooltip from './Tooltip';
 import { Heading, FlowLeft, FlowRight } from './flex';
 
 const GameHeading = () => {
   const { client, connected, id, newRound, gameState } = useGameContext();
   const [newRoundModalShown, setNewRoundModalShown] = useState(false);
 
-  const pop = (popId, content) => <Popover id={popId}>{content}</Popover>;
-
   return (
     <Heading>
       {client ? (
         <>
           <FlowLeft>
-            <OverlayTrigger
-              overlay={pop('new-round', 'Shuffle the board and start a new round')}
-              placement="bottom"
-            >
+            <Tooltip popId="new-round" content="Shuffle the board and start a new round">
               <IconButton
                 onClick={() =>
                   gameState.gameStarted && !gameState.gameOver
@@ -32,35 +27,31 @@ const GameHeading = () => {
               >
                 <Icon name="random" />
               </IconButton>
-            </OverlayTrigger>{' '}
+            </Tooltip>
           </FlowLeft>
         </>
       ) : null}
       <FlowRight>
-        <OverlayTrigger
-          overlay={pop('join-video', 'Join video conference call using jitsi')}
-          placement="bottom"
-        >
+        <Tooltip popId="join-video" content="Join video conference call using jitsi">
           <IconButton onClick={() => window.open(`https://meet.jit.si/durak_${id}`, '_blank')}>
             <Icon name="video" />
           </IconButton>
-        </OverlayTrigger>{' '}
-        <OverlayTrigger
-          overlay={pop(
-            'event-stream',
+        </Tooltip>{' '}
+        <Tooltip
+          popId="event-stream"
+          content={() => (
             <>
               Event stream{' '}
               {connected ? 'connected' : <strong className="text-warning">disconnected</strong>}
-            </>,
+            </>
           )}
-          placement="bottom"
         >
           <Icon
             css=" && { margin-right: 20px; margin-left: 0; }"
             name={connected ? 'wifi' : 'user-slash'}
             color={connected ? 'success' : 'danger'}
           />
-        </OverlayTrigger>
+        </Tooltip>
       </FlowRight>
       {newRoundModalShown && (
         <ConfirmModal
