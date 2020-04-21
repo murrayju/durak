@@ -97,7 +97,7 @@ const Actions = styled.div`
   padding: 10px;
 `;
 
-const Winners = styled.div`
+const ClientList = styled.div`
   ${position('absolute', null, 0, 0, 0)};
   display: flex;
   flex-flow: row wrap;
@@ -105,13 +105,14 @@ const Winners = styled.div`
   justify-content: center;
 `;
 
-const Winner = styled.div`
+const Client = styled.div`
   margin: 0 10px;
 `;
 
 const PlayArea = () => {
   const {
     clientId,
+    spectators,
     gameState,
     playCards,
     declareAsBeat,
@@ -210,13 +211,22 @@ const PlayArea = () => {
           ) : null}
         </Actions>
       )}
-      <Winners>
-        {gameState.winners.map((p) => (
-          <Winner key={p.id}>
-            <Icon name="crown" /> {p.name}
-          </Winner>
+      <ClientList>
+        {spectators.map((p) => (
+          <Client key={p.id}>
+            <Icon
+              name={
+                gameState.winners.find(({ id }) => id === p.id)
+                  ? 'crown'
+                  : p.connected
+                  ? 'eye'
+                  : 'eye-slash'
+              }
+            />{' '}
+            {p.name}
+          </Client>
         ))}
-      </Winners>
+      </ClientList>
     </Box>
   );
 };

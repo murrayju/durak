@@ -46,6 +46,7 @@ const useGameApi = (id: string): GameContextType => {
 
   const gameState = GameState.deserialize(game?.state);
   const clients = game?.clients || [];
+  const spectators = clients.filter((c) => !gameState.isPlayer(c));
 
   // Join a player to the game
   const join = (playerInfo: Client) =>
@@ -80,6 +81,7 @@ const useGameApi = (id: string): GameContextType => {
     id,
     notFound,
     connected,
+    spectators,
     clients,
     client,
     clientId,

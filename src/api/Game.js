@@ -20,6 +20,7 @@ const fakePlayers = config.get('fakePlayers') || [];
 export type Client = {
   id: string,
   name: string,
+  connected?: boolean,
 };
 
 export type SerializedGame = {
@@ -47,6 +48,7 @@ export default class Game {
   _sse: SseChannel;
   _sseClients: Map<string, Set<$Response>>;
   _sseConnections: WeakMap<$Response, string>;
+  _sseCtx: Map<string, ApiRequestContext>;
 
   constructor({ id, clients, state }: SerializedGame) {
     this.id = id;
@@ -54,23 +56,37 @@ export default class Game {
     this.state = state instanceof GameState ? state : GameState.deserialize(state);
     this._sseClients = new Map();
     this._sseConnections = new WeakMap();
+    this._sseCtx = new Map();
     this._sse = new SseChannel({ jsonEncode: true })
       .on('connect', (channel, req, res) => {
         const { clientId } = req.ctx;
-        logger.info(`Client connected to SSE stream.`, { clientId });
+        this._sseCtx.set(clientId, req.ctx);
+        const client = this.clients.find((c) => c.id === clientId) || null;
+        if (client) {
+          client.connected = true;
+        }
+        logger.info(`Client connected to SSE stream.`, { client });
         if (!this._sseClients.has(clientId)) {
           this._sseClients.set(clientId, new Set());
         }
         this._sseClients.get(clientId)?.add(res);
         this._sseConnections.set(res, clientId);
+        this.save(req.ctx).catch((err) => logger.error('Save failed on sse connect', err));
       })
       .on('disconnect', (channel, res) => {
         const clientId = this._sseConnections.get(res);
-        logger.info(`Client disconnected from SSE stream.`, {
-          clientId,
-        });
+        const client = this.clients.find((c) => c.id === clientId) || null;
+        if (clientId && client) {
+          client.connected = false;
+          const ctx = this._sseCtx.get(clientId);
+          if (ctx) {
+            this.save(ctx).catch((err) => logger.error('Save failed on sse connect', err));
+          }
+        }
+        logger.info(`Client disconnected from SSE stream.`, { client });
         this._sseConnections.delete(res);
         if (clientId) {
+          this._sseCtx.delete(clientId);
           this._sseClients.get(clientId)?.delete(res);
           if (this._sseClients.get(clientId)?.size === 0) {
             this._sseClients.delete(clientId);
@@ -84,10 +100,7 @@ export default class Game {
 
   async serialize(forPlayer: string, explicitlyObscured?: boolean): Promise<SerializedGame> {
     const { id, clients, state } = this;
-    const obscured =
-      explicitlyObscured == null
-        ? !!state.players.find((p) => p.id === forPlayer)
-        : explicitlyObscured;
+    const obscured = explicitlyObscured == null ? state.isPlayer(forPlayer) : explicitlyObscured;
     return { id, clients, state: state.serialize(forPlayer, obscured) };
   }
 
@@ -199,9 +212,12 @@ export default class Game {
     await this.save(ctx);
   }
 
-  async joinClient(ctx: ApiRequestContext, player: Client) {
-    if (!this.clients.find((c) => c.id === player.id)) {
-      this.clients.push(player);
+  async joinClient(ctx: ApiRequestContext, { id, name }: Client) {
+    const existingClient = this.clients.find((c) => c.id === id) || null;
+    const client: Client = existingClient || { id, name };
+    client.connected = !!this._sseClients.get(client.id)?.size;
+    if (!existingClient) {
+      this.clients.push(client);
     }
     await this.save(ctx);
   }

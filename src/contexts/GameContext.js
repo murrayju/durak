@@ -13,6 +13,7 @@ export type GameContextType = {
   notFound: boolean,
   connected: boolean,
   clients: Client[],
+  spectators: Client[],
   client: ?Client,
   clientId: string,
   gameState: GameState,
