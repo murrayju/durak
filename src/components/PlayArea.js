@@ -119,7 +119,7 @@ const PlayArea = () => {
     setSelectedCards,
     setErrorMsg,
   } = useGameContext();
-  const player = gameState.getPlayer(clientId) || gameState.attacker;
+  const player = gameState.getPlayer(clientId) || gameState.primaryAttacker;
   const isPlaying = player.id === clientId;
   const isDefender = gameState.isDefender(clientId);
   const [hoverCard, setHoverCard] = useState(null);

@@ -11,12 +11,8 @@ type Props = {
 
 const PlayerIndicator = ({ player }: Props) => {
   const { gameState } = useGameContext();
-  const { turn } = gameState;
-
-  const attacker = gameState.relativePlayer(0, turn);
-  const defender = gameState.relativePlayer(1, turn);
-  const isAttacker = player === attacker;
-  const isDefender = player === defender;
+  const isAttacker = gameState.isPrimaryAttacker(player);
+  const isDefender = gameState.isDefender(player);
 
   return isAttacker ? (
     <Icon name="dragon" />

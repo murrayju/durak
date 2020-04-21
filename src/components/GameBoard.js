@@ -34,7 +34,7 @@ const GameBoard = () => {
   const numPlayers = players.length;
   // Show either this client's player (if they are part of the game)
   // OR whichever player's turn it is as the "main player"
-  const player = gameState.getPlayer(clientId) || gameState.attacker;
+  const player = gameState.getPlayer(clientId) || gameState.primaryAttacker;
   const playerIndex = players.indexOf(player);
 
   const relPlayer = (offset, source = playerIndex) => gameState.relativePlayer(offset, source);

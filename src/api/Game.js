@@ -247,6 +247,9 @@ export default class Game {
         if (!this.state.canAttack(player)) {
           throw new Error(`You are not an attacker.`);
         }
+        if (!this.state.attacks.length && !this.state.isPrimaryAttacker(player)) {
+          throw new Error(`It's not your turn to attack first!`);
+        }
         cards.forEach((c) => {
           if (!this.isValidAttack(c)) {
             throw new Error(`Invalid attack`);

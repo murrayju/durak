@@ -149,7 +149,7 @@ export default class GameState {
     return this.relativePlayer(1);
   }
 
-  get attacker(): Player {
+  get primaryAttacker(): Player {
     return this.players[this.turn];
   }
 
@@ -169,12 +169,20 @@ export default class GameState {
     return this.players.find((p) => p.id === (player?.id || player)) || null;
   }
 
+  isPlayer(player: Player | Client | string): boolean {
+    return !!this.getPlayer(player);
+  }
+
   isDefender(player: Player | Client | string): boolean {
     return this.defender.equals(player);
   }
 
+  isPrimaryAttacker(player: Player | Client | string): boolean {
+    return this.primaryAttacker.equals(player);
+  }
+
   isAttacker(player: Player | Client | string): boolean {
-    return this.attacker.equals(player);
+    return this.isPlayer(player) && !this.isDefender(player);
   }
 
   canAttack(player: Player | Client | string): boolean {
