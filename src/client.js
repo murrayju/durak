@@ -6,7 +6,7 @@ import queryString from 'query-string';
 import { createPath } from 'history';
 import { CookiesProvider, Cookies } from 'react-cookie';
 import { DndProvider } from 'react-dnd';
-import DndBackend from 'react-dnd-html5-backend';
+import DndBackend from 'react-dnd-touch-backend';
 
 import App from './components/App';
 import createFetch from './createFetch';
@@ -74,7 +74,7 @@ async function onLocationChange(location, action) {
     appInstance = renderReactApp(
       <CookiesProvider cookies={cookies}>
         <AppContext.Provider value={renderContext}>
-          <DndProvider backend={DndBackend}>
+          <DndProvider backend={DndBackend} options={{ enableMouseEvents: true }}>
             <App>{route.component}</App>
           </DndProvider>
         </AppContext.Provider>

@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { position } from 'polished';
 import { useDrop } from 'react-dnd';
@@ -9,6 +9,7 @@ import Hand from './Hand';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import CardComponent from './Card';
+import AttackGroup from './AttackGroup';
 import Card from '../api/Card';
 
 const Box = styled.div`
@@ -37,17 +38,6 @@ const AttackArea = styled.div`
   justify-content: center;
   width: 100%;
   z-index: 1;
-`;
-
-const AttackGroup = styled.div``;
-
-const AttackCard = styled(CardComponent)`
-  position: static;
-  margin: 0;
-`;
-const DefenseCard = styled(CardComponent)`
-  position: static;
-  margin-top: 65px;
 `;
 
 const TrumpCard = styled(CardComponent)`
@@ -125,44 +115,38 @@ const PlayArea = () => {
     gameState,
     playCards,
     pickUpAttacks,
-    selectedCards,
     setSelectedCards,
     setErrorMsg,
   } = useGameContext();
-  const [{ isOver }, drop] = useDrop({
+  const player = gameState.getPlayer(clientId) || gameState.attacker;
+  const isPlaying = player.id === clientId;
+  const isDefender = gameState.isDefender(clientId);
+  const [hoverCard, setHoverCard] = useState(null);
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'card',
-    drop: (dropped) => console.log('dropped', dropped),
-    hover: (item) => console.log('hovering', item),
-    canDrop: () => true,
+    drop: ({ id }) => {
+      setErrorMsg(null);
+      playCards({
+        type: 'attack',
+        cards: [{ id }],
+      }).then(
+        () => setSelectedCards([]),
+        (err) => {
+          setErrorMsg(err.message.replace('Fetch failed: ', ''));
+          setSelectedCards([]);
+        },
+      );
+    },
+    hover: ({ id }) => setHoverCard(Card.deserialize(id)),
+    canDrop: () => !isDefender,
     collect: (mon) => ({
       isOver: !!mon.isOver(),
       canDrop: !!mon.canDrop(),
     }),
   });
 
-  const player = gameState.getPlayer(clientId) || gameState.attacker;
-  const isPlaying = player.id === clientId;
-  const isDefender = gameState.isDefender(clientId);
-
   const { trumpSuit } = gameState;
   const { symbol: trumpSymbol } = new Card('2', trumpSuit || 'X', 'X');
-
-  const defend = (targetCard: Card) => {
-    setErrorMsg(null);
-    playCards({
-      type: 'defend',
-      cards: selectedCards.map(({ id }) => ({
-        id,
-        target: targetCard.id,
-      })),
-    }).then(
-      () => setSelectedCards([]),
-      (err) => {
-        setErrorMsg(err.message.replace('Fetch failed: ', ''));
-        setSelectedCards([]);
-      },
-    );
-  };
 
   const pickUp = () => {
     setErrorMsg(null);
@@ -176,7 +160,7 @@ const PlayArea = () => {
   };
 
   return (
-    <Box>
+    <Box ref={drop}>
       {trumpSuit && <TrumpIndicator>{trumpSymbol}</TrumpIndicator>}
       {gameState.trumpCard && <TrumpCard card={gameState.trumpCard} inDeck />}
       <DrawPile hand={gameState.deck} deck />
@@ -191,14 +175,11 @@ const PlayArea = () => {
           )}
         </>
       ) : null}
-      <AttackArea ref={drop}>
+      <AttackArea>
         {gameState.attacks.map(({ attack, defense }) => (
-          <AttackGroup key={attack.id}>
-            <AttackCard card={attack} onCardClick={isDefender ? defend : null} />
-            {defense && <DefenseCard card={defense} />}
-          </AttackGroup>
+          <AttackGroup key={attack.id} attack={attack} defense={defense} />
         ))}
-        {isOver && 'hovering'}
+        {canDrop && isOver && hoverCard && <AttackGroup css="opacity: 0.5" attack={hoverCard} />}
       </AttackArea>
       {isPlaying && (
         <Actions>

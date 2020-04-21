@@ -88,20 +88,22 @@ const CardComponent = ({
   });
 
   return (
-    <CardImg
-      ref={drag}
-      index={index}
-      idNum={parseInt(card.idNum, 10)}
-      disheveled={disheveled}
-      primary={primary}
-      inDeck={inDeck}
-      alt={card.name}
-      src={card.imageUrl}
-      onClick={onCardClick ? () => onCardClick(card) : null}
-      selected={selected}
-      dragging={isDragging}
-      className={className}
-    />
+    <>
+      <CardImg
+        ref={drag}
+        index={index}
+        idNum={parseInt(card.idNum, 10)}
+        disheveled={disheveled}
+        primary={primary}
+        inDeck={inDeck}
+        alt={card.name}
+        src={card.imageUrl}
+        onClick={onCardClick ? () => onCardClick(card) : null}
+        selected={selected}
+        dragging={isDragging}
+        className={className}
+      />
+    </>
   );
 };
 CardComponent.defaultProps = {
