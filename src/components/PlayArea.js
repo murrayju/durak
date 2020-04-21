@@ -114,6 +114,7 @@ const PlayArea = () => {
     clientId,
     gameState,
     playCards,
+    declareAsBeat,
     pickUpAttacks,
     setSelectedCards,
     setErrorMsg,
@@ -159,6 +160,13 @@ const PlayArea = () => {
     );
   };
 
+  const itsBeat = () => {
+    setErrorMsg(null);
+    declareAsBeat().then(null, (err) => {
+      setErrorMsg(err.message.replace('Fetch failed: ', ''));
+    });
+  };
+
   return (
     <Box ref={drop}>
       {trumpSuit && <TrumpIndicator>{trumpSymbol}</TrumpIndicator>}
@@ -187,6 +195,17 @@ const PlayArea = () => {
             <IconButton primary text onClick={pickUp}>
               <Icon name="skull-crossbones" />
               Pick Up
+            </IconButton>
+          ) : null}
+          {!isDefender && gameState.attacks.length > 0 && gameState.unbeatenAttacks.length === 0 ? (
+            <IconButton
+              primary
+              text
+              onClick={itsBeat}
+              disabled={gameState.beatVotes.includes(player.id)}
+            >
+              <Icon name="trophy" />
+              It&apos;s beat
             </IconButton>
           ) : null}
         </Actions>

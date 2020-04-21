@@ -69,7 +69,6 @@ const MainHand = () => {
     clientId,
     gameState,
     playCards,
-    declareAsBeat,
     selectedCards,
     setSelectedCards,
     errorMsg,
@@ -92,13 +91,6 @@ const MainHand = () => {
         setSelectedCards([]);
       },
     );
-  };
-
-  const itsBeat = () => {
-    setErrorMsg(null);
-    declareAsBeat().then(null, (err) => {
-      setErrorMsg(err.message.replace('Fetch failed: ', ''));
-    });
   };
 
   return (
@@ -127,17 +119,6 @@ const MainHand = () => {
             <IconButton primary text onClick={attack}>
               <Icon name="dragon" />
               Attack
-            </IconButton>
-          ) : null}
-          {gameState.attacks.length > 0 && gameState.unbeatenAttacks.length === 0 ? (
-            <IconButton
-              primary
-              text
-              onClick={itsBeat}
-              disabled={gameState.beatVotes.includes(player.id)}
-            >
-              <Icon name="trophy" />
-              It&apos;s beat
             </IconButton>
           ) : null}
         </Actions>
