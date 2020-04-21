@@ -1,18 +1,18 @@
 // @flow
-import React from 'react';
+import React, { useState } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { v4 as uuid } from 'uuid';
 
 type Props = {
-  popId: string,
   content: any,
   children: any,
   placement?: string,
+  popId?: ?string,
 };
 
 const Tooltip = ({ popId, content, children, placement }: Props) => {
-  const pop = (
-    <Popover id={popId}>{typeof content === 'function' ? content(popId) : content}</Popover>
-  );
+  const [id] = useState(popId || uuid());
+  const pop = <Popover id={id}>{typeof content === 'function' ? content(popId) : content}</Popover>;
 
   return (
     <OverlayTrigger overlay={pop} placement={placement}>
@@ -22,6 +22,7 @@ const Tooltip = ({ popId, content, children, placement }: Props) => {
 };
 Tooltip.defaultProps = {
   placement: 'bottom',
+  popId: null,
 };
 
 export default Tooltip;

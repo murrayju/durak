@@ -2,9 +2,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import useGameContext from '../hooks/useGameContext';
 import type Player from '../api/Player';
 import PlayerName from './PlayerName';
 import PlayerIndicator from './PlayerIndicator';
+import ConnectionIndicator from './ConnectionIndicator';
 import Hand from './Hand';
 
 const Box = styled.div`
@@ -35,11 +37,14 @@ type Props = {
 };
 
 const PlayerHand = ({ player, side, className }: Props) => {
+  const { clients } = useGameContext();
+  const connected = !!clients.find(({ id }) => id === player.id)?.connected;
   return (
     <Box side={side} className={className}>
       <Hand hand={player.hand} />
       <PlayerName>
-        {player.name} <PlayerIndicator player={player} />
+        <ConnectionIndicator what={`${player.name} is`} connected={connected} /> {player.name}{' '}
+        <PlayerIndicator player={player} />
       </PlayerName>
     </Box>
   );

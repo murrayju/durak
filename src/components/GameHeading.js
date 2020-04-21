@@ -6,6 +6,7 @@ import Icon from './Icon';
 import IconButton from './IconButton';
 import ConfirmModal from './ConfirmModal';
 import Tooltip from './Tooltip';
+import ConnectionIndicator from './ConnectionIndicator';
 import { Heading, FlowLeft, FlowRight } from './flex';
 
 const GameHeading = () => {
@@ -37,21 +38,11 @@ const GameHeading = () => {
             <Icon name="video" />
           </IconButton>
         </Tooltip>{' '}
-        <Tooltip
-          popId="event-stream"
-          content={() => (
-            <>
-              Event stream{' '}
-              {connected ? 'connected' : <strong className="text-warning">disconnected</strong>}
-            </>
-          )}
-        >
-          <Icon
-            css=" && { margin-right: 20px; margin-left: 0; }"
-            name={connected ? 'wifi' : 'user-slash'}
-            color={connected ? 'success' : 'danger'}
-          />
-        </Tooltip>
+        <ConnectionIndicator
+          what="Event stream"
+          connected={connected}
+          css=" && { margin-right: 20px; margin-left: 0; }"
+        />
       </FlowRight>
       {newRoundModalShown && (
         <ConfirmModal
