@@ -31,18 +31,24 @@ const GameLobby = () => {
     newRound().finally(() => setSubmitting(false));
   };
 
+  const joinedClients = clients.filter((c) => c.joined && c.name);
+
   return (
     <Box>
-      <Button onClick={submit} disabled={clients.length < 2 || isSubmitting}>
+      <Button onClick={submit} disabled={joinedClients.length < 2 || isSubmitting}>
         Start Game
       </Button>
       <PlayersBox>
         <h3>Connected Players</h3>
-        {clients.map((c) => (
-          <div key={c.id}>
-            <ConnectionIndicator what={`${c.name} is`} connected={c.connected || false} /> {c.name}
-          </div>
-        ))}
+        {joinedClients.map(
+          (c) =>
+            c.name && (
+              <div key={c.id}>
+                <ConnectionIndicator what={`${c.name} is`} connected={c.connected || false} />{' '}
+                {c.name}
+              </div>
+            ),
+        )}
       </PlayersBox>
     </Box>
   );

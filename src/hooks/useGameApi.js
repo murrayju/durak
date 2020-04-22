@@ -22,20 +22,6 @@ const useGameApi = (id: string): GameContextType => {
   const { clientId } = cookies;
   const client = game?.clients?.find((p) => p.id === clientId) || null;
 
-  // get the initial state
-  useEffect(() => {
-    setGame(null);
-    fetch(`/api/game/${id}`, {
-      method: 'GET',
-    })
-      .then((r) => r.json())
-      .then(setGame)
-      .catch(() => {
-        setGame(null);
-        setNotFound(true);
-      });
-  }, [fetch, id]);
-
   // subscribe to change events
   const connected = useEventSource(`/api/game/${id}/events`, (es) => {
     es.addEventListener('stateChanged', ({ data: rawData }) => {
@@ -43,6 +29,22 @@ const useGameApi = (id: string): GameContextType => {
       setGame(data);
     });
   });
+
+  // get the initial state _after_ es connects, to avoid race condition caused by missed events
+  useEffect(() => {
+    setGame(null);
+    if (connected) {
+      fetch(`/api/game/${id}`, {
+        method: 'GET',
+      })
+        .then((r) => r.json())
+        .then(setGame)
+        .catch(() => {
+          setGame(null);
+          setNotFound(true);
+        });
+    }
+  }, [connected, fetch, id]);
 
   const gameState = GameState.deserialize(game?.state);
   const clients = game?.clients || [];

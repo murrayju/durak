@@ -31,7 +31,7 @@ const Game = ({ id }: Props) => {
     <GameContext.Provider value={gameContext}>
       <Screen>
         <GameHeading />
-        {!client ? <JoinGame /> : gameState.gameStarted ? <GameBoard /> : <GameLobby />}
+        {!client?.joined ? <JoinGame /> : gameState.gameStarted ? <GameBoard /> : <GameLobby />}
         <PreloadDeckImages />
       </Screen>
     </GameContext.Provider>

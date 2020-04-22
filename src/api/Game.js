@@ -19,7 +19,8 @@ const fakePlayers = config.get('fakePlayers') || [];
 
 export type Client = {
   id: string,
-  name: string,
+  name?: string,
+  joined?: boolean,
   connected?: boolean,
 };
 
@@ -61,9 +62,11 @@ export default class Game {
       .on('connect', (channel, req, res) => {
         const { clientId } = req.ctx;
         this._sseCtx.set(clientId, req.ctx);
-        const client = this.clients.find((c) => c.id === clientId) || null;
-        if (client) {
-          client.connected = true;
+        const existingClient = this.clients.find((c) => c.id === clientId) || null;
+        const client: Client = existingClient || { id: clientId };
+        client.connected = true;
+        if (!existingClient) {
+          this.clients.push(client);
         }
         logger.info(`Client connected to SSE stream.`, { client });
         if (!this._sseClients.has(clientId)) {
@@ -75,25 +78,25 @@ export default class Game {
       })
       .on('disconnect', (channel, res) => {
         const clientId = this._sseConnections.get(res);
-        const client = this.clients.find((c) => c.id === clientId) || null;
-        if (clientId && client) {
-          client.connected = false;
-          const ctx = this._sseCtx.get(clientId);
-          if (ctx) {
-            this.save(ctx).catch((err) => logger.error('Save failed on sse connect', err));
-          }
-        }
-        logger.info(`Client disconnected from SSE stream.`, { client });
         this._sseConnections.delete(res);
+        const client = this.clients.find((c) => c.id === clientId) || null;
         if (clientId) {
-          this._sseCtx.delete(clientId);
           this._sseClients.get(clientId)?.delete(res);
           if (this._sseClients.get(clientId)?.size === 0) {
             this._sseClients.delete(clientId);
+            if (client) {
+              client.connected = false;
+              const ctx = this._sseCtx.get(clientId);
+              if (ctx) {
+                this.save(ctx).catch((err) => logger.error('Save failed on sse connect', err));
+              }
+            }
+            this._sseCtx.delete(clientId);
           }
-          if (this._sseClients.size === 0) {
-            logger.info('All clients disconnected');
-          }
+        }
+        logger.info(`Client disconnected from SSE stream.`, { client });
+        if (this._sseClients.size === 0) {
+          logger.info('All clients disconnected');
         }
       });
   }
@@ -108,7 +111,7 @@ export default class Game {
     const deck = Deck.random();
 
     // randomly seat the players, and deal initial hands to players
-    const players = [...this.clients, ...fakePlayers]
+    const players = [...this.clients.filter((c) => c.joined && c.name), ...fakePlayers]
       .sort(() => Math.random() - 0.5)
       .map(
         (c) =>
@@ -216,6 +219,8 @@ export default class Game {
     const existingClient = this.clients.find((c) => c.id === id) || null;
     const client: Client = existingClient || { id, name };
     client.connected = !!this._sseClients.get(client.id)?.size;
+    client.name = name;
+    client.joined = true;
     if (!existingClient) {
       this.clients.push(client);
     }
