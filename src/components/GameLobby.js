@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Button } from 'react-bootstrap';
 
 import useGameContext from '../hooks/useGameContext';
+import ConnectionIndicator from './ConnectionIndicator';
 
 const Box = styled.div`
   flex: 1 1;
@@ -37,11 +38,11 @@ const GameLobby = () => {
       </Button>
       <PlayersBox>
         <h3>Connected Players</h3>
-        <ul>
-          {clients.map((c) => (
-            <li key={c.id}>{c.name}</li>
-          ))}
-        </ul>
+        {clients.map((c) => (
+          <div key={c.id}>
+            <ConnectionIndicator what={`${c.name} is`} connected={c.connected || false} /> {c.name}
+          </div>
+        ))}
       </PlayersBox>
     </Box>
   );
