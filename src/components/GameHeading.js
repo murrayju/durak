@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 
 import useTableContext from '../hooks/useTableContext';
+import useFullScreen from '../hooks/useFullScreen';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import ConfirmModal from './ConfirmModal';
@@ -12,6 +13,7 @@ import { Heading, FlowLeft, FlowRight } from './flex';
 const GameHeading = () => {
   const { client, connected, id, newRound, gameState } = useTableContext();
   const [newRoundModalShown, setNewRoundModalShown] = useState(false);
+  const { isFullScreen, toggle: toggleFullScreen } = useFullScreen();
 
   return (
     <Heading>
@@ -33,16 +35,19 @@ const GameHeading = () => {
         </>
       ) : null}
       <FlowRight>
-        <Tooltip popId="join-video" content="Join video conference call using jitsi">
-          <IconButton onClick={() => window.open(`https://meet.jit.si/durak_${id}`, '_blank')}>
-            <Icon name="video" />
-          </IconButton>
-        </Tooltip>{' '}
-        <ConnectionIndicator
-          what="Event stream"
-          connected={connected}
-          css=" && { margin-right: 20px; margin-left: 0; }"
-        />
+        <div>
+          <ConnectionIndicator what="Event stream" connected={connected} css="margin: 0.5em;" />
+          <Tooltip popId="join-video" content="Join video conference call using jitsi">
+            <IconButton onClick={() => window.open(`https://meet.jit.si/durak_${id}`, '_blank')}>
+              <Icon name="video" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip popId="toggle-fullscreen" content="Toggle full screen mode">
+            <IconButton onClick={toggleFullScreen}>
+              <Icon name={isFullScreen ? 'compress' : 'expand'} />
+            </IconButton>
+          </Tooltip>
+        </div>
       </FlowRight>
       {newRoundModalShown && (
         <ConfirmModal
