@@ -8,14 +8,14 @@ const routes = {
   children: [
     {
       path: '',
-      load: () => import(/* webpackChunkName: 'newGame' */ './newGame'),
+      load: () => import(/* webpackChunkName: 'newTable' */ './newTable'),
     },
     {
-      path: '/game',
+      path: '/table',
       children: [
         {
           path: '/:id',
-          load: () => import(/* webpackChunkName: 'game' */ './game'),
+          load: () => import(/* webpackChunkName: 'table' */ './table'),
         },
       ],
     },

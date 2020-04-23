@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { position } from 'polished';
 
-import useGameContext from '../hooks/useGameContext';
+import useTableContext from '../hooks/useTableContext';
 import Hand from './Hand';
 import Icon from './Icon';
 import IconButton from './IconButton';
@@ -73,7 +73,7 @@ const MainHand = () => {
     setSelectedCards,
     errorMsg,
     setErrorMsg,
-  } = useGameContext();
+  } = useTableContext();
 
   const player = gameState.getPlayer(clientId) || gameState.primaryAttacker;
   const isPlaying = player.id === clientId;

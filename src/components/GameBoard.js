@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import useGameContext from '../hooks/useGameContext';
+import useTableContext from '../hooks/useTableContext';
 import type Player from '../api/Player';
 import MainHand from './MainHand';
 
@@ -25,7 +25,7 @@ const Board = styled.div`
 `;
 
 const GameBoard = () => {
-  const { clientId, gameState } = useGameContext();
+  const { clientId, gameState } = useTableContext();
   const { width, height } = useScreenSize();
 
   const screenRatio = width / height;

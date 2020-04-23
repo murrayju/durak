@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import useGameContext from '../hooks/useGameContext';
+import useTableContext from '../hooks/useTableContext';
 import type Player from '../api/Player';
 import PlayerName from './PlayerName';
 import PlayerIndicator from './PlayerIndicator';
@@ -37,7 +37,7 @@ type Props = {
 };
 
 const PlayerHand = ({ player, side, className }: Props) => {
-  const { clients } = useGameContext();
+  const { clients } = useTableContext();
   const connected = !!clients.find(({ id }) => id === player.id)?.connected;
   return (
     <Box side={side} className={className}>

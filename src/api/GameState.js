@@ -5,7 +5,7 @@ import Deck from './Deck';
 import type { SerializedDeck } from './Deck';
 import Player from './Player';
 import type { SerializedPlayer } from './Player';
-import type { Client } from './Game';
+import type { Client } from './Table';
 
 type Attack = {
   attack: Card,

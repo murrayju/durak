@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Button } from 'react-bootstrap';
 
-import useGameContext from '../hooks/useGameContext';
+import useTableContext from '../hooks/useTableContext';
 import ConnectionIndicator from './ConnectionIndicator';
 
 const Box = styled.div`
@@ -18,8 +18,8 @@ const PlayersBox = styled.div`
   margin-top: 10px;
 `;
 
-const GameLobby = () => {
-  const { newRound, clients } = useGameContext();
+const TableLobby = () => {
+  const { newRound, clients } = useTableContext();
   const [isSubmitting, setSubmitting] = useState(false);
 
   const submit = (evt) => {
@@ -54,4 +54,4 @@ const GameLobby = () => {
   );
 };
 
-export default GameLobby;
+export default TableLobby;

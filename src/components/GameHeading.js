@@ -1,7 +1,7 @@
 // @flow
 import React, { useState } from 'react';
 
-import useGameContext from '../hooks/useGameContext';
+import useTableContext from '../hooks/useTableContext';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import ConfirmModal from './ConfirmModal';
@@ -10,7 +10,7 @@ import ConnectionIndicator from './ConnectionIndicator';
 import { Heading, FlowLeft, FlowRight } from './flex';
 
 const GameHeading = () => {
-  const { client, connected, id, newRound, gameState } = useGameContext();
+  const { client, connected, id, newRound, gameState } = useTableContext();
   const [newRoundModalShown, setNewRoundModalShown] = useState(false);
 
   return (

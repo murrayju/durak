@@ -11,7 +11,7 @@ import MainContainer from './MainContainer';
 // used by styled-components
 // this should match the values in aura
 export const bsTheme = {
-  game: {
+  table: {
     pokerGreen: '#477148',
     darkGreen: darken(0.5, '#477148'),
   },

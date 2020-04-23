@@ -1,7 +1,7 @@
 // @flow
 import Deck from './Deck';
 import type { SerializedDeck } from './Deck';
-import type { Client } from './Game';
+import type { Client } from './Table';
 
 export type SerializedPlayer = {
   id: string,

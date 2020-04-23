@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useDrop } from 'react-dnd';
 
-import useGameContext from '../hooks/useGameContext';
+import useTableContext from '../hooks/useTableContext';
 import CardComponent from './Card';
 import Card from '../api/Card';
 
@@ -35,7 +35,7 @@ const AttackGroup = ({ attack, defense, className }: Props) => {
     selectedCards,
     setSelectedCards,
     setErrorMsg,
-  } = useGameContext();
+  } = useTableContext();
   const isDefender = gameState.isDefender(clientId);
   const [hoverCard, setHoverCard] = useState(null);
   const [{ isOver, canDrop }, drop] = useDrop({

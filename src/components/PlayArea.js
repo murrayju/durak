@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { position } from 'polished';
 import { useDrop } from 'react-dnd';
 
-import useGameContext from '../hooks/useGameContext';
+import useTableContext from '../hooks/useTableContext';
 import Hand from './Hand';
 import Icon from './Icon';
 import IconButton from './IconButton';
@@ -17,9 +17,9 @@ const Box = styled.div`
   flex-flow: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid ${({ theme }) => theme.game.darkGreen};
+  border: 1px solid ${({ theme }) => theme.table.darkGreen};
   border-radius: 20px;
-  background-color: ${({ theme }) => theme.game.pokerGreen};
+  background-color: ${({ theme }) => theme.table.pokerGreen};
 
   ${position('absolute', 65, 60, 100, 60)}
   @media (min-width: ${({ theme }) => theme.screen.smMin}) {
@@ -119,7 +119,7 @@ const PlayArea = () => {
     pickUpAttacks,
     setSelectedCards,
     setErrorMsg,
-  } = useGameContext();
+  } = useTableContext();
   const player = gameState.getPlayer(clientId) || gameState.primaryAttacker;
   const isPlaying = player.id === clientId;
   const isDefender = gameState.isDefender(clientId);

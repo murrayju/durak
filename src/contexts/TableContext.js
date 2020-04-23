@@ -1,14 +1,14 @@
 // @flow
 import React from 'react';
 
-import type { SerializedGame, Client, PlayAction } from '../api/Game';
+import type { SerializedTable, Client, PlayAction } from '../api/Table';
 import type GameState from '../api/GameState';
 import type Card from '../api/Card';
 
 type SetterFn<T> = (T | ((T) => T)) => void;
 
-export type GameContextType = {
-  game?: ?SerializedGame,
+export type TableContextType = {
+  table?: ?SerializedTable,
   id: string,
   notFound: boolean,
   connected: boolean,
@@ -30,5 +30,5 @@ export type GameContextType = {
   setErrorMsg: SetterFn<?string>,
 };
 
-const GameContext = React.createContext<GameContextType>({});
-export default GameContext;
+const TableContext = React.createContext<TableContextType>({});
+export default TableContext;

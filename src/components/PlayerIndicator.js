@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 
-import useGameContext from '../hooks/useGameContext';
+import useTableContext from '../hooks/useTableContext';
 import Icon from './Icon';
 import type Player from '../api/Player';
 
@@ -10,7 +10,7 @@ type Props = {
 };
 
 const PlayerIndicator = ({ player }: Props) => {
-  const { gameState } = useGameContext();
+  const { gameState } = useTableContext();
   const isAttacker = gameState.isPrimaryAttacker(player);
   const isDefender = gameState.isDefender(player);
 

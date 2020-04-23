@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid';
 import { version } from '../version._generated_'; // eslint-disable-line import/no-unresolved
 import logger from '../logger';
 import type { ServerContext } from '../server';
-import Game from './Game';
+import Table from './Table';
 import Deck from './Deck';
 
 export type ApiRequestContext = {
@@ -28,11 +28,11 @@ export type ApiRequest = {
   ctx: ApiRequestContext,
 };
 
-export type GameApiRequest = {
+export type TableApiRequest = {
   ...Request,
   ctx: {
     ...ApiRequestContext,
-    game: Game,
+    table: Table,
   },
 };
 
@@ -69,77 +69,77 @@ export default function (serverContext: ServerContext) {
     res.json(Deck.imageUrlMap);
   });
 
-  router.post('/game', async (req: ApiRequest, res) => {
-    const game = await Game.create(req.ctx);
-    return res.json(await game.serialize());
+  router.post('/table', async (req: ApiRequest, res) => {
+    const table = await Table.create(req.ctx);
+    return res.json(await table.serialize());
   });
 
-  router.use('/game/:id', async (req: GameApiRequest, res, next) => {
-    const game = await Game.find(req.ctx, req.params.id);
-    if (!game) {
+  router.use('/table/:id', async (req: TableApiRequest, res, next) => {
+    const table = await Table.find(req.ctx, req.params.id);
+    if (!table) {
       return res.status(404).send('Not found');
     }
-    req.ctx.game = game;
+    req.ctx.table = table;
     return next();
   });
 
-  router.get('/game/:id', async (req: GameApiRequest, res) => {
+  router.get('/table/:id', async (req: TableApiRequest, res) => {
     const {
-      ctx: { game, clientId },
+      ctx: { table, clientId },
     } = req;
-    return res.json(await game.serialize(clientId));
+    return res.json(await table.serialize(clientId));
   });
 
-  router.get('/game/:id/events', async (req: GameApiRequest, res) => {
+  router.get('/table/:id/events', async (req: TableApiRequest, res) => {
     const {
-      ctx: { game },
+      ctx: { table },
     } = req;
-    return game.connectSseClient(req, res);
+    return table.connectSseClient(req, res);
   });
 
-  router.post('/game/:id/join', async (req: GameApiRequest, res) => {
+  router.post('/table/:id/join', async (req: TableApiRequest, res) => {
     const {
       body,
-      ctx: { game, clientId },
+      ctx: { table, clientId },
     } = req;
     const player = {
       ...body,
       id: clientId,
     };
-    await game.joinClient(req.ctx, player);
+    await table.joinClient(req.ctx, player);
     return res.status(204).send();
   });
 
-  router.post('/game/:id/newRound', async (req: GameApiRequest, res) => {
+  router.post('/table/:id/newRound', async (req: TableApiRequest, res) => {
     const {
-      ctx: { game },
+      ctx: { table },
     } = req;
-    await game.startNewRound(req.ctx);
+    await table.startNewRound(req.ctx);
     return res.status(204).send();
   });
 
-  router.post('/game/:id/playCards', async (req: GameApiRequest, res) => {
+  router.post('/table/:id/playCards', async (req: TableApiRequest, res) => {
     const {
-      ctx: { game },
+      ctx: { table },
       body,
     } = req;
-    await game.playCards(req.ctx, body);
+    await table.playCards(req.ctx, body);
     return res.status(204).send();
   });
 
-  router.post('/game/:id/pickUpAttacks', async (req: GameApiRequest, res) => {
+  router.post('/table/:id/pickUpAttacks', async (req: TableApiRequest, res) => {
     const {
-      ctx: { game },
+      ctx: { table },
     } = req;
-    await game.pickUpAttacks(req.ctx);
+    await table.pickUpAttacks(req.ctx);
     return res.status(204).send();
   });
 
-  router.post('/game/:id/declareAsBeat', async (req: GameApiRequest, res) => {
+  router.post('/table/:id/declareAsBeat', async (req: TableApiRequest, res) => {
     const {
-      ctx: { game },
+      ctx: { table },
     } = req;
-    await game.declareAsBeat(req.ctx);
+    await table.declareAsBeat(req.ctx);
     return res.status(204).send();
   });
 

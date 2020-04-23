@@ -4,7 +4,7 @@ import { useCookies } from 'react-cookie';
 import { Form, FormGroup, Col, FormControl, ControlLabel, Button } from 'react-bootstrap';
 import styled from 'styled-components';
 
-import useGameContext from '../hooks/useGameContext';
+import useTableContext from '../hooks/useTableContext';
 
 const Box = styled.div`
   flex: 1 1;
@@ -13,8 +13,8 @@ const Box = styled.div`
   justify-content: center;
 `;
 
-const JoinGame = () => {
-  const { id, join, clientId } = useGameContext();
+const JoinTable = () => {
+  const { id, join, clientId } = useTableContext();
   const [isSubmitting, setSubmitting] = useState(false);
   const [cookies, setCookie] = useCookies();
   const [playerName, setPlayerName] = useState(cookies.durak_name || '');
@@ -36,7 +36,7 @@ const JoinGame = () => {
     <Box>
       <Form horizontal noValidate autoComplete="off" onSubmit={submit}>
         <h1>
-          <small>joining game:</small> {id}
+          <small>joining table:</small> {id}
         </h1>
         <FormGroup>
           <Col componentClass={ControlLabel} sm={3}>
@@ -58,7 +58,7 @@ const JoinGame = () => {
         <FormGroup>
           <Col smOffset={3} sm={9}>
             <Button type="submit" disabled={!valid || isSubmitting}>
-              Join Game
+              Join Table
             </Button>
           </Col>
         </FormGroup>
@@ -67,4 +67,4 @@ const JoinGame = () => {
   );
 };
 
-export default JoinGame;
+export default JoinTable;

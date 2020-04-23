@@ -24,7 +24,7 @@ export type Client = {
   connected?: boolean,
 };
 
-export type SerializedGame = {
+export type SerializedTable = {
   id: string,
   clients?: Client[],
   state?: SerializedGameState,
@@ -40,9 +40,9 @@ export type PlayAction = {
   cards: CardPlay[],
 };
 
-const gamesCache = new Map<string, Game>();
+const tablesCache = new Map<string, Table>();
 
-export default class Game {
+export default class Table {
   id: string;
   clients: Client[];
   state: GameState;
@@ -51,7 +51,7 @@ export default class Game {
   _sseConnections: WeakMap<$Response, string>;
   _sseCtx: Map<string, ApiRequestContext>;
 
-  constructor({ id, clients, state }: SerializedGame) {
+  constructor({ id, clients, state }: SerializedTable) {
     this.id = id;
     this.clients = clients || [];
     this.state = state instanceof GameState ? state : GameState.deserialize(state);
@@ -101,7 +101,7 @@ export default class Game {
       });
   }
 
-  async serialize(forPlayer: string, explicitlyObscured?: boolean): Promise<SerializedGame> {
+  async serialize(forPlayer: string, explicitlyObscured?: boolean): Promise<SerializedTable> {
     const { id, clients, state } = this;
     const obscured = explicitlyObscured == null ? state.isPlayer(forPlayer) : explicitlyObscured;
     return { id, clients, state: state.serialize(forPlayer, obscured) };
@@ -151,7 +151,7 @@ export default class Game {
     this._sse.close();
     this._sseClients.clear();
     this._sseConnections = new WeakMap();
-    gamesCache.delete(this.id);
+    tablesCache.delete(this.id);
   }
 
   async connectSseClient(req: $Request, res: $Response): Promise<void> {
@@ -202,7 +202,7 @@ export default class Game {
     await this.emitObscuredStateToEachPlayer();
     try {
       await ctx.serverContext.db
-        .collection('games')
+        .collection('tables')
         .replaceOne({ id: this.id }, await this.serialize('server', false), { upsert: true });
     } catch (err) {
       logger.error('Failed to save to db', { err });
@@ -351,28 +351,28 @@ export default class Game {
     await this.save(ctx);
   }
 
-  static async findInDb(ctx: ApiRequestContext, id: string): Promise<?Game> {
-    const serializedGame: ?SerializedGame = await ctx.serverContext.db
-      .collection('games')
+  static async findInDb(ctx: ApiRequestContext, id: string): Promise<?Table> {
+    const serializedTable: ?SerializedTable = await ctx.serverContext.db
+      .collection('tables')
       .findOne({ id });
-    if (!serializedGame) {
+    if (!serializedTable) {
       return null;
     }
-    const game = new Game(serializedGame);
-    gamesCache.set(game.id, game);
-    return game;
+    const table = new Table(serializedTable);
+    tablesCache.set(table.id, table);
+    return table;
   }
 
-  static async find(ctx: ApiRequestContext, id: string): Promise<?Game> {
-    return gamesCache.get(id) || (await this.findInDb(ctx, id)) || null;
+  static async find(ctx: ApiRequestContext, id: string): Promise<?Table> {
+    return tablesCache.get(id) || (await this.findInDb(ctx, id)) || null;
   }
 
-  static async get(ctx: ApiRequestContext, id: string): Promise<?Game> {
-    const game = await this.find(ctx, id);
-    if (!game) {
-      throw new Error(`No game found with id '${id}'`);
+  static async get(ctx: ApiRequestContext, id: string): Promise<?Table> {
+    const table = await this.find(ctx, id);
+    if (!table) {
+      throw new Error(`No table found with id '${id}'`);
     }
-    return game;
+    return table;
   }
 
   static async newUniqueId(ctx: ApiRequestContext) {
@@ -393,8 +393,8 @@ export default class Game {
 
   static async create(ctx: ApiRequestContext) {
     const id = await this.newUniqueId(ctx);
-    const game = new Game({ id });
-    gamesCache.set(id, game);
-    return game;
+    const table = new Table({ id });
+    tablesCache.set(id, table);
+    return table;
   }
 }

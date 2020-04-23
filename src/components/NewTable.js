@@ -6,19 +6,19 @@ import useFetch from '../hooks/useFetch';
 import Loading from './Loading';
 import NotFound from './NotFound';
 
-const NewGame = () => {
+const NewTable = () => {
   const { fetch } = useFetch();
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/game`, {
+    fetch(`/api/table`, {
       method: 'POST',
     })
       .then((r) => r.json())
-      .then((game) => history.push(`/game/${game.id}`))
+      .then((table) => history.push(`/table/${table.id}`))
       .catch(() => setNotFound(true));
   }, [fetch]);
-  return notFound ? <NotFound /> : <Loading what="new game" />;
+  return notFound ? <NotFound /> : <Loading what="new table" />;
 };
 
-export default NewGame;
+export default NewTable;
