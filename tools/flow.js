@@ -1,5 +1,5 @@
 // @flow
-import { buildLog, spawn } from 'build-strap';
+import { buildLog, flow as flowCmd } from 'build-strap';
 
 // Normally handled by eslint, but we get more debug info when run separately
 export default async function flow(
@@ -10,12 +10,5 @@ export default async function flow(
     buildLog('Skipping due to --no-flow');
     return;
   }
-  await spawn(
-    'flow',
-    [fullCheck ? 'check' : 'status', ...(allBranches ? ['--show-all-branches'] : [])],
-    {
-      stdio: 'inherit',
-      shell: true,
-    },
-  );
+  await flowCmd({ allBranches, incremental: !fullCheck });
 }

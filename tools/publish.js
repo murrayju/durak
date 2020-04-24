@@ -1,6 +1,6 @@
 import { run, clean, publish, getVersion, buildLog, yarn } from 'build-strap';
 import build from './build';
-// import test from './test';
+import jest from './jest';
 
 export default async function doPublish() {
   if (process.argv.includes('--no-publish')) {
@@ -26,7 +26,7 @@ export default async function doPublish() {
 
   if (!process.argv.includes('--publish-only')) {
     await run(build);
-    // await run(test, true);
+    await run(jest);
     if (process.argv.includes('--publish-node-modules')) {
       buildLog('Fetching node_modules needed for production...');
       await yarn([], {

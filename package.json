@@ -19,7 +19,8 @@
   },
   "scripts": {
     "run": "babel-node tools/run",
-    "start": "./bs tdd"
+    "start": "./bs tdd",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -119,12 +120,12 @@
     "@babel/preset-flow": "^7.7.4",
     "autoprefixer": "^9.7.6",
     "babel-eslint": "^10.0.3",
+    "babel-jest": "^25.4.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-styled-components": "^1.10.6",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "browser-sync": "^2.26.7",
     "build-strap": "^1.2.0",
-    "chai": "^4.2.0",
     "chokidar": "^3.3.1",
     "css-loader": "^3.5.2",
     "cssnano": "^4.1.10",
@@ -142,13 +143,14 @@
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^3.0.0",
     "flow-bin": "^0.123.0",
+    "flow-typed": "^3.1.0",
     "get-port": "^5.1.0",
     "husky": "^4.2.5",
+    "jest": "^25.4.0",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "lodash": "^4.17.15",
     "md5-file": "^5.0.0",
-    "mocha": "^7.1.1",
     "nodemon": "^2.0.3",
     "null-loader": "^4.0.0",
     "pixrem": "^5.0.0",
@@ -186,7 +188,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "./bs lint"
+      "pre-commit": "./bs husky"
     }
   }
 }
