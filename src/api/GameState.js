@@ -192,12 +192,14 @@ export default class GameState {
   incrementTurn(skipOne: boolean = false): number {
     this.attacks = [];
     this.beatVotes = [];
+    const currentAttacker = this.primaryAttacker;
     // draw cards starting with primary attacker, in reverse order
     Array.from({ length: this.numPlayers }).forEach((_, i) => {
       const player = this.relativePlayer(-i);
       // Try the deck first
       player.hand.bottomDeck(this.deck.draw(6 - player.hand.size));
       if (player.hand.size < 6 && this.trumpCard) {
+        // grab the trump card last
         player.hand.bottomDeck(this.trumpCard);
         this.trumpCard = null;
       }
@@ -207,7 +209,8 @@ export default class GameState {
       this.winners = [...this.winners, ...this.players.filter((p) => !p.hand.size)];
       this.players = this.players.filter((p) => !!p.hand.size);
     }
-    this.turn = (this.turn + (skipOne ? 2 : 1)) % this.numPlayers;
+    const attackerWentOut = currentAttacker !== this.primaryAttacker;
+    this.turn = (this.turn + (skipOne ? 2 : 1) - (attackerWentOut ? 1 : 0)) % this.numPlayers;
     return this.turn;
   }
 
