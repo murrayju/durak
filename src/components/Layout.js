@@ -6,7 +6,6 @@ import { position, darken } from 'polished';
 
 // external-global styles must be imported in your JS.
 import Footer from './Footer';
-import MainContainer from './MainContainer';
 
 // used by styled-components
 // this should match the values in aura
@@ -63,26 +62,16 @@ const ContentRoot = styled.div`
 `;
 
 type Props = {
-  container?: boolean,
-  row?: boolean,
   children: ReactNode,
-  alignItems?: string,
 };
 
-const Layout = ({ container, children, ...props }: Props) => (
+const Layout = ({ children }: Props) => (
   <ThemeProvider theme={bsTheme}>
     <PageRoot>
       <Footer />
-      <ContentRoot>
-        {container ? <MainContainer {...props}>{children}</MainContainer> : children}
-      </ContentRoot>
+      <ContentRoot>{children}</ContentRoot>
     </PageRoot>
   </ThemeProvider>
 );
-Layout.defaultProps = {
-  container: false,
-  row: false,
-  alignItems: 'center',
-};
 
 export default Layout;
