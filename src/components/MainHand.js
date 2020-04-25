@@ -1,7 +1,6 @@
 // @flow
 import React from 'react';
 import styled from 'styled-components';
-import { position } from 'polished';
 
 import useTableContext from '../hooks/useTableContext';
 import Hand from './Hand';
@@ -10,21 +9,20 @@ import IconButton from './IconButton';
 import PlayerIndicator from './PlayerIndicator';
 
 const Box = styled.div`
-  ${position('absolute', null, 0, 0, 0)}
-  height: 95px;
-  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
-    height: 140px;
-  }
-  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
-    height: 200px;
-  }
+  flex: 1 1;
   display: flex;
   justify-content: center;
 `;
 
 const TheHand = styled(Hand)`
-  position: absolute;
-  bottom: -50px;
+  align-items: flex-start;
+  margin-top: 5px;
+  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
+    margin-top: 10px;
+  }
+  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
+    margin-top: 15px;
+  }
 `;
 
 const MainHandIndicators = styled.div`

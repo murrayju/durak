@@ -13,7 +13,6 @@ const Box = styled.div`
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
-  position: relative;
   overflow: visible;
 
   > * {

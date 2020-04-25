@@ -13,6 +13,7 @@ import AttackGroup from './AttackGroup';
 import Card from '../api/Card';
 
 const Box = styled.div`
+  flex: 1 1;
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -20,24 +21,18 @@ const Box = styled.div`
   border: 1px solid ${({ theme }) => theme.table.darkGreen};
   border-radius: 20px;
   background-color: ${({ theme }) => theme.table.pokerGreen};
-
-  ${position('absolute', 65, 60, 100, 60)}
-  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
-    ${position('absolute', 95, 100, 150, 100)}
-  }
-  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
-    ${position('absolute', 120, 140, 210, 140)}
-  }
+  position: relative;
 `;
 
 const AttackArea = styled.div`
-  flex: 0 0;
+  flex: 1 1;
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
+  align-content: center;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   width: 100%;
-  z-index: 1;
+  z-index: 2;
 `;
 
 const TrumpCard = styled(CardComponent)`
@@ -53,6 +48,7 @@ const TrumpCard = styled(CardComponent)`
     top: 20px;
     right: 80px;
   }
+  z-index: 1;
 `;
 
 const TrumpIndicator = styled.div`
@@ -70,18 +66,21 @@ const TrumpIndicator = styled.div`
     right: 125px;
     font-size: 7em;
   }
+  z-index: 1;
 `;
 
 const DrawPile = styled(Hand)`
   position: absolute;
   top: 10px;
   right: 10px;
+  z-index: 1;
 `;
 
 const DiscardPile = styled(Hand)`
   position: absolute;
   top: 50px;
   left: 100px;
+  z-index: 0;
 `;
 
 const GameOver = styled.h1`

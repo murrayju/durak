@@ -10,18 +10,14 @@ import type Card from '../api/Card';
 const CardImg = styled.img`
   position: relative;
   margin-top: ${({ inDeck, selected, dragging }) =>
-    inDeck ? 0 : selected || dragging ? '-350px' : '-250px'};
+    !inDeck && (selected || dragging) ? '-50px' : 0};
   cursor: ${({ onClick }) => (onClick ? 'pointer' : null)};
-  width: 70px;
-  top: ${({ inDeck }) => (inDeck ? null : '60px')};
-  transform: ${({ primary, disheveled, idNum }) =>
-    `${primary ? 'scale(1.5)' : ''} ${
-      disheveled
-        ? `rotate(${13 * idNum}deg) translate(${((idNum - 26) * 77) % 50}px, ${
-            ((idNum - 26) * 17) % 50
-          }px)`
-        : ''
-    }`};
+  transform: ${({ disheveled, idNum }) =>
+    disheveled
+      ? `rotate(${13 * idNum}deg) translate(${((idNum - 26) * 77) % 50}px, ${
+          ((idNum - 26) * 17) % 50
+        }px)`
+      : ''};
   ${({ dragging }) =>
     dragging
       ? {
@@ -30,27 +26,26 @@ const CardImg = styled.img`
         }
       : null};
 
+  width: ${({ primary }) => (primary ? '105px' : '70px')};
   &:not(:first-child) {
-    margin-left: ${({ inDeck, primary }) => (inDeck ? '-69.5px' : primary ? '-50px;' : '-65px;')};
+    margin-left: ${({ inDeck, primary }) => (inDeck ? '-69.5px' : primary ? '-80px;' : '-65px;')};
     margin-top: ${({ inDeck, index }) => (inDeck ? `${index * 0.5}px` : null)};
   }
 
   @media (min-width: ${({ theme }) => theme.screen.smMin}) {
-    width: 100px;
-    top: ${({ inDeck }) => (inDeck ? null : '50px')};
+    width: ${({ primary }) => (primary ? '150px' : '100px')};
     &:not(:first-child) {
       margin-left: ${({ inDeck, primary }) =>
-        inDeck ? '-99.25px' : primary ? '-75px;' : '-92px;'};
+        inDeck ? '-99.25px' : primary ? '-110px;' : '-92px;'};
       margin-top: ${({ inDeck, index }) => (inDeck ? `${index * 0.75}px` : null)};
     }
   }
 
   @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
-    width: 146px;
-    top: ${({ inDeck }) => (inDeck ? null : '40px')};
+    width: ${({ primary }) => (primary ? '220px' : '146px')};
     &:not(:first-child) {
       margin-left: ${({ inDeck, primary }) =>
-        inDeck ? '-145px' : primary ? '-100px;' : '-135px;'};
+        inDeck ? '-145px' : primary ? '-160px;' : '-130px;'};
       margin-top: ${({ inDeck, index }) => (inDeck ? `${index}px` : null)};
     }
   }

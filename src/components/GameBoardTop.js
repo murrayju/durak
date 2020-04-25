@@ -6,17 +6,15 @@ import type Player from '../api/Player';
 import PlayerHand from './PlayerHand';
 
 const TopSide = styled.div`
+  flex: 1 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  padding: 0 80px;
-  top: 50px;
-  left: 0;
-  right: 0;
+  align-items: flex-end;
+  justify-content: space-evenly;
 `;
 
-const TopHand = styled(PlayerHand)``;
+const TopHand = styled(PlayerHand)`
+  flex: 0 0;
+`;
 
 type Props = {
   players: Player[],

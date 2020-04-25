@@ -15,19 +15,6 @@ const Box = styled.div`
   flex-flow: column;
   align-items: center;
   justify-content: center;
-
-  padding: ${({ side }) => (side ? `50px 0px` : null)};
-  @media (min-width: ${({ theme }) => {
-      return theme.screen.smMin;
-    }}) {
-    padding: ${({ side }) => (side ? `80px 0px` : null)};
-  }
-
-  @media (min-width: ${({ theme }) => {
-      return theme.screen.lgMin;
-    }}) {
-    padding: ${({ side }) => (side ? `150px 0px` : null)};
-  }
 `;
 
 type Props = {

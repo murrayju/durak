@@ -13,15 +13,33 @@ import BoardRight from './GameBoardRight';
 
 import useScreenSize from '../hooks/useScreenSize';
 
-const Board = styled.div`
+const Grid = styled.div`
   flex: 1 1;
-  display: flex;
-  flex-flow: column;
   width: 100%;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  display: grid;
+
+  --small-edge: 60px;
+  --big-edge: 100px;
+  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
+    --small-edge: 100px;
+    --big-edge: 150px;
+  }
+  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
+    --small-edge: 140px;
+    --big-edge: 210px;
+  }
+
+  grid-template-columns: [left] var(--small-edge) [center] 1fr [right] var(--small-edge) [right-edge];
+  grid-template-rows: [top] var(--small-edge) [center] 1fr [bottom] var(--big-edge) [bottom-edge];
   z-index: 100;
+`;
+
+const Cell = styled.div`
+  grid-row: ${({ row }) => row};
+  grid-column: ${({ col }) => col};
+  display: flex;
+  flex-flow: ${({ flow }) => flow};
+  justify-content: ${({ justify }) => justify};
 `;
 
 const GameBoard = () => {
@@ -104,13 +122,23 @@ const GameBoard = () => {
   }
 
   return (
-    <Board>
-      {midPlayers && <BoardTop players={midPlayers} />}
-      {leftPlayers && <BoardLeft players={leftPlayers} />}
-      {rightPlayers && <BoardRight players={rightPlayers} />}
-      <PlayArea />
-      {player && <MainHand />}
-    </Board>
+    <Grid>
+      <Cell row="top" col="center">
+        {midPlayers && <BoardTop players={midPlayers} />}
+      </Cell>
+      <Cell row="center" col="left" justify="flex-end">
+        {leftPlayers && <BoardLeft players={leftPlayers} />}
+      </Cell>
+      <Cell row="center" col="right">
+        {rightPlayers && <BoardRight players={rightPlayers} />}
+      </Cell>
+      <Cell row="center" col="center">
+        <PlayArea />
+      </Cell>
+      <Cell row="bottom" col="left / right-gutter">
+        {player && <MainHand />}
+      </Cell>
+    </Grid>
   );
 };
 

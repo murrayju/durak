@@ -6,16 +6,17 @@ import type Player from '../api/Player';
 import PlayerHand from './PlayerHand';
 
 const RightSide = styled.div`
+  flex: 1 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: space-evenly;
   flex-direction: column;
-  position: absolute;
-  right: 0px;
 `;
 
 const RightHand = styled(PlayerHand)`
-  transform: rotate(90deg);
+  flex: 0 0;
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: bottom center;
 `;
 
 type Props = {

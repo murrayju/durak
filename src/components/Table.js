@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import styled from 'styled-components';
 
 import useTableApi from '../hooks/useTableApi';
 import TableContext from '../contexts/TableContext';
@@ -12,13 +11,6 @@ import JoinTable from './JoinTable';
 import GameHeading from './GameHeading';
 import PreloadDeckImages from './PreloadDeckImages';
 
-const Screen = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-flow: column;
-`;
-
 type Props = {
   id: string,
 };
@@ -29,11 +21,9 @@ const Table = ({ id }: Props) => {
 
   return table?.state ? (
     <TableContext.Provider value={tableContext}>
-      <Screen>
-        <GameHeading />
-        {!client?.joined ? <JoinTable /> : gameState.gameStarted ? <GameBoard /> : <TableLobby />}
-        <PreloadDeckImages />
-      </Screen>
+      <GameHeading />
+      {!client?.joined ? <JoinTable /> : gameState.gameStarted ? <GameBoard /> : <TableLobby />}
+      <PreloadDeckImages />
     </TableContext.Provider>
   ) : notFound ? (
     <NotFound />

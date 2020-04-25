@@ -51,11 +51,11 @@ const PageRoot = styled.div`
   ${position('fixed', 0, 0, 0, 0)};
   width: 100%;
   background-color: ${({ theme }) => theme.brand.gray5};
+  display: flex;
 `;
 
 const ContentRoot = styled.div`
   display: flex;
-  width: 100%;
   flex: 1 1;
   flex-flow: column;
   align-items: center;
