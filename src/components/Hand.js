@@ -14,6 +14,7 @@ const Box = styled.div`
   align-items: center;
   justify-content: center;
   overflow: visible;
+  transform: ${({ rotate }) => rotate && `rotate(${rotate})`};
 
   > * {
     flex: 0 0 auto;
@@ -28,6 +29,7 @@ type Props = {
   canDrag?: ?boolean,
   deck?: ?boolean,
   disheveled?: ?boolean,
+  rotate?: ?string,
   className?: string,
 };
 
@@ -39,11 +41,12 @@ const Hand = ({
   canDrag,
   deck,
   disheveled,
+  rotate,
   className,
 }: Props) => {
   const { cards } = hand.sort();
   return (
-    <Box className={className}>
+    <Box className={className} rotate={rotate}>
       {cards.map((c, i) => (
         <CardComponent
           key={c.id}
@@ -67,6 +70,7 @@ Hand.defaultProps = {
   canDrag: false,
   deck: false,
   disheveled: false,
+  rotate: null,
   className: '',
 };
 

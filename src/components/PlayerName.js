@@ -2,8 +2,9 @@
 import styled from 'styled-components';
 
 const PlayerName = styled.div`
-  font-size: 1em;
+  white-space: nowrap;
   margin-top: 0.5em;
+  font-size: 1em;
   @media (min-width: ${({ theme }) => theme.screen.smMin}) {
     font-size: 1.2em;
   }

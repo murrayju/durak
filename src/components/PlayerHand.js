@@ -28,7 +28,7 @@ const PlayerHand = ({ player, side, className }: Props) => {
   const connected = !!clients.find(({ id }) => id === player.id)?.connected;
   return (
     <Box side={side} className={className}>
-      <Hand hand={player.hand} />
+      <Hand hand={player.hand} rotate="180deg" />
       <PlayerName>
         <ConnectionIndicator what={`${player.name} is`} connected={connected} /> {player.name}{' '}
         <PlayerIndicator player={player} />

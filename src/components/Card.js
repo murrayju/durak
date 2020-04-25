@@ -28,7 +28,7 @@ const CardImg = styled.img`
 
   width: ${({ primary }) => (primary ? '105px' : '70px')};
   &:not(:first-child) {
-    margin-left: ${({ inDeck, primary }) => (inDeck ? '-69.5px' : primary ? '-80px;' : '-65px;')};
+    margin-left: ${({ inDeck, primary }) => (inDeck ? '-69.5px' : primary ? '-80px;' : '-63px;')};
     margin-top: ${({ inDeck, index }) => (inDeck ? `${index * 0.5}px` : null)};
   }
 
@@ -36,7 +36,7 @@ const CardImg = styled.img`
     width: ${({ primary }) => (primary ? '150px' : '100px')};
     &:not(:first-child) {
       margin-left: ${({ inDeck, primary }) =>
-        inDeck ? '-99.25px' : primary ? '-110px;' : '-92px;'};
+        inDeck ? '-99.25px' : primary ? '-110px;' : '-90px;'};
       margin-top: ${({ inDeck, index }) => (inDeck ? `${index * 0.75}px` : null)};
     }
   }
