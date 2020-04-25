@@ -19,7 +19,6 @@ export type SerializedGameState = {
   gameStarted: boolean,
   gameOver: boolean,
   players: SerializedPlayer[],
-  winners: SerializedPlayer[],
   deck: SerializedDeck,
   trumpCard: ?SerializedCard,
   trumpSuit: ?Suit,
@@ -34,7 +33,6 @@ export type GameStateCtorData = {
   gameStarted?: boolean,
   gameOver?: boolean,
   players?: Array<SerializedPlayer | Player>,
-  winners?: Array<SerializedPlayer | Player>,
   deck?: SerializedDeck | Deck,
   trumpCard?: ?(SerializedCard | Card),
   trumpSuit?: ?Suit,
@@ -49,7 +47,6 @@ export default class GameState {
   gameStarted: boolean;
   gameOver: boolean;
   players: Player[];
-  winners: Player[];
   deck: Deck;
   trumpCard: ?Card;
   trumpSuit: ?Suit;
@@ -63,7 +60,6 @@ export default class GameState {
     gameStarted,
     gameOver,
     players,
-    winners,
     deck,
     trumpCard,
     trumpSuit,
@@ -76,7 +72,6 @@ export default class GameState {
     this.gameStarted = gameStarted || false;
     this.gameOver = gameOver || false;
     this.players = players?.map((p) => (p instanceof Player ? p : Player.deserialize(p))) || [];
-    this.winners = winners?.map((p) => (p instanceof Player ? p : Player.deserialize(p))) || [];
     this.deck = deck instanceof Deck ? deck : deck ? Deck.deserialize(deck) : new Deck();
     this.trumpCard =
       trumpCard instanceof Card ? trumpCard : trumpCard ? Card.deserialize(trumpCard) : null;
@@ -106,7 +101,6 @@ export default class GameState {
       gameStarted,
       gameOver,
       players,
-      winners,
       deck,
       trumpCard,
       trumpSuit,
@@ -120,7 +114,6 @@ export default class GameState {
       gameStarted,
       gameOver,
       players: players.map((p) => p.serialize(obscured && p.id !== forPlayer)),
-      winners: winners.map((p) => p.serialize(obscured && p.id !== forPlayer)),
       deck: deck.serialize(obscured),
       trumpCard: trumpCard?.serialize() || null,
       trumpSuit,
@@ -134,13 +127,26 @@ export default class GameState {
     };
   }
 
+  get winners(): Player[] {
+    return this.players.filter((p) => p.out);
+  }
+
+  get activePlayers(): Player[] {
+    return this.players.filter((p) => !p.out);
+  }
+
   get numPlayers(): number {
     return this.players.length;
   }
 
-  relativePlayer(offset: number, source?: number = this.turn) {
-    const num = this.numPlayers;
-    return this.players[(source + num + offset) % num];
+  get numActivePlayers(): number {
+    return this.activePlayers.length;
+  }
+
+  relativePlayer(offset: number, source?: number = this.turn, all?: boolean = false) {
+    const players = all ? this.players : this.activePlayers;
+    const num = players.length;
+    return players[(source + num + offset) % num];
   }
 
   get defender(): Player {
@@ -148,7 +154,7 @@ export default class GameState {
   }
 
   get primaryAttacker(): Player {
-    return this.players[this.turn];
+    return this.activePlayers[this.turn];
   }
 
   get unbeatenAttacks(): Attack[] {
@@ -163,12 +169,13 @@ export default class GameState {
     return Math.min(6 - this.attacks.length, this.defender.hand.size - this.unbeatenAttacks.length);
   }
 
-  getPlayer(player: Player | Client | string): ?Player {
-    return this.players.find((p) => p.id === (player?.id || player)) || null;
+  getPlayer(player: Player | Client | string, all?: boolean = false): ?Player {
+    const players = all ? this.players : this.activePlayers;
+    return players.find((p) => p.id === (player?.id || player)) || null;
   }
 
-  isPlayer(player: Player | Client | string): boolean {
-    return !!this.getPlayer(player);
+  isPlayer(player: Player | Client | string, all?: boolean): boolean {
+    return !!this.getPlayer(player, all);
   }
 
   isDefender(player: Player | Client | string): boolean {
@@ -192,7 +199,7 @@ export default class GameState {
     this.beatVotes = [];
     const currentAttacker = this.primaryAttacker;
     // draw cards starting with primary attacker, in reverse order
-    Array.from({ length: this.numPlayers }).forEach((_, i) => {
+    Array.from({ length: this.numActivePlayers }).forEach((_, i) => {
       const player = this.relativePlayer(-i);
       // Try the deck first
       player.hand.bottomDeck(this.deck.draw(6 - player.hand.size));
@@ -204,11 +211,15 @@ export default class GameState {
     });
     if (!this.deck.size && !this.trumpCard) {
       // any players without cards now are out
-      this.winners = [...this.winners, ...this.players.filter((p) => !p.hand.size)];
-      this.players = this.players.filter((p) => !!p.hand.size);
+      this.players
+        .filter((p) => !p.hand.size)
+        .forEach((p) => {
+          // eslint-disable-next-line no-param-reassign
+          p.out = true;
+        });
     }
     const attackerWentOut = currentAttacker !== this.primaryAttacker;
-    this.turn = (this.turn + (skipOne ? 2 : 1) - (attackerWentOut ? 1 : 0)) % this.numPlayers;
+    this.turn = (this.turn + (skipOne ? 2 : 1) - (attackerWentOut ? 1 : 0)) % this.numActivePlayers;
     return this.turn;
   }
 

@@ -25,13 +25,12 @@ const Box = styled.div`
 `;
 
 const AttackArea = styled.div`
-  flex: 1 1;
+  flex: 0 0;
   display: flex;
   flex-flow: row wrap;
   align-content: center;
   align-items: center;
   justify-content: space-evenly;
-  width: 100%;
   z-index: 2;
 `;
 
@@ -81,6 +80,14 @@ const DiscardPile = styled(Hand)`
   top: 50px;
   left: 100px;
   z-index: 0;
+`;
+
+const GameOverBox = styled.div`
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
 `;
 
 const GameOver = styled.h1`
@@ -174,14 +181,14 @@ const PlayArea = () => {
       <DrawPile hand={gameState.deck} deck />
       <DiscardPile hand={gameState.discard} deck disheveled />
       {gameState.gameOver ? (
-        <>
+        <GameOverBox>
           <GameOver>Game Over</GameOver>
           {gameState.durak && (
             <h3>
               <Icon name="beer" /> {gameState.getPlayer(gameState.durak)?.name} is the durak!
             </h3>
           )}
-        </>
+        </GameOverBox>
       ) : null}
       <AttackArea>
         {gameState.attacks.map(({ attack, defense }) => (
@@ -211,18 +218,9 @@ const PlayArea = () => {
         </Actions>
       )}
       <ClientList>
-        {spectators.map((p) => (
-          <Client key={p.id}>
-            <Icon
-              name={
-                gameState.winners.find(({ id }) => id === p.id)
-                  ? 'crown'
-                  : p.connected
-                  ? 'eye'
-                  : 'eye-slash'
-              }
-            />{' '}
-            {p.name}
+        {spectators.map((s) => (
+          <Client key={s.id}>
+            <Icon name={s.connected ? 'eye' : 'eye-slash'} /> {s.name}
           </Client>
         ))}
       </ClientList>

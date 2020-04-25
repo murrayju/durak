@@ -48,7 +48,7 @@ const useTableApi = (id: string): TableContextType => {
 
   const gameState = GameState.deserialize(table?.state);
   const clients = table?.clients || [];
-  const spectators = clients.filter((c) => !gameState.isPlayer(c));
+  const spectators = clients.filter((c) => !gameState.isPlayer(c, true) && c.joined);
 
   // Join a player to the table
   const join = (playerInfo: Client) =>

@@ -13,6 +13,7 @@ export const bsTheme = {
   table: {
     pokerGreen: '#477148',
     darkGreen: darken(0.5, '#477148'),
+    gold: '#CFB53B',
   },
   brand: {
     primary: '#337ab7', // DMA Light blue

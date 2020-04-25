@@ -25,6 +25,20 @@ const TheHand = styled(Hand)`
   }
 `;
 
+const Crown = styled(Icon)`
+  color: ${({ theme }) => theme.table.gold};
+  font-size: 4em;
+  margin-top: 5px;
+  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
+    font-size: 5em;
+    margin-top: 10px;
+  }
+  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
+    font-size: 6em;
+    margin-top: 15px;
+  }
+`;
+
 const MainHandIndicators = styled.div`
   position: absolute;
   bottom: 0;
@@ -73,7 +87,7 @@ const MainHand = () => {
     setErrorMsg,
   } = useTableContext();
 
-  const player = gameState.getPlayer(clientId) || gameState.primaryAttacker;
+  const player = gameState.getPlayer(clientId, true) || gameState.primaryAttacker;
   const isPlaying = player.id === clientId;
   const isDefender = gameState.isDefender(clientId);
 
@@ -93,19 +107,23 @@ const MainHand = () => {
 
   return (
     <Box>
-      <TheHand
-        primary
-        canDrag
-        hand={player.hand}
-        selected={selectedCards}
-        onCardClick={(c) =>
-          setSelectedCards((sel) =>
-            sel.find((s) => s.id === c.id)
-              ? sel.filter((s) => s.id !== c.id)
-              : [...(isDefender ? [] : sel), c],
-          )
-        }
-      />
+      {player.out ? (
+        <Crown name="crown" />
+      ) : (
+        <TheHand
+          primary
+          canDrag
+          hand={player.hand}
+          selected={selectedCards}
+          onCardClick={(c) =>
+            setSelectedCards((sel) =>
+              sel.find((s) => s.id === c.id)
+                ? sel.filter((s) => s.id !== c.id)
+                : [...(isDefender ? [] : sel), c],
+            )
+          }
+        />
+      )}
       <MainHandIndicators>
         <PlayerName>{player.name}</PlayerName>
         <PlayerIndicator player={player} />

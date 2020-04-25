@@ -8,6 +8,7 @@ import PlayerName from './PlayerName';
 import PlayerIndicator from './PlayerIndicator';
 import ConnectionIndicator from './ConnectionIndicator';
 import Hand from './Hand';
+import Icon from './Icon';
 
 const Box = styled.div`
   flex: 1 1;
@@ -15,6 +16,17 @@ const Box = styled.div`
   flex-flow: column;
   align-items: center;
   justify-content: center;
+`;
+
+const Crown = styled(Icon)`
+  color: ${({ theme }) => theme.table.gold};
+  font-size: 2em;
+  @media (min-width: ${({ theme }) => theme.screen.smMin}) {
+    font-size: 3em;
+  }
+  @media (min-width: ${({ theme }) => theme.screen.lgMin}) {
+    font-size: 4em;
+  }
 `;
 
 type Props = {
@@ -28,7 +40,7 @@ const PlayerHand = ({ player, side, className }: Props) => {
   const connected = !!clients.find(({ id }) => id === player.id)?.connected;
   return (
     <Box side={side} className={className}>
-      <Hand hand={player.hand} rotate="180deg" />
+      {player.out ? <Crown name="crown" /> : <Hand hand={player.hand} rotate="180deg" />}
       <PlayerName>
         <ConnectionIndicator what={`${player.name} is`} connected={connected} /> {player.name}{' '}
         <PlayerIndicator player={player} />

@@ -338,7 +338,7 @@ export default class Table {
       this.state.beatVotes.push(player.id);
     }
 
-    if (this.state.beatVotes.length === this.state.numPlayers - 1) {
+    if (this.state.beatVotes.length === this.state.numActivePlayers - 1) {
       this.state.discard.topDeck(
         this.state.attacks.flatMap(({ attack, defense }) => [
           attack,
