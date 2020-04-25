@@ -12,7 +12,7 @@ describe('GameState', () => {
         { id: '3', name: 'Cathy', hand: ['A:C'] },
         { id: '4', name: 'Dan', hand: ['A:H'] },
       ],
-      attacks: [{ attack: '2:C', defense: '3:C' }],
+      attacks: [['2:C', '3:C']],
       turn: 1,
     });
     expect(state.turn).toBe(1);
@@ -37,7 +37,7 @@ describe('GameState', () => {
         { id: '3', name: 'Cathy', hand: ['A:C'] },
         { id: '4', name: 'Dan', hand: ['A:H'] },
       ],
-      attacks: [{ attack: '2:C', defense: '3:C' }],
+      attacks: [['2:C', '3:C']],
       turn: 1,
     });
     expect(state.turn).toBe(1);
@@ -61,7 +61,7 @@ describe('GameState', () => {
         { id: '3', name: 'Cathy', hand: ['A:C'] },
         { id: '4', name: 'Dan', hand: ['A:H'] },
       ],
-      attacks: [{ attack: '2:C' }],
+      attacks: [['2:C']],
       turn: 1,
     });
     expect(state.turn).toBe(1);

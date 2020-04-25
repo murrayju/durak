@@ -12,10 +12,7 @@ type Attack = {
   defense?: ?Card,
 };
 
-type SerializedAttack = {
-  attack: SerializedCard,
-  defense?: ?SerializedCard,
-};
+type SerializedAttack = [SerializedCard, SerializedCard] | [SerializedCard];
 
 export type SerializedGameState = {
   turn: number,
@@ -84,7 +81,8 @@ export default class GameState {
     this.trumpCard =
       trumpCard instanceof Card ? trumpCard : trumpCard ? Card.deserialize(trumpCard) : null;
     this.trumpSuit = trumpSuit || this.trumpCard?.suit || null;
-    this.attacks = (attacks || []).map(({ attack, defense } = {}) => ({
+    // $FlowFixMe
+    this.attacks = (attacks || []).map(([attack, defense]) => ({
       attack: attack instanceof Card ? attack : Card.deserialize(attack),
       defense: defense instanceof Card ? defense : defense ? Card.deserialize(defense) : null,
     }));
@@ -126,10 +124,10 @@ export default class GameState {
       deck: deck.serialize(obscured),
       trumpCard: trumpCard?.serialize() || null,
       trumpSuit,
-      attacks: attacks.map(({ attack, defense }) => ({
-        attack: attack.serialize(),
-        defense: defense?.serialize() || null,
-      })),
+      attacks: attacks.map(({ attack, defense }) => [
+        attack.serialize(),
+        ...(defense ? [defense?.serialize()] : []),
+      ]),
       discard: discard.serialize(obscured),
       durak,
       beatVotes,
