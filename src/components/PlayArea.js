@@ -10,6 +10,7 @@ import Icon from './Icon';
 import IconButton from './IconButton';
 import CardComponent from './Card';
 import AttackGroup from './AttackGroup';
+import ProgressTimer from './ProgressTimer';
 import Card from '../api/Card';
 
 const Box = styled.div`
@@ -115,12 +116,21 @@ const Client = styled.div`
   margin: 0 10px;
 `;
 
+const PickUpTimer = styled(ProgressTimer)`
+  && {
+    width: 40%;
+    height: 20px;
+  }
+`;
+
 const PlayArea = () => {
   const {
     clientId,
     spectators,
     gameState,
+    config,
     playCards,
+    declareDoneAttacking,
     declareAsBeat,
     pickUpAttacks,
     setSelectedCards,
@@ -167,6 +177,13 @@ const PlayArea = () => {
     );
   };
 
+  const doneAttacking = () => {
+    setErrorMsg(null);
+    declareDoneAttacking().then(null, (err) => {
+      setErrorMsg(err.message.replace('Fetch failed: ', ''));
+    });
+  };
+
   const itsBeat = () => {
     setErrorMsg(null);
     declareAsBeat().then(null, (err) => {
@@ -196,6 +213,13 @@ const PlayArea = () => {
         ))}
         {canDrop && isOver && hoverCard && <AttackGroup css="opacity: 0.5" attack={hoverCard} />}
       </AttackArea>
+      {gameState.phase === 'pickUp' && (
+        <>
+          <h3>{gameState.defender.name} is picking up!</h3>
+          <small>Any more attacks?</small>
+          <PickUpTimer striped active bsStyle="warning" timeSpan={config.pickUpTimer} />
+        </>
+      )}
       {isPlaying && (
         <Actions>
           {isDefender && gameState.unbeatenAttacks.length > 0 ? (
@@ -204,7 +228,7 @@ const PlayArea = () => {
               Pick Up
             </IconButton>
           ) : null}
-          {!isDefender && gameState.attacks.length > 0 && gameState.unbeatenAttacks.length === 0 ? (
+          {!isDefender && gameState.looksBeat ? (
             <IconButton
               primary
               text
@@ -213,6 +237,17 @@ const PlayArea = () => {
             >
               <Icon name="trophy" />
               It&apos;s beat
+            </IconButton>
+          ) : null}
+          {!isDefender && gameState.phase === 'pickUp' ? (
+            <IconButton
+              primary
+              text
+              onClick={doneAttacking}
+              disabled={gameState.pickUpVotes.includes(player.id)}
+            >
+              <Icon name="flag" />
+              Done Attacking
             </IconButton>
           ) : null}
         </Actions>

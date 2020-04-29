@@ -13,9 +13,11 @@ type Attack = {
 };
 
 type SerializedAttack = [SerializedCard, SerializedCard] | [SerializedCard];
+type TurnPhase = 'attack' | 'pickUp';
 
 export type SerializedGameState = {
   turn: number,
+  phase: TurnPhase,
   gameStarted: boolean,
   gameOver: boolean,
   players: SerializedPlayer[],
@@ -26,10 +28,12 @@ export type SerializedGameState = {
   discard: SerializedDeck,
   durak: ?string,
   beatVotes: string[],
+  pickUpVotes: string[],
 };
 
 export type GameStateCtorData = {
   turn?: number,
+  phase?: TurnPhase,
   gameStarted?: boolean,
   gameOver?: boolean,
   players?: Array<SerializedPlayer | Player>,
@@ -40,10 +44,12 @@ export type GameStateCtorData = {
   discard?: SerializedDeck | Deck,
   durak?: ?string,
   beatVotes?: ?(string[]),
+  pickUpVotes?: ?(string[]),
 };
 
 export default class GameState {
   turn: number;
+  phase: TurnPhase;
   gameStarted: boolean;
   gameOver: boolean;
   players: Player[];
@@ -54,9 +60,11 @@ export default class GameState {
   discard: Deck;
   durak: ?string;
   beatVotes: string[];
+  pickUpVotes: string[];
 
   constructor({
     turn,
+    phase,
     gameStarted,
     gameOver,
     players,
@@ -67,6 +75,7 @@ export default class GameState {
     discard,
     durak,
     beatVotes,
+    pickUpVotes,
   }: GameStateCtorData = {}) {
     this.turn = turn || 0;
     this.gameStarted = gameStarted || false;
@@ -85,6 +94,8 @@ export default class GameState {
       discard instanceof Deck ? discard : discard ? Deck.deserialize(discard) : new Deck([]);
     this.durak = durak || null;
     this.beatVotes = beatVotes || [];
+    this.pickUpVotes = pickUpVotes || [];
+    this.phase = phase || 'attack';
   }
 
   computeDerivedState() {
@@ -98,6 +109,7 @@ export default class GameState {
     this.computeDerivedState();
     const {
       turn,
+      phase,
       gameStarted,
       gameOver,
       players,
@@ -108,9 +120,11 @@ export default class GameState {
       discard,
       durak,
       beatVotes,
+      pickUpVotes,
     } = this;
     return {
       turn,
+      phase,
       gameStarted,
       gameOver,
       players: players.map((p) => p.serialize(obscured && p.id !== forPlayer)),
@@ -124,6 +138,7 @@ export default class GameState {
       discard: discard.serialize(obscured),
       durak,
       beatVotes,
+      pickUpVotes,
     };
   }
 
@@ -166,7 +181,10 @@ export default class GameState {
   }
 
   get remainingAttackSlots(): number {
-    return Math.min(6 - this.attacks.length, this.defender.hand.size - this.unbeatenAttacks.length);
+    return Math.min(
+      6 - this.attacks.length,
+      this.phase === 'pickUp' ? Infinity : this.defender.hand.size - this.unbeatenAttacks.length,
+    );
   }
 
   getPlayer(player: Player | Client | string, all?: boolean = false): ?Player {
@@ -197,6 +215,7 @@ export default class GameState {
   incrementTurn(skipOne: boolean = false): number {
     this.attacks = [];
     this.beatVotes = [];
+    this.pickUpVotes = [];
     const currentAttacker = this.primaryAttacker;
     // draw cards starting with primary attacker, in reverse order
     Array.from({ length: this.numActivePlayers }).forEach((_, i) => {
@@ -220,6 +239,7 @@ export default class GameState {
     }
     const attackerWentOut = currentAttacker !== this.primaryAttacker;
     this.turn = (this.turn + (skipOne ? 2 : 1) - (attackerWentOut ? 1 : 0)) % this.numActivePlayers;
+    this.phase = 'attack';
     return this.turn;
   }
 

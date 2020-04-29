@@ -16,6 +16,7 @@ import GameState from './GameState';
 import type { SerializedGameState } from './GameState';
 
 const fakePlayers = config.get('fakePlayers') || [];
+const pickUpTimer = config.get('pickUpTimer');
 
 export type Client = {
   id: string,
@@ -24,10 +25,15 @@ export type Client = {
   connected?: boolean,
 };
 
+export type TableConfig = {
+  pickUpTimer: number,
+};
+
 export type SerializedTable = {
   id: string,
   clients?: Client[],
   state?: SerializedGameState,
+  config?: TableConfig,
 };
 
 export type CardPlay = {
@@ -46,15 +52,19 @@ export default class Table {
   id: string;
   clients: Client[];
   state: GameState;
+  config: TableConfig;
   _sse: SseChannel;
   _sseClients: Map<string, Set<$Response>>;
   _sseConnections: WeakMap<$Response, string>;
   _sseCtx: Map<string, ApiRequestContext>;
+  _pickUpTimer: ?TimeoutID;
 
-  constructor({ id, clients, state }: SerializedTable) {
+  constructor({ id, clients, state, config: passedConfig }: SerializedTable) {
     this.id = id;
     this.clients = clients || [];
     this.state = state instanceof GameState ? state : GameState.deserialize(state);
+    this.config = passedConfig || { pickUpTimer };
+    this._pickUpTimer = null;
     this._sseClients = new Map();
     this._sseConnections = new WeakMap();
     this._sseCtx = new Map();
@@ -104,7 +114,7 @@ export default class Table {
   async serialize(forPlayer: string, explicitlyObscured?: boolean): Promise<SerializedTable> {
     const { id, clients, state } = this;
     const obscured = explicitlyObscured == null ? state.isPlayer(forPlayer) : explicitlyObscured;
-    return { id, clients, state: state.serialize(forPlayer, obscured) };
+    return { id, clients, state: state.serialize(forPlayer, obscured), config: this.config };
   }
 
   async newRound() {
@@ -312,16 +322,55 @@ export default class Table {
     }
   }
 
+  async _doPickUp(ctx: ApiRequestContext) {
+    if (this.state.phase !== 'pickUp') {
+      throw new Error(`Unexpected turn phase.`);
+    }
+
+    if (this._pickUpTimer) {
+      clearTimeout(this._pickUpTimer);
+      this._pickUpTimer = null;
+    }
+
+    this.state.defender.hand.bottomDeck(
+      this.state.attacks.flatMap(({ attack, defense }) => [attack, ...(defense ? [defense] : [])]),
+    );
+    this.state.incrementTurn(true);
+    await this.save(ctx);
+  }
+
   async pickUpAttacks(ctx: ApiRequestContext) {
     const player = this.ensurePlayerCanPlay(ctx);
     if (!this.state.isDefender(player)) {
       throw new Error(`You are not the defender.`);
     }
+    if (this.state.phase !== 'attack') {
+      throw new Error('Not in the attack phase.');
+    }
 
-    player.hand.bottomDeck(
-      this.state.attacks.flatMap(({ attack, defense }) => [attack, ...(defense ? [defense] : [])]),
-    );
-    this.state.incrementTurn(true);
+    this.state.phase = 'pickUp';
+    this._pickUpTimer = setTimeout(() => this._doPickUp(ctx), this.config.pickUpTimer);
+    await this.save(ctx);
+  }
+
+  async declareDoneAttacking(ctx: ApiRequestContext) {
+    const player = this.ensurePlayerCanPlay(ctx);
+    if (this.state.phase !== 'pickUp') {
+      throw new Error(`Not in the picking up phase.`);
+    }
+    if (this.state.isDefender(player)) {
+      throw new Error(`Defender doesn't get a done vote.`);
+    }
+
+    if (!this.state.pickUpVotes.includes(player.id)) {
+      this.state.pickUpVotes.push(player.id);
+    }
+
+    if (this.state.pickUpVotes.length === this.state.numActivePlayers - 1) {
+      // everyone voted, don't wait for the timer
+      await this._doPickUp(ctx);
+    }
+
     await this.save(ctx);
   }
 

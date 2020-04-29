@@ -135,6 +135,14 @@ export default function (serverContext: ServerContext) {
     return res.status(204).send();
   });
 
+  router.post('/table/:id/declareDoneAttacking', async (req: TableApiRequest, res) => {
+    const {
+      ctx: { table },
+    } = req;
+    await table.declareDoneAttacking(req.ctx);
+    return res.status(204).send();
+  });
+
   router.post('/table/:id/declareAsBeat', async (req: TableApiRequest, res) => {
     const {
       ctx: { table },

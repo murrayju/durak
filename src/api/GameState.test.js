@@ -1,7 +1,7 @@
 // @flow
 import GameState from './GameState';
 
-describe('GameState', () => {
+describe('Incrementing turns', () => {
   it('correctly increments turn when attacker goes out', () => {
     const state = new GameState({
       deck: [],
@@ -73,5 +73,28 @@ describe('GameState', () => {
     expect(state.turn).toBe(3);
     expect(state.primaryAttacker.name).toEqual('Dan');
     expect(state.defender.name).toEqual('Alice');
+  });
+});
+
+describe('Remaining attacks', () => {
+  it('ignores defender hand size when picking up', () => {
+    const state = new GameState({
+      deck: [],
+      trumpCard: '4:D',
+      players: [
+        { id: '1', name: 'Alice', hand: ['A:D', 'K:D', 'Q:D', 'J:D'] },
+        { id: '2', name: 'Bob', hand: ['A:S', '2:S', '3:S'] },
+      ],
+      attacks: [['2:C'], ['5:D']],
+      turn: 0,
+      phase: 'attack',
+    });
+    expect(state.defender.name).toEqual('Bob');
+    // 3 cards in hand, 2 open attacks, room for 1 more
+    expect(state.remainingAttackSlots).toBe(1);
+
+    state.phase = 'pickUp';
+    // defender is picking up, room for 6 total attacks (4 more)
+    expect(state.remainingAttackSlots).toBe(4);
   });
 });

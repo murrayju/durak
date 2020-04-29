@@ -49,6 +49,7 @@ const useTableApi = (id: string): TableContextType => {
   const gameState = GameState.deserialize(table?.state);
   const clients = table?.clients || [];
   const spectators = clients.filter((c) => !gameState.isPlayer(c, true) && c.joined);
+  const config = table?.config || { pickUpTimer: 0 };
 
   // Join a player to the table
   const join = (playerInfo: Client) =>
@@ -73,6 +74,11 @@ const useTableApi = (id: string): TableContextType => {
       method: 'POST',
     });
 
+  const declareDoneAttacking = async () =>
+    fetch(`/api/table/${id}/declareDoneAttacking`, {
+      method: 'POST',
+    });
+
   const declareAsBeat = async () =>
     fetch(`/api/table/${id}/declareAsBeat`, {
       method: 'POST',
@@ -88,10 +94,14 @@ const useTableApi = (id: string): TableContextType => {
     client,
     clientId,
     gameState,
+    config,
+
+    // methods
     join,
     newRound,
     playCards,
     pickUpAttacks,
+    declareDoneAttacking,
     declareAsBeat,
 
     // client-side

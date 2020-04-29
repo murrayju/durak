@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 
-import type { SerializedTable, Client, PlayAction } from '../api/Table';
+import type { SerializedTable, Client, PlayAction, TableConfig } from '../api/Table';
 import type GameState from '../api/GameState';
 import type Card from '../api/Card';
 
@@ -17,10 +17,12 @@ export type TableContextType = {
   client: ?Client,
   clientId: string,
   gameState: GameState,
+  config: TableConfig,
   join: (Client) => Promise<void>,
   newRound: () => Promise<void>,
   playCards: (PlayAction) => Promise<void>,
   pickUpAttacks: () => Promise<void>,
+  declareDoneAttacking: () => Promise<void>,
   declareAsBeat: () => Promise<void>,
 
   // Client-only state
