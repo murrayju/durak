@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import styled from 'styled-components';
+import { Tooltip } from 'react-bootstrap';
 
 import useTableContext from '../hooks/useTableContext';
 import type Player from '../api/Player';
@@ -16,6 +17,12 @@ const Box = styled.div`
   flex-flow: column;
   align-items: center;
   justify-content: center;
+  position: relative;
+`;
+
+const BeatTip = styled(Tooltip)`
+  position: absolute;
+  bottom: -25px;
 `;
 
 const Crown = styled(Icon)`
@@ -31,20 +38,24 @@ const Crown = styled(Icon)`
 
 type Props = {
   player: Player,
-  side: boolean,
   className?: string,
 };
 
-const PlayerHand = ({ player, side, className }: Props) => {
-  const { clients } = useTableContext();
+const PlayerHand = ({ player, className }: Props) => {
+  const { clients, gameState } = useTableContext();
   const connected = !!clients.find(({ id }) => id === player.id)?.connected;
   return (
-    <Box side={side} className={className}>
+    <Box className={className}>
       {player.out ? <Crown name="crown" /> : <Hand hand={player.hand} rotate="180deg" />}
       <PlayerName>
         <ConnectionIndicator what={`${player.name} is`} connected={connected} /> {player.name}{' '}
         <PlayerIndicator player={player} />
       </PlayerName>
+      {gameState.beatVotes.includes(player.id) && (
+        <BeatTip placement="bottom" id={`${player.name}-beat`} className="in">
+          It&apos;s beat!
+        </BeatTip>
+      )}
     </Box>
   );
 };

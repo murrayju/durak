@@ -124,6 +124,9 @@ const GameBoard = () => {
 
   return (
     <Grid>
+      <Cell row="center" col="center">
+        <PlayArea />
+      </Cell>
       <Cell row="top" col="center">
         {midPlayers && <BoardTop players={midPlayers} />}
       </Cell>
@@ -132,9 +135,6 @@ const GameBoard = () => {
       </Cell>
       <Cell row="center" col="right">
         {rightPlayers && <BoardRight players={rightPlayers} />}
-      </Cell>
-      <Cell row="center" col="center">
-        <PlayArea />
       </Cell>
       <Cell row="bottom" col="left / right-gutter">
         {player && <MainHand />}

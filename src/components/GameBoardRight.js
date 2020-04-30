@@ -27,7 +27,7 @@ const GameBoardRight = ({ players }: Props) => {
   return (
     <RightSide>
       {players.map((p) => (
-        <RightHand key={p.id} player={p} side />
+        <RightHand key={p.id} player={p} />
       ))}
     </RightSide>
   );
