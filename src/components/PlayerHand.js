@@ -44,6 +44,8 @@ type Props = {
 const PlayerHand = ({ player, className }: Props) => {
   const { clients, gameState } = useTableContext();
   const connected = !!clients.find(({ id }) => id === player.id)?.connected;
+  const votedBeat = gameState.beatVotes.includes(player.id);
+  const votedPickUp = gameState.pickUpVotes.includes(player.id);
   return (
     <Box className={className}>
       {player.out ? <Crown name="crown" /> : <Hand hand={player.hand} rotate="180deg" />}
@@ -51,9 +53,9 @@ const PlayerHand = ({ player, className }: Props) => {
         <ConnectionIndicator what={`${player.name} is`} connected={connected} /> {player.name}{' '}
         <PlayerIndicator player={player} />
       </PlayerName>
-      {gameState.beatVotes.includes(player.id) && (
+      {(votedBeat || votedPickUp) && (
         <BeatTip placement="bottom" id={`${player.name}-beat`} className="in">
-          It&apos;s beat!
+          {votedBeat ? `It's beat!` : votedPickUp ? `I'm good` : ''}
         </BeatTip>
       )}
     </Box>
