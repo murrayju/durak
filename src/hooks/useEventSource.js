@@ -9,6 +9,7 @@ const useEventSource = (
 ) => {
   const [connected, setConnected] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const initFn = useCallback(initializeFn, deps);
 
   useEffect(() => {

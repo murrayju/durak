@@ -1,5 +1,5 @@
 #!/bin/bash
-nodeVersion=12.16.1
+nodeVersion=14.1.0
 yarnVersion=1.22.4
 downloadDir=`pwd`/download
 mkdir -p $downloadDir
