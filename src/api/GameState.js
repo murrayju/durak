@@ -216,7 +216,6 @@ export default class GameState {
     this.attacks = [];
     this.beatVotes = [];
     this.pickUpVotes = [];
-    const currentAttacker = this.primaryAttacker;
     // draw cards starting with primary attacker, in reverse order
     Array.from({ length: this.numActivePlayers }).forEach((_, i) => {
       const player = this.relativePlayer(-i);
@@ -228,17 +227,20 @@ export default class GameState {
         this.trumpCard = null;
       }
     });
+    let outBeforeTurn = 0;
     if (!this.deck.size && !this.trumpCard) {
       // any players without cards now are out
-      this.players
-        .filter((p) => !p.hand.size)
-        .forEach((p) => {
+      this.activePlayers.forEach((p, i) => {
+        if (!p.hand.size) {
           // eslint-disable-next-line no-param-reassign
           p.out = true;
-        });
+          if (i <= this.turn) {
+            outBeforeTurn += 1;
+          }
+        }
+      });
     }
-    const attackerWentOut = currentAttacker !== this.primaryAttacker;
-    this.turn = (this.turn + (skipOne ? 2 : 1) - (attackerWentOut ? 1 : 0)) % this.numActivePlayers;
+    this.turn = (this.turn + (skipOne ? 2 : 1) - outBeforeTurn) % this.numActivePlayers;
     this.phase = 'attack';
     return this.turn;
   }
