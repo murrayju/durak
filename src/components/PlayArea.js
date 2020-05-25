@@ -96,6 +96,12 @@ const GameOver = styled.h1`
   text-transform: capitalize;
 `;
 
+const Bottom = styled.div`
+  ${position('absolute', null, 0, 0, 0)};
+  display: flex;
+  flex-flow: column nowrap;
+`;
+
 const Actions = styled.div`
   width: 100%;
   display: flex;
@@ -105,7 +111,6 @@ const Actions = styled.div`
 `;
 
 const ClientList = styled.div`
-  ${position('absolute', null, 0, 0, 0)};
   display: flex;
   flex-flow: row wrap;
   padding: 10px;
@@ -220,45 +225,47 @@ const PlayArea = () => {
           <PickUpTimer striped active bsStyle="warning" timeSpan={config.pickUpTimer} />
         </>
       )}
-      {isPlaying && (
-        <Actions>
-          {isDefender && gameState.unbeatenAttacks.length > 0 ? (
-            <IconButton primary text onClick={pickUp}>
-              <Icon name="skull-crossbones" />
-              Pick Up
-            </IconButton>
-          ) : null}
-          {!isDefender && gameState.looksBeat ? (
-            <IconButton
-              primary
-              text
-              onClick={itsBeat}
-              disabled={gameState.beatVotes.includes(player.id)}
-            >
-              <Icon name="trophy" />
-              It&apos;s beat
-            </IconButton>
-          ) : null}
-          {!isDefender && gameState.phase === 'pickUp' ? (
-            <IconButton
-              primary
-              text
-              onClick={doneAttacking}
-              disabled={gameState.pickUpVotes.includes(player.id)}
-            >
-              <Icon name="flag" />
-              Done Attacking
-            </IconButton>
-          ) : null}
-        </Actions>
-      )}
-      <ClientList>
-        {spectators.map((s) => (
-          <Client key={s.id}>
-            <Icon name={s.connected ? 'eye' : 'eye-slash'} /> {s.name}
-          </Client>
-        ))}
-      </ClientList>
+      <Bottom>
+        {isPlaying && (
+          <Actions>
+            {isDefender && gameState.unbeatenAttacks.length > 0 ? (
+              <IconButton warning text onClick={pickUp}>
+                <Icon name="skull-crossbones" />
+                Pick Up
+              </IconButton>
+            ) : null}
+            {!isDefender && gameState.looksBeat ? (
+              <IconButton
+                primary
+                text
+                onClick={itsBeat}
+                disabled={gameState.beatVotes.includes(player.id)}
+              >
+                <Icon name="trophy" />
+                It&apos;s beat
+              </IconButton>
+            ) : null}
+            {!isDefender && gameState.phase === 'pickUp' ? (
+              <IconButton
+                primary
+                text
+                onClick={doneAttacking}
+                disabled={gameState.pickUpVotes.includes(player.id)}
+              >
+                <Icon name="flag" />
+                Done Attacking
+              </IconButton>
+            ) : null}
+          </Actions>
+        )}
+        <ClientList>
+          {spectators.map((s) => (
+            <Client key={s.id}>
+              <Icon name={s.connected ? 'eye' : 'eye-slash'} /> {s.name}
+            </Client>
+          ))}
+        </ClientList>
+      </Bottom>
     </Box>
   );
 };
