@@ -165,9 +165,9 @@ export default class Table {
   }
 
   async connectSseClient(req: $Request, res: $Response): Promise<void> {
-    await new Promise((resolve, reject) =>
-      this._sse.addClient(req, res, (err) => (err ? reject(err) : resolve())),
-    );
+    await new Promise((resolve, reject) => {
+      this._sse.addClient(req, res, (err) => (err ? reject(err) : resolve()));
+    });
     this._sse.send({ id: uuid(), event: 'connected' }, [res]);
   }
 
@@ -179,11 +179,9 @@ export default class Table {
   ): void {
     const clients =
       clientWhiteList || clientBlackList
-        ? whiteBlackFilter(
-            [...this._sseClients.keys()],
-            clientWhiteList,
-            clientBlackList,
-          ).flatMap((k) => [...(this._sseClients.get(k) || [])])
+        ? whiteBlackFilter([...this._sseClients.keys()], clientWhiteList, clientBlackList).flatMap(
+            (k) => [...(this._sseClients.get(k) || [])],
+          )
         : null;
     const count = clients ? clients.length : this._sse.getConnectionCount();
     this._sse.send(

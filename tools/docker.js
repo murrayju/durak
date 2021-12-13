@@ -49,12 +49,9 @@ export default async function docker(
 
   // ensure that these files exist, so that we can guarantee to stash them
   await Promise.all(
-    [
-      './latest.builder.tag',
-      './latest.builder.id',
-      './latest.build.tag',
-      './latest.build.id',
-    ].map(async (f) => fs.ensureFile(f)),
+    ['./latest.builder.tag', './latest.builder.id', './latest.build.tag', './latest.build.id'].map(
+      async (f) => fs.ensureFile(f),
+    ),
   );
 
   const v = await getVersion();
@@ -172,7 +169,7 @@ export async function runDbContainer(
   port: ?number = 27018,
   alias: ?string = 'db',
 ) {
-  const dc = yaml.safeLoad(await fs.readFile('./docker-compose.yml'));
+  const dc = yaml.load(await fs.readFile('./docker-compose.yml'));
   const { image, environment } = dc.services.db;
   const p = port && (await getPort({ port, host }));
   buildLog('Starting database server...');

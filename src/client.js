@@ -1,3 +1,4 @@
+/* eslint-disable import/no-import-module-exports */
 import 'whatwg-fetch';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -6,7 +7,7 @@ import queryString from 'query-string';
 import { createPath } from 'history';
 import { CookiesProvider, Cookies } from 'react-cookie';
 import { DndProvider } from 'react-dnd';
-import DndBackend from 'react-dnd-touch-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 
 import App from './components/App';
 import createFetch from './createFetch';
@@ -49,6 +50,7 @@ async function onLocationChange(location, action) {
 
   const isInitialRender = !action;
   try {
+    // eslint-disable-next-line react/jsx-no-constructed-context-values
     const renderContext = {
       ...context,
       pathname: location.pathname,
@@ -74,7 +76,7 @@ async function onLocationChange(location, action) {
     appInstance = renderReactApp(
       <CookiesProvider cookies={cookies}>
         <AppContext.Provider value={renderContext}>
-          <DndProvider backend={DndBackend} options={{ enableMouseEvents: true }}>
+          <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
             <App>{route.component}</App>
           </DndProvider>
         </AppContext.Provider>

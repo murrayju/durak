@@ -23,7 +23,7 @@ type Props = {
   players: Player[],
 };
 
-const GameBoardLeft = ({ players }: Props) => {
+const GameBoardLeft = function ({ players }: Props) {
   return (
     <LeftSide>
       {players.map((p) => (

@@ -157,7 +157,9 @@ async function start(
         if (!appPromiseIsResolved) return;
         appPromiseIsResolved = false;
         // eslint-disable-next-line no-return-assign
-        appPromise = new Promise((resolve) => (appPromiseResolve = resolve));
+        appPromise = new Promise((resolve) => {
+          appPromiseResolve = resolve;
+        });
       });
 
       let app = null;
@@ -247,7 +249,7 @@ async function start(
       appPromiseResolve();
 
       // Launch the development server with Browsersync and HMR
-      await new Promise((resolve, reject) =>
+      await new Promise((resolve, reject) => {
         browserSync.create().init(
           {
             // https://www.browsersync.io/docs/options
@@ -259,8 +261,8 @@ async function start(
             ...(isDebug ? {} : { notify: false, ui: false }),
           },
           (error, bs) => (error ? reject(error) : resolve(bs)),
-        ),
-      );
+        );
+      });
 
       const timeEnd = new Date();
       const time = timeEnd.getTime() - timeStart.getTime();

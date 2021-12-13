@@ -27,9 +27,9 @@ type Props = {
   what?: string,
 };
 
-const Loading = ({ loading, verb = 'Loading', what = '' }: Props) => (
-  <>
-    {loading && (
+const Loading = function ({ loading, verb = 'Loading', what = '' }: Props) {
+  return (
+    !!loading && (
       <Box>
         <Spinner size={32} />
         <LoadingText>
@@ -38,9 +38,9 @@ const Loading = ({ loading, verb = 'Loading', what = '' }: Props) => (
           ...
         </LoadingText>
       </Box>
-    )}
-  </>
-);
+    )
+  );
+};
 Loading.defaultProps = {
   loading: true,
   verb: 'Loading',

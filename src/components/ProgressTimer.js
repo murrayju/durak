@@ -9,7 +9,7 @@ type Props = {
   className?: string,
 };
 
-const ProgressTimer = ({ timeSpan, className, ...props }: Props) => {
+const ProgressTimer = function ({ timeSpan, className, ...props }: Props) {
   const { elapsedTime } = useTimer(100);
   const percent = (elapsedTime / timeSpan) * 100;
   const secsRemaining = Math.round((timeSpan - elapsedTime) / 1000);

@@ -1,5 +1,5 @@
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
 
   plugins: ['flowtype', 'css-modules', 'prettier', 'react-hooks'],
   extends: [
@@ -53,7 +53,6 @@ module.exports = {
       },
     ],
     'no-debugger': 'warn',
-    'no-nested-ternary': 'off',
 
     // Prefer destructuring from arrays and objects
     // http://eslint.org/docs/rules/prefer-destructuring

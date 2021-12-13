@@ -37,7 +37,7 @@ type Props = {
   },
 };
 
-const ErrorPage = ({ error }: Props) => {
+const ErrorPage = function ({ error }: Props) {
   // $FlowFixMe
   if (__DEV__ && error) {
     return (

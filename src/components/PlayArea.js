@@ -128,7 +128,7 @@ const PickUpTimer = styled(ProgressTimer)`
   }
 `;
 
-const PlayArea = () => {
+const PlayArea = function () {
   const {
     clientId,
     spectators,

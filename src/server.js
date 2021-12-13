@@ -1,4 +1,6 @@
 // @flow
+/* eslint-disable import/no-import-module-exports */
+import { renderStylesToString } from '@emotion/server';
 import config from '@murrayju/config';
 import path from 'path';
 import express from 'express';
@@ -9,7 +11,6 @@ import { CookiesProvider } from 'react-cookie';
 import cookiesMiddleware from 'universal-cookie-express';
 import PrettyError from 'pretty-error';
 import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
-import { renderStylesToString } from 'emotion-server';
 import bodyParser from 'body-parser';
 import type { Db } from 'mongodb';
 
@@ -83,6 +84,7 @@ const createApp = async () => {
 
       // Global (context) variables that can be easily accessed from any React component
       // https://facebook.github.io/react/docs/context.html
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       const context = {
         fetch,
         pathname: req.path,

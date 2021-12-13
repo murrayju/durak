@@ -141,11 +141,6 @@ const config = {
           // Apply PostCSS plugins including autoprefixer
           {
             loader: 'postcss-loader',
-            options: {
-              config: {
-                path: './tools/',
-              },
-            },
           },
 
           // Compile Less to CSS

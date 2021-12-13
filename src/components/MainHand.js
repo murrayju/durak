@@ -76,16 +76,9 @@ const ErrorMessage = styled.span`
   padding: 0 15px;
 `;
 
-const MainHand = () => {
-  const {
-    clientId,
-    gameState,
-    playCards,
-    selectedCards,
-    setSelectedCards,
-    errorMsg,
-    setErrorMsg,
-  } = useTableContext();
+const MainHand = function () {
+  const { clientId, gameState, playCards, selectedCards, setSelectedCards, errorMsg, setErrorMsg } =
+    useTableContext();
 
   const player = gameState.getPlayer(clientId, true) || gameState.primaryAttacker;
   const isPlaying = player.id === clientId;

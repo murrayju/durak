@@ -42,7 +42,7 @@ const Cell = styled.div`
   justify-content: ${({ justify }) => justify};
 `;
 
-const GameBoard = () => {
+const GameBoard = function () {
   const { clientId, gameState } = useTableContext();
   const { width, height } = useScreenSize();
 

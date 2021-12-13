@@ -41,7 +41,7 @@ type Props = {
   className?: string,
 };
 
-const PlayerHand = ({ player, className }: Props) => {
+const PlayerHand = function ({ player, className }: Props) {
   const { clients, gameState } = useTableContext();
   const connected = !!clients.find(({ id }) => id === player.id)?.connected;
   const votedBeat = gameState.beatVotes.includes(player.id);

@@ -12,21 +12,21 @@ words:
 # limit the number of cards on the draw pile after dealing (for debugging)
 deckSize: null
 pickUpTimer: 10000
-fakePlayers:
-  - id: asd-1
-    name: Jim
-  - id: asd-2
-    name: George
-  - id: asd-3
-    name: Paul
-  - id: asd-4
-    name: Michael
-  - id: asd-5
-    name: Brandon
-  - id: asd-6
-    name: Cheech
-  - id: asd-7
-    name: Chong
+fakePlayers: null
+  # - id: asd-1
+  #   name: Jim
+  # - id: asd-2
+  #   name: George
+  # - id: asd-3
+  #   name: Paul
+  # - id: asd-4
+  #   name: Michael
+  # - id: asd-5
+  #   name: Brandon
+  # - id: asd-6
+  #   name: Cheech
+  # - id: asd-7
+  #   name: Chong
 db:
   url: mongodb://localhost:27018
   name: durak

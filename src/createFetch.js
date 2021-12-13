@@ -61,19 +61,20 @@ function createFetch(fetch: Fetch, { baseUrl, cookie }: Options): CustomFetch {
 
   return async (url: string, passedOptions?: FetchOptions) => {
     const { headers, qs, ...options } = passedOptions || {};
-    return (/^\/api/.test(url)
-      ? // $FlowFixMe
-        fetch(addQs(`${baseUrl}${url}`, qs), {
-          ...apiDefaults,
-          // $FlowFixMe
-          ...options,
-          headers: {
-            ...apiDefaults.headers,
+    return (
+      /^\/api/.test(url)
+        ? // $FlowFixMe
+          fetch(addQs(`${baseUrl}${url}`, qs), {
+            ...apiDefaults,
             // $FlowFixMe
-            ...headers,
-          },
-        })
-      : fetch(addQs(url, qs), { ...options, headers })
+            ...options,
+            headers: {
+              ...apiDefaults.headers,
+              // $FlowFixMe
+              ...headers,
+            },
+          })
+        : fetch(addQs(url, qs), { ...options, headers })
     ).then(async (r: Response) => {
       if (!r.ok) {
         try {

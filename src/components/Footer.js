@@ -19,7 +19,7 @@ const Box = styled.div`
   }
 `;
 
-const Footer = () => {
+const Footer = function () {
   const [version] = useVersion();
 
   return (

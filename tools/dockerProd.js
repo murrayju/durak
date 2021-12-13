@@ -52,10 +52,11 @@ export default async function dockerProd(
 
   try {
     if (integration) {
-      ({ alias: dbHost, dockerPort: dbPort, id: db } = await runDbContainer(
-        network,
-        persistDbData ? './db/data-prod' : null,
-      ));
+      ({
+        alias: dbHost,
+        dockerPort: dbPort,
+        id: db,
+      } = await runDbContainer(network, persistDbData ? './db/data-prod' : null));
     }
 
     const dockerPort = 80;

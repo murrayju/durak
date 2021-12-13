@@ -1,54 +1,90 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import history from '../history';
+/* eslint-disable react/require-default-props */
+// @flow
+import React, { type Node, type AbstractComponent } from 'react';
 
-function isLeftClickEvent(event) {
+function isLeftClickEvent(event: SyntheticMouseEvent<HTMLElement>) {
   return event.button === 0;
 }
 
-function isModifiedEvent(event) {
+function isModifiedEvent(event: SyntheticMouseEvent<HTMLElement>) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
 }
 
-export const withLink = (defaultPrefix = '', defaultTo = '/') => (WrappedComponent) =>
-  class extends React.PureComponent {
-    static propTypes = {
-      prefix: PropTypes.string,
-      to: PropTypes.string,
-      onClick: PropTypes.func,
+type HistoryInterface = {
+  push: (string) => void,
+};
+
+export type WithLinkOptions = {|
+  prefix?: string,
+  to?: string,
+  history?: ?HistoryInterface,
+|};
+
+type ExtendedProps<Props> = {|
+  ...Props,
+  ...WithLinkOptions,
+  children?: Node,
+  href?: string,
+  onClick?: (event: SyntheticMouseEvent<HTMLElement>) => void,
+|};
+
+type WithLink = (
+  opts?: WithLinkOptions,
+) => <Props>(toWrap: AbstractComponent<Props>) => AbstractComponent<ExtendedProps<Props>>;
+
+export const withLink: WithLink =
+  ({
+    prefix: defaultPrefix = '',
+    to: defaultTo = '/',
+    history: defaultHistory = null,
+  }: WithLinkOptions = {}) =>
+  <Props>(WrappedComponent: AbstractComponent<Props>): AbstractComponent<ExtendedProps<Props>> =>
+    function ({
+      onClick,
+      to = defaultTo,
+      prefix = defaultPrefix,
+      history = defaultHistory,
+      ...props
+    }: ExtendedProps<Props>): Node {
+      return (
+        <WrappedComponent
+          href={prefix + to}
+          {...props}
+          onClick={(event: SyntheticMouseEvent<HTMLElement>) => {
+            if (onClick) {
+              onClick(event);
+            }
+
+            if (
+              isModifiedEvent(event) ||
+              !isLeftClickEvent(event) ||
+              event.defaultPrevented === true
+            ) {
+              return;
+            }
+
+            if (history && to != null) {
+              event.preventDefault();
+              history.push(prefix + to);
+            }
+          }}
+        />
+      );
     };
 
-    static defaultProps = {
-      prefix: defaultPrefix,
-      to: defaultTo,
-      onClick: null,
-    };
+type LinkProps = {| external?: boolean, target?: string, rel?: string |};
 
-    handleClick = (event) => {
-      const { onClick, to, prefix } = this.props;
+export const Link: AbstractComponent<ExtendedProps<LinkProps>> = withLink()(
+  ({ children, external, target, rel, ...props }: ExtendedProps<LinkProps>) => (
+    <a
+      href
+      {...props}
+      target={target ?? (external ? '_blank' : null)}
+      rel={rel ?? (external ? 'noopener noreferrer' : null)}
+    >
+      {children}
+    </a>
+  ),
+);
 
-      if (onClick) {
-        onClick(event);
-      }
-
-      if (isModifiedEvent(event) || !isLeftClickEvent(event) || event.defaultPrevented === true) {
-        return;
-      }
-
-      event.preventDefault();
-      if (to != null) {
-        history.push(prefix + to);
-      }
-    };
-
-    render() {
-      const { to, prefix, onClick, ...props } = this.props;
-      return <WrappedComponent href={prefix + to} {...props} onClick={this.handleClick} />;
-    }
-  };
-
-export default withLink()(({ children, ...props }) => (
-  <a href {...props}>
-    {children}
-  </a>
-));
+export default Link;

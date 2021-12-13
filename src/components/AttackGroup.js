@@ -27,15 +27,9 @@ type Props = {
   className?: string,
 };
 
-const AttackGroup = ({ attack, defense, className }: Props) => {
-  const {
-    clientId,
-    gameState,
-    playCards,
-    selectedCards,
-    setSelectedCards,
-    setErrorMsg,
-  } = useTableContext();
+const AttackGroup = function ({ attack, defense, className }: Props) {
+  const { clientId, gameState, playCards, selectedCards, setSelectedCards, setErrorMsg } =
+    useTableContext();
   const isDefender = gameState.isDefender(clientId);
   const [hoverCard, setHoverCard] = useState(null);
   const [{ isOver, canDrop }, drop] = useDrop({

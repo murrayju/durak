@@ -63,7 +63,7 @@ type Props = {
   className?: string,
 };
 
-const CardComponent = ({
+const CardComponent = function ({
   card,
   index,
   selected,
@@ -73,8 +73,9 @@ const CardComponent = ({
   disheveled,
   canDrag,
   className,
-}: Props) => {
+}: Props) {
   const [{ isDragging }, drag] = useDrag({
+    type: 'card',
     item: { type: 'card', id: card.id },
     canDrag: () => canDrag,
     collect: (mon) => ({
@@ -83,22 +84,20 @@ const CardComponent = ({
   });
 
   return (
-    <>
-      <CardImg
-        ref={drag}
-        index={index}
-        idNum={parseInt(card.idNum, 10)}
-        disheveled={disheveled}
-        primary={primary}
-        inDeck={inDeck}
-        alt={card.name}
-        src={card.imageUrl}
-        onClick={onCardClick ? () => onCardClick(card) : null}
-        selected={selected}
-        dragging={isDragging}
-        className={className}
-      />
-    </>
+    <CardImg
+      ref={drag}
+      index={index}
+      idNum={parseInt(card.idNum, 10)}
+      disheveled={disheveled}
+      primary={primary}
+      inDeck={inDeck}
+      alt={card.name}
+      src={card.imageUrl}
+      onClick={onCardClick ? () => onCardClick(card) : null}
+      selected={selected}
+      dragging={isDragging}
+      className={className}
+    />
   );
 };
 CardComponent.defaultProps = {

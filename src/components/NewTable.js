@@ -6,7 +6,7 @@ import useFetch from '../hooks/useFetch';
 import Loading from './Loading';
 import NotFound from './NotFound';
 
-const NewTable = () => {
+const NewTable = function () {
   const { fetch } = useFetch();
   const [notFound, setNotFound] = useState(false);
 

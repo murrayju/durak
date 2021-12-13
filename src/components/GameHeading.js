@@ -10,7 +10,7 @@ import Tooltip from './Tooltip';
 import ConnectionIndicator from './ConnectionIndicator';
 import { Heading, FlowLeft, FlowRight } from './flex';
 
-const GameHeading = () => {
+const GameHeading = function () {
   const { client, connected, id, newRound, gameState } = useTableContext();
   const [newRoundModalShown, setNewRoundModalShown] = useState(false);
   const { isFullScreen, toggle: toggleFullScreen } = useFullScreen();
@@ -18,21 +18,19 @@ const GameHeading = () => {
   return (
     <Heading>
       {client ? (
-        <>
-          <FlowLeft>
-            <Tooltip popId="new-round" content="Shuffle the board and start a new round">
-              <IconButton
-                onClick={() =>
-                  gameState.gameStarted && !gameState.gameOver
-                    ? setNewRoundModalShown(true)
-                    : newRound()
-                }
-              >
-                <Icon name="random" />
-              </IconButton>
-            </Tooltip>
-          </FlowLeft>
-        </>
+        <FlowLeft>
+          <Tooltip popId="new-round" content="Shuffle the board and start a new round">
+            <IconButton
+              onClick={() =>
+                gameState.gameStarted && !gameState.gameOver
+                  ? setNewRoundModalShown(true)
+                  : newRound()
+              }
+            >
+              <Icon name="random" />
+            </IconButton>
+          </Tooltip>
+        </FlowLeft>
       ) : null}
       <FlowRight>
         <div>

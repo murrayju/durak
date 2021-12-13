@@ -66,13 +66,15 @@ type Props = {
   children: ReactNode,
 };
 
-const Layout = ({ children }: Props) => (
-  <ThemeProvider theme={bsTheme}>
-    <PageRoot>
-      <Footer />
-      <ContentRoot>{children}</ContentRoot>
-    </PageRoot>
-  </ThemeProvider>
-);
+const Layout = function ({ children }: Props) {
+  return (
+    <ThemeProvider theme={bsTheme}>
+      <PageRoot>
+        <Footer />
+        <ContentRoot>{children}</ContentRoot>
+      </PageRoot>
+    </ThemeProvider>
+  );
+};
 
 export default Layout;

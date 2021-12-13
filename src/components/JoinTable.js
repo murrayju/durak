@@ -13,7 +13,7 @@ const Box = styled.div`
   justify-content: center;
 `;
 
-const JoinTable = () => {
+const JoinTable = function () {
   const { id, join, clientId } = useTableContext();
   const [isSubmitting, setSubmitting] = useState(false);
   const [cookies, setCookie] = useCookies();

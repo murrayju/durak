@@ -8,7 +8,7 @@ export const PreloadImages = styled.div`
   background: ${({ urls }) => urls?.map((url) => `url('${url}')`).join(', ')};
 `;
 
-const PreloadDeckImages = () => {
+const PreloadDeckImages = function () {
   const deckImgMap = useDeckImages();
 
   return <PreloadImages urls={Object.values(deckImgMap)} />;

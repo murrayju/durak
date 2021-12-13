@@ -15,7 +15,7 @@ type Props = {
   id: string,
 };
 
-const Table = ({ id }: Props) => {
+const Table = function ({ id }: Props) {
   const tableContext = useTableApi(id);
   const { table, notFound, client, gameState } = tableContext;
 

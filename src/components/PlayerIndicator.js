@@ -9,7 +9,7 @@ type Props = {
   player: Player,
 };
 
-const PlayerIndicator = ({ player }: Props) => {
+const PlayerIndicator = function ({ player }: Props) {
   const { gameState } = useTableContext();
   const isAttacker = gameState.isPrimaryAttacker(player);
   const isDefender = gameState.isDefender(player);

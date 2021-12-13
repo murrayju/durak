@@ -5,10 +5,6 @@ module.exports = {
   // https://facebook.github.io/jest/docs/en/configuration.html#automock-boolean
   automock: false, // [boolean]
 
-  // Respect Browserify's "browser" field in package.json when resolving modules.
-  // https://facebook.github.io/jest/docs/en/configuration.html#browser-boolean
-  browser: false, // [boolean]
-
   // This config option can be used here to have Jest stop running tests after the first failure.
   // https://facebook.github.io/jest/docs/en/configuration.html#bail-boolean
   bail: false, // [boolean]

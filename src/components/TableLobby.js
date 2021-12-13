@@ -18,7 +18,7 @@ const PlayersBox = styled.div`
   margin-top: 10px;
 `;
 
-const TableLobby = () => {
+const TableLobby = function () {
   const { newRound, clients } = useTableContext();
   const [isSubmitting, setSubmitting] = useState(false);
 

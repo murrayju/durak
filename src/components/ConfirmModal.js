@@ -22,24 +22,26 @@ type Props = {
   onCancel: () => void,
 };
 
-const ConfirmModal = ({ title, message, onConfirm, onCancel }: Props) => (
-  <Overlay onClick={onCancel}>
-    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
-    <ModalContent onClick={(evt) => evt.stopPropagation()}>
-      <Modal.Header>
-        <Modal.Title>{title}</Modal.Title>
-      </Modal.Header>
+const ConfirmModal = function ({ title, message, onConfirm, onCancel }: Props) {
+  return (
+    <Overlay onClick={onCancel}>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
+      <ModalContent onClick={(evt) => evt.stopPropagation()}>
+        <Modal.Header>
+          <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
 
-      {message && <Modal.Body>{message}</Modal.Body>}
+        {message && <Modal.Body>{message}</Modal.Body>}
 
-      <Modal.Footer>
-        <Button onClick={onCancel}>Cancel</Button>
-        <Button onClick={onConfirm} bsStyle="primary">
-          Confirm
-        </Button>
-      </Modal.Footer>
-    </ModalContent>
-  </Overlay>
-);
+        <Modal.Footer>
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onConfirm} bsStyle="primary">
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </ModalContent>
+    </Overlay>
+  );
+};
 
 export default ConfirmModal;

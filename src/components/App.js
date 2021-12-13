@@ -7,5 +7,7 @@ import Layout from './Layout';
 type Props = {
   children: ReactNode,
 };
-const App = ({ children }: Props) => <Layout container>{children}</Layout>;
+const App = function ({ children }: Props) {
+  return <Layout container>{children}</Layout>;
+};
 export default App;

@@ -10,7 +10,7 @@ type Props = {
   popId?: ?string,
 };
 
-const Tooltip = ({ popId, content, children, placement }: Props) => {
+const Tooltip = function ({ popId, content, children, placement }: Props) {
   const [id] = useState(popId || uuid());
   const pop = <Popover id={id}>{typeof content === 'function' ? content(popId) : content}</Popover>;
 

@@ -33,7 +33,7 @@ type Props = {
   className?: string,
 };
 
-const Hand = ({
+const Hand = function ({
   hand,
   selected,
   onCardClick,
@@ -43,7 +43,7 @@ const Hand = ({
   disheveled,
   rotate,
   className,
-}: Props) => {
+}: Props) {
   const { cards } = hand.sort();
   return (
     <Box className={className} rotate={rotate}>
