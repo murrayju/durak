@@ -329,7 +329,7 @@ declare module 'mongodb' {
       /**
        * The username for auth
        */
-      user: string,
+      username: string,
 
       /**
        * The password for auth
@@ -1298,13 +1298,10 @@ declare module 'mongodb' {
     fsync?: boolean,
     ...
   } & CommonOptions;
-  declare type EnhancedOmit<
-    T,
-    K,
-  > = /* Flow doesn't support conditional types, use `$Call` utility type */ any;
-  declare type ExtractIdType<
-    TSchema,
-  > = /* Flow doesn't support conditional types, use `$Call` utility type */ any;
+  declare type EnhancedOmit<T, K> =
+    /* Flow doesn't support conditional types, use `$Call` utility type */ any;
+  declare type ExtractIdType<TSchema> =
+    /* Flow doesn't support conditional types, use `$Call` utility type */ any;
   declare type OptionalId<
     TSchema: {
       _id?: any,
@@ -1321,7 +1318,7 @@ declare module 'mongodb' {
   declare export class Collection<
     TSchema: {
       [key: string]: any,
-      ...,
+      ...
     } = DefaultSchema,
   > {
     /**
@@ -2150,7 +2147,7 @@ declare module 'mongodb' {
   >;
   declare type DotAndArrayNotation<AssignableType> = {
     [key: string]: AssignableType,
-    ...,
+    ...
   };
   declare type ReadonlyPartial<TSchema> = $ObjMapi<
     TSchema,
@@ -2165,9 +2162,8 @@ declare module 'mongodb' {
     DotAndArrayNotation<AssignableType>;
   declare export type MatchKeysAndValues<TSchema> = ReadonlyPartial<TSchema> &
     DotAndArrayNotation<any>;
-  declare type Unpacked<
-    Type,
-  > = /* Flow doesn't support conditional types, use `$Call` utility type */ any;
+  declare type Unpacked<Type> =
+    /* Flow doesn't support conditional types, use `$Call` utility type */ any;
   declare export type SortValues = -1 | 1;
   declare export type AddToSetOperators<Type> = {
     $each: Type,
@@ -2188,7 +2184,7 @@ declare module 'mongodb' {
   > &
     NotAcceptedFields<TSchema, any[]>) & {
     [key: string]: AddToSetOperators<any> | any,
-    ...,
+    ...
   };
   declare export type PushOperator<TSchema> = ($ObjMapi<
     { [k: KeysOfAType<TSchema, any[]>]: any },
@@ -2196,7 +2192,7 @@ declare module 'mongodb' {
   > &
     NotAcceptedFields<TSchema, any[]>) & {
     [key: string]: ArrayOperator<any> | any,
-    ...,
+    ...
   };
   declare export type PullOperator<TSchema> = ($ObjMapi<
     { [k: KeysOfAType<TSchema, any[]>]: any },
@@ -2208,7 +2204,7 @@ declare module 'mongodb' {
   > &
     NotAcceptedFields<TSchema, any[]>) & {
     [key: string]: QuerySelector<any> | any,
-    ...,
+    ...
   };
   declare export type PullAllOperator<TSchema> = ($ObjMapi<
     { [k: KeysOfAType<TSchema, any[]>]: any },
@@ -2216,7 +2212,7 @@ declare module 'mongodb' {
   > &
     NotAcceptedFields<TSchema, any[]>) & {
     [key: string]: any[],
-    ...,
+    ...
   };
   /**
    * https://docs.mongodb.com/manual/reference/operator/update
@@ -2240,7 +2236,7 @@ declare module 'mongodb' {
     $mul?: OnlyFieldsOfType<TSchema, number>,
     $rename?: {
       [key: string]: string,
-      ...,
+      ...
     },
     $set?: MatchKeysAndValues<TSchema>,
     $setOnInsert?: MatchKeysAndValues<TSchema>,
@@ -2260,7 +2256,7 @@ declare module 'mongodb' {
      */
     $bit?: {
       [key: string]: $ObjMapi<{ [k: 'and' | 'or' | 'xor']: any }, <key>(key) => number>,
-      ...,
+      ...
     },
     ...
   };
@@ -2318,12 +2314,10 @@ declare module 'mongodb' {
    * https://docs.mongodb.com/manual/reference/operator/query-bitwise
    */
   declare type BitwiseQuery = number | Binary | number[];
-  declare type RegExpForString<
-    T,
-  > = /* Flow doesn't support conditional types, use `$Call` utility type */ any;
-  declare type MongoAltQuery<
-    T,
-  > = /* Flow doesn't support conditional types, use `$Call` utility type */ any;
+  declare type RegExpForString<T> =
+    /* Flow doesn't support conditional types, use `$Call` utility type */ any;
+  declare type MongoAltQuery<T> =
+    /* Flow doesn't support conditional types, use `$Call` utility type */ any;
   /**
    * https://docs.mongodb.com/manual/reference/operator/query/#query-selectors
    */
@@ -2405,9 +2399,8 @@ declare module 'mongodb' {
     [key: string]: any,
     ...
   };
-  declare export type ObjectQuerySelector<
-    T,
-  > = /* Flow doesn't support conditional types, use `$Call` utility type */ any;
+  declare export type ObjectQuerySelector<T> =
+    /* Flow doesn't support conditional types, use `$Call` utility type */ any;
   declare export type Condition<T> = MongoAltQuery<T> | QuerySelector<MongoAltQuery<T>>;
   declare export type FilterQuery<T> = $ObjMapi<T, <P>(P) => Condition<$ElementType<T, P>>> &
     RootQuerySelector<T>;
@@ -3017,7 +3010,7 @@ declare module 'mongodb' {
     ops: TSchema[],
     insertedIds: {
       [key: number]: $PropertyType<TSchema, '_id'>,
-      ...,
+      ...
     },
     connection: any,
     result: {

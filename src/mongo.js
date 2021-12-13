@@ -9,18 +9,18 @@ let mongoDb: ?Db = null;
 let mongoClient: ?MongoClient = null;
 
 export async function init(): Promise<{ db: Db, client: MongoClient }> {
-  const { url, user, password } = config.get('db');
-  const client = await MongoClient.connect(url, {
-    useUnifiedTopology: true,
-    ...(user && password
+  const { url, user: username, password } = config.get('db');
+  const client = new MongoClient(url, {
+    ...(username && password
       ? {
           auth: {
-            user,
+            username,
             password,
           },
         }
       : null),
   });
+  await client.connect();
   mongoClient = client;
 
   // get/create the database
