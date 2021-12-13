@@ -29,8 +29,10 @@ export default async function doPublish() {
     await run(jest);
     if (process.argv.includes('--publish-node-modules')) {
       buildLog('Fetching node_modules needed for production...');
-      await yarn([], {
-        cwd: './build/',
+      await yarn({
+        spawnOptions: {
+          cwd: './build/',
+        },
       });
     }
   }

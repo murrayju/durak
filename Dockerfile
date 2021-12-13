@@ -17,7 +17,7 @@ RUN yarn run run publish --release --publish-node-modules
 # Defaults when running this container
 EXPOSE 443
 ENTRYPOINT ["yarn", "run", "run"]
-CMD ["server"]
+CMD ["start"]
 
 ###
 # Production image. Only include what is needed for production
