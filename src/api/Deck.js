@@ -43,6 +43,11 @@ export default class Deck {
     return this;
   }
 
+  setOrder(order: string[]) {
+    this.cards.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    return this;
+  }
+
   // Take card(s) from the top of the deck
   draw(count?: number = 1): Card[] {
     return this.cards.splice(-count, count).reverse();

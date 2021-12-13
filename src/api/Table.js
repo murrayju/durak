@@ -320,6 +320,12 @@ export default class Table {
     }
   }
 
+  async setHandOrder(ctx: ApiRequestContext, order: string[]) {
+    const player = this.ensurePlayerCanPlay(ctx);
+    player.hand.setOrder(order);
+    await this.save(ctx);
+  }
+
   async _doPickUp(ctx: ApiRequestContext) {
     if (this.state.phase !== 'pickUp') {
       throw new Error(`Unexpected turn phase.`);

@@ -127,6 +127,15 @@ export default function (serverContext: ServerContext) {
     return res.status(204).send();
   });
 
+  router.post('/table/:id/setHandOrder', async (req: TableApiRequest, res) => {
+    const {
+      ctx: { table },
+      body,
+    } = req;
+    await table.setHandOrder(req.ctx, body);
+    return res.status(204).send();
+  });
+
   router.post('/table/:id/pickUpAttacks', async (req: TableApiRequest, res) => {
     const {
       ctx: { table },

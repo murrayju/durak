@@ -21,6 +21,7 @@ export type TableContextType = {
   join: (Client) => Promise<void>,
   newRound: () => Promise<void>,
   playCards: (PlayAction) => Promise<void>,
+  setHandOrder: (string[]) => Promise<void>,
   pickUpAttacks: () => Promise<void>,
   declareDoneAttacking: () => Promise<void>,
   declareAsBeat: () => Promise<void>,

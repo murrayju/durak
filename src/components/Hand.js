@@ -1,5 +1,6 @@
 // @flow
-import React from 'react';
+import { Reorder } from 'framer-motion';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
 import CardComponent from './Card';
@@ -21,10 +22,14 @@ const Box = styled.div`
   }
 `;
 
+const ConditionalWrapper = ({ condition, wrapper, children }) =>
+  condition ? wrapper({ children }) : children;
+
 type Props = {
   hand: Deck,
   selected?: ?(Card[]),
   onCardClick?: ?(Card) => void,
+  onReorder?: ?(string[]) => void,
   primary?: ?boolean,
   canDrag?: ?boolean,
   deck?: ?boolean,
@@ -37,6 +42,7 @@ const Hand = function ({
   hand,
   selected,
   onCardClick,
+  onReorder,
   primary,
   canDrag,
   deck,
@@ -44,28 +50,62 @@ const Hand = function ({
   rotate,
   className,
 }: Props) {
-  const { cards } = hand.sort();
+  const { cards } = hand;
+  const cardIds = useMemo(() => cards.map((card) => card.id), [cards]);
+
+  const ReorderGroup = useCallback(
+    ({ children }) => (
+      <Reorder.Group as="div" axis="x" values={cardIds} onReorder={onReorder}>
+        {children}
+      </Reorder.Group>
+    ),
+    [cardIds, onReorder],
+  );
+
+  const makeCardWrapper = useCallback(
+    (children, id) => (
+      <Reorder.Item
+        as="span"
+        value={id}
+        drag
+        style={{ display: 'inline-block', position: 'relative', marginLeft: -63 }}
+      >
+        {children}
+      </Reorder.Item>
+    ),
+    [],
+  );
+
   return (
     <Box className={className} rotate={rotate}>
-      {cards.map((c, i) => (
-        <CardComponent
-          key={c.id}
-          card={c}
-          index={i}
-          primary={primary}
-          canDrag={canDrag}
-          onCardClick={onCardClick}
-          selected={!!selected?.find((s) => s.id === c.id)}
-          inDeck={deck}
-          disheveled={disheveled}
-        />
-      ))}
+      <ConditionalWrapper condition={onReorder} wrapper={ReorderGroup}>
+        {cards.map((c, i) => (
+          <ConditionalWrapper
+            key={c.id}
+            condition={onReorder}
+            wrapper={({ children }) => makeCardWrapper(children, c.id)}
+          >
+            <CardComponent
+              key={c.id}
+              card={c}
+              index={i}
+              primary={primary}
+              canDrag={canDrag}
+              onCardClick={onCardClick}
+              selected={!!selected?.find((s) => s.id === c.id)}
+              inDeck={deck}
+              disheveled={disheveled}
+            />
+          </ConditionalWrapper>
+        ))}
+      </ConditionalWrapper>
     </Box>
   );
 };
 Hand.defaultProps = {
   selected: null,
   onCardClick: null,
+  onReorder: null,
   primary: false,
   canDrag: false,
   deck: false,

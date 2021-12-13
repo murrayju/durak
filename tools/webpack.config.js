@@ -56,6 +56,11 @@ const config = {
     strictExportPresence: true,
 
     rules: [
+      {
+        type: 'javascript/auto',
+        test: /\.mjs$/,
+        include: /node_modules/,
+      },
       // Rules for JS / JSX
       {
         test: reScript,

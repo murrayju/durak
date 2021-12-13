@@ -69,6 +69,12 @@ const useTableApi = (id: string): TableContextType => {
       body: JSON.stringify(action),
     });
 
+  const setHandOrder = async (order: string[]) =>
+    fetch(`/api/table/${id}/setHandOrder`, {
+      method: 'POST',
+      body: JSON.stringify(order),
+    });
+
   const pickUpAttacks = async () =>
     fetch(`/api/table/${id}/pickUpAttacks`, {
       method: 'POST',
@@ -100,6 +106,7 @@ const useTableApi = (id: string): TableContextType => {
     join,
     newRound,
     playCards,
+    setHandOrder,
     pickUpAttacks,
     declareDoneAttacking,
     declareAsBeat,

@@ -77,8 +77,16 @@ const ErrorMessage = styled.span`
 `;
 
 const MainHand = function () {
-  const { clientId, gameState, playCards, selectedCards, setSelectedCards, errorMsg, setErrorMsg } =
-    useTableContext();
+  const {
+    clientId,
+    gameState,
+    playCards,
+    setHandOrder,
+    selectedCards,
+    setSelectedCards,
+    errorMsg,
+    setErrorMsg,
+  } = useTableContext();
 
   const player = gameState.getPlayer(clientId, true) || gameState.primaryAttacker;
   const isPlaying = player.id === clientId;
@@ -115,6 +123,7 @@ const MainHand = function () {
                 : [...(isDefender ? [] : sel), c],
             )
           }
+          onReorder={setHandOrder}
         />
       )}
       <MainHandIndicators>
