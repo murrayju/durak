@@ -10,3 +10,10 @@ out/
 latest.build*
 log/
 deploy_rsa
+bs.bat
+bs.ps1
+node*
+yarn
+yarn-error.log
+yarn.bat
+yarn.ps1

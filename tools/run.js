@@ -7,7 +7,7 @@ setPkg(pkg);
 if (require.main === module) {
   delete require.cache[__filename]; // eslint-disable-line no-underscore-dangle
   // eslint-disable-next-line global-require, import/no-dynamic-require
-  runCli((path) => require(`./${path}`).default, 'publish')
+  runCli({ resolveFn: (path) => require(`./${path}`).default })
     .then(() => process.exit(0))
     .catch((err) => {
       buildLog(`Unhandled exception in run module: ${err}`);

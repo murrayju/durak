@@ -4,6 +4,8 @@
   "description": "a card game",
   "main": "index.js",
   "buildStrap": {
+    "nodeVersion": "16.13.1",
+    "yarnVersion": "1.22.15",
     "repoType": "git",
     "copyright": "murrayju",
     "releaseBranch": "master",
@@ -14,7 +16,7 @@
     },
     "docker": {
       "repository": "murrayju/durak",
-      "registry": "docker.pkg.github.com"
+      "registry": "ghcr.io"
     }
   },
   "scripts": {
@@ -125,7 +127,7 @@
     "babel-plugin-styled-components": "^1.10.6",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "browser-sync": "^2.26.7",
-    "build-strap": "^1.2.0",
+    "build-strap": "^3.0.0",
     "chokidar": "^3.4.0",
     "css-loader": "^3.5.3",
     "cssnano": "^4.1.10",

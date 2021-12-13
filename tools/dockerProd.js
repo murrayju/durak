@@ -5,7 +5,7 @@ import {
   buildLog,
   getDockerRepo,
   dockerImages,
-  dockerRun,
+  dockerContainerRun,
   dockerNetworkDelete,
   dockerTryStopContainer,
   run,
@@ -64,8 +64,8 @@ export default async function dockerProd(
     buildLog(`Starting server, to be available at https://localhost:${localPort}`);
 
     // Run the tests in the builder container
-    await dockerRun(
-      [
+    await dockerContainerRun({
+      runArgs: [
         '--rm',
         '-it',
         '-p',
@@ -81,9 +81,8 @@ export default async function dockerProd(
             ]
           : []),
       ],
-      await getBuildImage(tag),
-      [],
-    );
+      image: await getBuildImage(tag),
+    });
   } finally {
     // cleanup
     await cleanupAndExit();

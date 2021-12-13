@@ -172,7 +172,7 @@ async function start(
         delete require.cache[require.resolve('config')];
         delete require.cache[require.resolve('@murrayju/config')];
         delete require.cache[require.resolve('../build/server')];
-        // eslint-disable-next-line global-require, import/no-unresolved
+        // eslint-disable-next-line global-require, import/no-unresolved, import/extensions
         ({ app, destroy } = await require('../build/server').default());
         console.warn(`${hmrPrefix}App has been reloaded.`);
       };
@@ -241,7 +241,7 @@ async function start(
       console.info(`[${format(timeStart)}] Launching server...`);
 
       // Load compiled src/server.js as a middleware
-      // eslint-disable-next-line global-require, import/no-unresolved
+      // eslint-disable-next-line global-require, import/no-unresolved, import/extensions
       ({ app, destroy } = await require('../build/server').default());
       appPromiseIsResolved = true;
       appPromiseResolve();

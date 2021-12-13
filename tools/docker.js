@@ -178,7 +178,9 @@ export async function runDbContainer(
   buildLog('Starting database server...');
   const dockerPort = 27017;
   const id = await dockerPullAndRunContainer(image, {
+    image,
     runArgs: [
+      '--rm',
       ...(persist ? ['-v', `${path.resolve(persist)}:/data/db:rw`] : []),
       ...(p ? ['-p', `${p}:${dockerPort}`] : []),
       ...(alias ? ['--name', `durak-tdd-${alias}`] : []),
