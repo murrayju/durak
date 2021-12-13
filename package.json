@@ -173,7 +173,7 @@
     "prettier": "^2.0.5",
     "promise-queue": "^2.2.5",
     "raw-loader": "^4.0.1",
-    "react-dev-utils": "^10.0.0",
+    "react-dev-utils": "^11.0.4",
     "react-error-overlay": "^6.0.4",
     "stylelint": "^13.3.3",
     "stylelint-config-standard": "^20.0.0",
