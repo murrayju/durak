@@ -95,7 +95,7 @@
     "universal-cookie-express": "^4.0.3",
     "universal-router": "^9.0.1",
     "uuid": "^8.0.0",
-    "vm2": "^3.9.4",
+    "vm2": "^3.9.6",
     "whatwg-fetch": "^3.0.0",
     "winston": "^3.2.1"
   },
