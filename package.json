@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "run": "babel-node tools/run",
+    "target": "babel-node target/run",
     "start": "./bs tdd",
     "test": "jest",
     "prepare": "husky install"

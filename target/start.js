@@ -108,7 +108,7 @@ async function start(
 
       // Configure client-side hot module replacement
       const clientConfig = webpackConfig.find((cfg) => cfg.name === 'client');
-      clientConfig.entry.client = ['./tools/lib/webpackHotDevClient']
+      clientConfig.entry.client = ['./target/lib/webpackHotDevClient']
         .concat(clientConfig.entry.client)
         .sort((a, b) => b.includes('polyfill') - a.includes('polyfill'));
       clientConfig.output.filename = clientConfig.output.filename.replace('chunkhash', 'hash');
