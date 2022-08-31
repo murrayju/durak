@@ -68,7 +68,7 @@
     "history": "4",
     "js-yaml": "^4.1.0",
     "moment": "^2.25.1",
-    "moment-timezone": "^0.5.27",
+    "moment-timezone": "^0.5.35",
     "mongo": "^0.1.0",
     "mongodb": "^4.2.1",
     "node-fetch": "2",
